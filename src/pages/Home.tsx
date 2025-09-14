@@ -4,12 +4,10 @@ import Header from "../components/header/Header";
 const Home = () => {
   return (
     <>
-      {/* HEADER */}
-      <div className="h-[10000px]">
-        <Header />
-      </div>
       {/* BODY */}
-      <div className="flex justify-center items-center">BODY HERE</div>
+      <div className="flex justify-center items-center h-[20000px]">
+        BODY HERE
+      </div>
     </>
   );
 };
