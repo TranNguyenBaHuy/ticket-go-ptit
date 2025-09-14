@@ -1,14 +1,34 @@
 import { Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
-import Header from "./components/header/Header";
+import type { ComponentType, PropsWithChildren } from "react";
+import DefaultLayout from "./components/Layout/DefaultLayout/DefaultLayout";
+
+import { Fragment } from "react";
 function App() {
   return (
     <>
-      <Header />
       <Routes>
         {publicRoutes.map((route, index) => {
+          let Layout: ComponentType<PropsWithChildren> = DefaultLayout;
+
+          if (route.layout) {
+            Layout = route.layout;
+          } else if (route.layout === null) {
+            Layout = Fragment;
+          }
+
           const Page = route.component;
-          return <Route key={index} path={route.path} element={<Page />} />;
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  <Page />
+                </Layout>
+              }
+            />
+          );
         })}
       </Routes>
     </>
