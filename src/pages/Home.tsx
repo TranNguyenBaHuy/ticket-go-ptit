@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <>
       {/* HEADER */}
-      <div className="px-15 ">
+      <div className="h-[10000px]">
         <Header />
       </div>
       {/* BODY */}
