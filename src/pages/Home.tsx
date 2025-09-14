@@ -5,9 +5,7 @@ const Home = () => {
   return (
     <>
       {/* BODY */}
-      <div className="flex justify-center items-center h-[20000px]">
-        BODY HERE
-      </div>
+      <div className="text-[40px] font-bold h-[20000px]">HOME</div>
     </>
   );
 };
