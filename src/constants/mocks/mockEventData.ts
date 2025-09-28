@@ -41,7 +41,8 @@ export const events = [
     start_date: "2025-12-10T05:00:00",
     end_date: "2025-12-10T12:00:00",
     organizer: "City Marathon Org",
-    banner_url: "“KIM”",
+    banner_url:
+      "https://salt.tkbcdn.com/ts/ds/90/37/6e/cfa9510b1f648451290e0cf57b6fd548.jpg",
     tickets: [
       { ticket_id: "TCK004", type: "5km", price: 200000, quantity: 300 },
       { ticket_id: "TCK005", type: "10km", price: 300000, quantity: 200 },
