@@ -2,8 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import type { ComponentType, PropsWithChildren } from "react";
 import DefaultLayout from "./components/Layouts/DefaultLayout/DefaultLayout";
-
 import { Fragment } from "react";
+
 function App() {
   return (
     <>

@@ -4,6 +4,7 @@ import Products from "../pages/MyTickets";
 import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
+import EventDetail from "../components/EventDetail";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -11,8 +12,8 @@ const publicRoutes = [
   { path: "/my-tickets", component: Products, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/all-events", component: AllEvents, layout: DefaultLayout },
+  { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
 ];
-
 const privateRoutes = [];
 
 export { publicRoutes, privateRoutes };
