@@ -2,7 +2,6 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 type EventProps = {
   banner_url: string;
@@ -21,11 +20,6 @@ const EventCard: React.FC<EventProps> = ({
   location,
   price,
 }) => {
-  const navigate = useNavigate();
-  const handleClick = () => {
-    navigate(`/event/${event_id}`);
-  };
-
   return (
     <Link to={`/events/${event_id}`}>
       <div className="max-w-3xl bg-transparent rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-500">
