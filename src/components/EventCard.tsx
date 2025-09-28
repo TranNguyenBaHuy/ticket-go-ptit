@@ -14,7 +14,7 @@ const EventCard: React.FC<EventProps> = ({
   location,
 }) => {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+    <div className="max-w-3xl bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
         <img
           src={banner_url}
@@ -26,7 +26,9 @@ const EventCard: React.FC<EventProps> = ({
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold mb-1 line-clamp-2">{title}</h3>
+        <h3 className="text-lg font-semibold mb-1 line-clamp-2 min-h-[3.5rem]">
+          {title}
+        </h3>
         <p className="text-sm text-gray-500 line-clamp-1">{location}</p>
       </div>
     </div>
