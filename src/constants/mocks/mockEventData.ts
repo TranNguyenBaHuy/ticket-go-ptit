@@ -4,9 +4,9 @@ export const events = [
     title: "Waterbomb Ho Chi Minh City 2025",
     description: "Sự kiện EDM hoành tráng với dàn DJ quốc tế.",
     location: "SVĐ Phú Thọ, Quận 11, TP.HCM",
-    start_date: "2025-10-15T19:00:00",
-    end_date: "2025-10-15T23:59:00",
-    organizer: "BigScore Entertainment",
+    start_date: "19 tháng 10, 2025",
+    duration: "19:30 - 22:30",
+    organizer: "YG Entertainment",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/f3/80/f0/32ee189d7a435daf92b6a138d925381c.png",
     tickets: [
@@ -20,10 +20,10 @@ export const events = [
     event_id: "EVT002",
     title: `1CINÉ x CHILLIES: “KIM” THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE`,
     description:
-      "CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE | 12.10.2025 Sau 4 năm kể từ album đầu tay, Chillies chính thức trở lại với album phòng thu thứ hai mang tên “KIM”. Đặc biệt, bạn sẽ là một trong những khán giả “đầu tiên” được thưởng thức trọn vẹn những bản live đầu tiên của Album “KIM” trước khi album được phát hành, tại buổi pre-listening private showcase duy nhất diễn ra tại Ciné Saigon. Một đêm diễn đặc biệt dành riêng cho những ai yêu mến âm nhạc Chillies. Sân khấu lần này không chỉ để lắng nghe những ca khúc mới, mà còn là khoảnh khắc kết nối gần gũi giữa Chillies và khán giả. Hãy chuẩn bị tinh thần cho một đêm nhạc bất ngờ và đáng nhớ cùng Chillies! ✨",
+      "CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE...",
     location: "Nhà Văn Hóa Thanh Niên, TP.HCM",
-    start_date: "2025-11-01T09:00:00",
-    end_date: "2025-11-03T22:00:00",
+    start_date: "01 tháng 11, 2025",
+    duration: "19:30 - 22:30",
     organizer: "Food Global",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/63/8e/c1/6be36d3ecc5fe3e0c4a31b27a00f80fc.jpg",
@@ -38,8 +38,8 @@ export const events = [
     title: `EM XINH "SAY HI" CONCERT - ĐÊM 2`,
     description: "Sự kiện marathon với nhiều cự ly khác nhau.",
     location: "Phố đi bộ Nguyễn Huệ, TP.HCM",
-    start_date: "2025-12-10T05:00:00",
-    end_date: "2025-12-10T12:00:00",
+    start_date: "10 tháng 12, 2025",
+    duration: "19:30 - 22:30",
     organizer: "City Marathon Org",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/90/37/6e/cfa9510b1f648451290e0cf57b6fd548.jpg",
@@ -56,8 +56,8 @@ export const events = [
     title: "DAY6 10th Anniversary Tour <The DECADE> in HO CHI MINH CITY",
     description: "Trình diễn các công nghệ mới nhất trong AI, IoT và VR.",
     location: "Trung tâm Hội nghị SECC, Q.7, TP.HCM",
-    start_date: "2025-11-20T09:00:00",
-    end_date: "2025-11-22T18:00:00",
+    start_date: "20 tháng 11, 2025",
+    duration: "19:30 - 22:30",
     organizer: "TechWorld Vietnam",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/c6/e1/c2/d3d41b377ea3d9a3cd18177d656516d7.jpg",
@@ -72,10 +72,10 @@ export const events = [
     event_id: "EVT005",
     title: "Italia Mistero",
     description:
-      "Lần đầu tiên tại Hà Nội, Dàn nhạc Teatro Massimo, biểu tượng nghệ thuật của Palermo và một trong những dàn nhạc opera danh giá nhất nước Ý, sẽ trình diễn những tuyệt tác bất hủ của Rossini, Verdi, Donizetti và Bellini. Từ bản Sinfonia sôi nổi của Rossini, aria sâu lắng trong La traviata của Verdi, đến giai điệu ngọt ngào từ L’elisir d’amore và Casta diva trữ tình trong Norma, khán giả sẽ được thưởng thức trọn vẹn tinh hoa “thời hoàng kim” của opera Ý thế kỷ XIX.",
+      "Lần đầu tiên tại Hà Nội, Dàn nhạc Teatro Massimo, biểu tượng nghệ thuật...",
     location: "CGV Landmark 81, TP.HCM",
-    start_date: "2025-12-05T18:00:00",
-    end_date: "2025-12-12T23:00:00",
+    start_date: "05 tháng 12, 2025",
+    duration: "19:30 - 22:30",
     organizer: "Vietnam Film Association",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/88/52/dd/6ad9f988be92ae9bbaf1cbd395b3aa10.jpg",
@@ -98,7 +98,7 @@ export const events = [
       "Tròn một năm kể từ thành công của Album phòng thu thứ 3 và Concert Tour “Bảo Tàng Của Nuối Tiếc”, Vũ. sẽ kết hợp cùng 1900 Lé Théâtre để mang đến một đêm diễn đặc biệt - Private show “Bảo Tàng Của Nuối Tiếc”, như lời tri ân dành cho các khán giả. Đây cũng là lần đầu tiên Vũ. tổ chức Private show “Bảo Tàng Của Nuối Tiếc” dành riêng cho khán giả Hà Nội.",
     location: "SVĐ Quân Khu 7, TP.HCM",
     start_date: "2025-10-30T19:00:00",
-    end_date: "2025-10-30T23:00:00",
+    duration: "19:30 - 22:30",
     organizer: "RapViet Entertainment",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/c9/42/c9/e51cdafa1dfa1937e1847bd3ef2371af.jpg",
@@ -115,7 +115,7 @@ export const events = [
     description: "Học hỏi kinh nghiệm từ các startup thành công.",
     location: "ĐH Kinh Tế TP.HCM",
     start_date: "2025-11-10T08:00:00",
-    end_date: "2025-11-10T17:00:00",
+    duration: "19:30 - 22:30",
     organizer: "Startup Vietnam Foundation",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/9c/0e/cf/ffa9add63b449ab12f587d1a10ab5bc7.jpg",
@@ -132,8 +132,8 @@ export const events = [
     description: "Các đội bóng sinh viên tranh tài hấp dẫn.",
     location: "SVĐ Thống Nhất, TP.HCM",
     start_date: "2025-11-25T15:00:00",
-    end_date: "2025-11-30T21:00:00",
     organizer: "Liên đoàn bóng đá SVVN",
+    duration: "19:30 - 22:30",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/fb/eb/66/1d976574a7ad259eb46ec5c6cfeaf63e.png",
     tickets: [
@@ -159,8 +159,8 @@ export const events = [
     description: "Bộ sưu tập nghệ thuật độc đáo của các họa sĩ trẻ.",
     location: "Bảo tàng Mỹ Thuật TP.HCM",
     start_date: "2025-10-20T09:00:00",
-    end_date: "2025-10-25T17:00:00",
     organizer: "ArtSpace Vietnam",
+    duration: "19:30 - 22:30",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/3e/b1/c1/034602970c0ce4c58daee24779476ae5.jpg",
     tickets: [
@@ -177,7 +177,7 @@ export const events = [
       "Lululola Show - Hơn cả âm nhạc, không gian lãng mạn đậm chất thơ Đà Lạt bao trọn hình ảnh thung lũng Đà Lạt, được ngắm nhìn khoảng khắc hoàng hôn thơ mộng đến khi Đà Lạt về đêm siêu lãng mạn, được giao lưu với thần tượng một cách chân thật và gần gũi nhất trong không gian ấm áp và không khí se lạnh của Đà Lạt. Tất cả sẽ  mang đến một đêm nhạc ấn tượng mà bạn không thể quên khi đến với Đà Lạt.",
     location: "Công viên 23/9, TP.HCM",
     start_date: "2025-12-18T10:00:00",
-    end_date: "2025-12-20T22:00:00",
+    duration: "19:30 - 22:30",
     organizer: "Street Culture Org",
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/cb/5a/3b/13e9a9ccf99d586df2a7c6bd59d89369.png",
