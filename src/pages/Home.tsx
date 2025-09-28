@@ -7,6 +7,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+  // function lay gia ve re nhat
+  const getDisplayPrice = (tickets: { price: number }[]) => {
+    if (!tickets || tickets.length === 0) return null;
+    return Math.min(...tickets.map((t) => t.price));
+  };
+
   return (
     <div className="py-8 w-full mx-auto bg-[#212121]">
       <div className="mx-30">
@@ -29,15 +35,18 @@ const Home = () => {
             itemClass="mx-2"
             partialVisible={false}
           >
-            {events.map((event) => (
-              <EventCard
-                key={event.event_id}
-                banner_url={event.banner_url}
-                title={event.title}
-                date={event.start_date}
-                location={event.location}
-              />
-            ))}
+            {events.map((event) => {
+              return (
+                <EventCard
+                  key={event.event_id}
+                  banner_url={event.banner_url}
+                  title={event.title}
+                  date={event.start_date}
+                  location={event.location}
+                  price={getDisplayPrice(event.tickets)}
+                />
+              );
+            })}
           </Carousel>
         </div>
         {/* FOR YOU SECTION */}
@@ -51,15 +60,18 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {events.slice(0, 4).map((event) => (
-              <EventCard
-                key={event.event_id}
-                banner_url={event.banner_url}
-                title={event.title}
-                date={event.start_date}
-                location={event.location}
-              />
-            ))}
+            {events.slice(0, 4).map((event) => {
+              return (
+                <EventCard
+                  key={event.event_id}
+                  banner_url={event.banner_url}
+                  title={event.title}
+                  date={event.start_date}
+                  location={event.location}
+                  price={getDisplayPrice(event.tickets)}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
