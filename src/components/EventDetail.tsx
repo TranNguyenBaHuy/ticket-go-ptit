@@ -92,11 +92,11 @@ const EventDetail = () => {
       </div>
 
       {/* TICKET DETAILS SECTION */}
-      <div className="w-full py-8 bg-white text-white">
-        <div className="mx-30 flex flex-col rounded-lg overflow-hidden shadow-lg">
+      <div className="w-full py-8 bg-[#F5F7FC] text-white">
+        <div className="mx-30 flex gap-8 flex-col">
           {/* details section */}
-          <div className="p-2 flex flex-col gap-6">
-            <h1 className="py-2 text-black text-md font-bold border-b border-[#ebebf0]">
+          <div className="p-3 bg-white">
+            <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
             <div
@@ -105,10 +105,40 @@ const EventDetail = () => {
             ></div>
           </div>
           {/* booking section */}
-          <div className="p-3 flex flex-col gap-6 bg-[#2a2d34]">
-            <h1 className="py-2 text-white text-md font-bold border-b border-black">
+          <div className="bg-[#27272A] rounded-2xl py-4">
+            <h1 className="mx-3 text-white text-md font-bold border-b border-black ">
               Thông tin vé
             </h1>
+            <div>
+              {event.tickets.map((ticket, index) => (
+                <div
+                  key={ticket.ticket_id}
+                  className={`flex justify-between items-center py-2 px-4 ${
+                    index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                  }`}
+                >
+                  <h1 className="py-2 text-white font-semibold">
+                    {ticket.type}
+                  </h1>
+                  <div className="">
+                    <p
+                      className={`font-bold mb-2 ${
+                        ticket.quantity === 0
+                          ? "text-gray-400"
+                          : "text-[#2dc275]"
+                      }`}
+                    >
+                      {ticket.price.toLocaleString("de-DE")} đ
+                    </p>
+                    {ticket.quantity === 0 && (
+                      <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl">
+                        Hết vé
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

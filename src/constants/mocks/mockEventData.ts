@@ -32,7 +32,12 @@ export const events = [
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/63/8e/c1/6be36d3ecc5fe3e0c4a31b27a00f80fc.jpg",
     tickets: [
-      { ticket_id: "TCK003", type: "Vé Ngày", price: 100000, quantity: 2000 },
+      {
+        ticket_id: "TCK003",
+        type: "Chilly",
+        price: 100000,
+        quantity: 0,
+      },
     ],
     created_at: "2025-09-28T10:10:00",
     updated_at: "2025-09-28T10:10:00",
@@ -48,9 +53,9 @@ export const events = [
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/90/37/6e/cfa9510b1f648451290e0cf57b6fd548.jpg",
     tickets: [
-      { ticket_id: "TCK004", type: "5km", price: 200000, quantity: 300 },
-      { ticket_id: "TCK005", type: "10km", price: 300000, quantity: 200 },
-      { ticket_id: "TCK006", type: "21km", price: 500000, quantity: 100 },
+      { ticket_id: "TCK004", type: "Nhái", price: 200000, quantity: 0 },
+      { ticket_id: "TCK005", type: "Nhái vip", price: 300000, quantity: 200 },
+      { ticket_id: "TCK006", type: "Nhái vvip", price: 500000, quantity: 100 },
     ],
     created_at: "2025-09-28T10:20:00",
     updated_at: "2025-09-28T10:20:00",
