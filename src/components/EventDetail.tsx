@@ -23,7 +23,7 @@ const EventDetail = () => {
           {/* Left side: Info */}
           <div className="md:w-1/3 p-6 flex flex-col justify-between bg-[#38383d]">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-4">
+              <h1 className="text-xl md:text-2xl font-bold mb-4">
                 {event.title}
               </h1>
               <div className="flex items-center mb-4 gap-1.5 text-[#2dc275] ">
@@ -92,14 +92,23 @@ const EventDetail = () => {
       </div>
 
       {/* TICKET DETAILS SECTION */}
-      <div className="w-full py-6 bg-white text-white">
-        <div className="mx-30 flex flex-col  rounded-lg overflow-hidden shadow-lg">
-          <div className="p-3 flex flex-col gap-6">
-            <h1 className="text-black text-2xl font-bold">Giới thiệu</h1>
+      <div className="w-full py-8 bg-white text-white">
+        <div className="mx-30 flex flex-col rounded-lg overflow-hidden shadow-lg">
+          {/* details section */}
+          <div className="p-2 flex flex-col gap-6">
+            <h1 className="py-2 text-black text-md font-bold border-b border-[#ebebf0]">
+              Giới thiệu
+            </h1>
             <div
               className="mb-4 text-sm text-black"
               dangerouslySetInnerHTML={{ __html: event.description }}
             ></div>
+          </div>
+          {/* booking section */}
+          <div className="p-3 flex flex-col gap-6 bg-[#2a2d34]">
+            <h1 className="py-2 text-white text-md font-bold border-b border-black">
+              Thông tin vé
+            </h1>
           </div>
         </div>
       </div>
