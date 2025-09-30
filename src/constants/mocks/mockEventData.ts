@@ -53,9 +53,9 @@ export const events = [
     banner_url:
       "https://salt.tkbcdn.com/ts/ds/90/37/6e/cfa9510b1f648451290e0cf57b6fd548.jpg",
     tickets: [
-      { ticket_id: "TCK004", type: "Nhái", price: 200000, quantity: 0 },
-      { ticket_id: "TCK005", type: "Nhái vip", price: 300000, quantity: 200 },
-      { ticket_id: "TCK006", type: "Nhái vvip", price: 500000, quantity: 100 },
+      { ticket_id: "TCK004", type: "Em", price: 200000, quantity: 0 },
+      { ticket_id: "TCK005", type: "Xinh", price: 300000, quantity: 200 },
+      { ticket_id: "TCK006", type: "SayHi", price: 500000, quantity: 100 },
     ],
     created_at: "2025-09-28T10:20:00",
     updated_at: "2025-09-28T10:20:00",
