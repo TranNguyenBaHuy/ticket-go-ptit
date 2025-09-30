@@ -18,8 +18,8 @@ const EventDetail = () => {
   return (
     <>
       {/* TICKET INFO SECTION */}
-      <div className="w-full py-8 bg-gray-900 text-white">
-        <div className=" relative max-w-6xl mx-auto flex flex-col md:flex-row rounded-lg overflow-hidden shadow-lg">
+      <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-50% to-black text-white">
+        <div className=" relative max-w-6xl mx-auto flex flex-col md:flex-row rounded-lg overflow-hidden shadow-lg ">
           {/* Left side: Info */}
           <div className="md:w-1/3 p-6 flex flex-col justify-between bg-[#38383d]">
             <div>
@@ -59,7 +59,8 @@ const EventDetail = () => {
           </div>
 
           {/* divider */}
-          <div className="hidden md:flex justify-center">
+          <div className="hidden md:flex flex-col absolute justify-center items-center top-0 bottom-0 left-1/3 -translate-x-1/2">
+            <div className="w-14 h-8 rounded-b-full bg-[#27272A]"></div>
             <svg
               width="4"
               height="415"
@@ -76,6 +77,7 @@ const EventDetail = () => {
                 d="M2 2v411"
               ></path>
             </svg>
+            <div className="w-14 h-8 rounded-t-full bg-black"></div>
           </div>
 
           {/* Right side: Banner */}
