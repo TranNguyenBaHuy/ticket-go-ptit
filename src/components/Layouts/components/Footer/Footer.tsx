@@ -20,6 +20,7 @@ const Footer = () => {
             <p>Công ty TNHH TicketBox Clone</p>
             <p>Đại diện theo pháp luật: Trịnh Trần Phương Tuấn</p>
             <p>Mã số đăng ký thuế: 123456</p>
+            <p>Deployment</p>
           </div>
           <div>
             <a
