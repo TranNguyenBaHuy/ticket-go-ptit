@@ -1,19 +1,13 @@
 // import { useState } from "react";
-
 import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { responsive } from "../components/Base/ResponsiveBase/Carousel";
 import { Link } from "react-router-dom";
 import EventCard from "../components/EventCard";
+import { getDisplayPrice } from "../components/utils/getDisplayPrice";
 
 const Home = () => {
-  // function lay gia ve re nhat
-  const getDisplayPrice = (tickets: { price: number }[]) => {
-    if (!tickets || tickets.length === 0) return null;
-    return Math.min(...tickets.map((t) => t.price));
-  };
-
   return (
     <div className="py-8 w-full mx-auto bg-[#212121]">
       <div className="mx-30">
