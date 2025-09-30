@@ -19,8 +19,9 @@ export const events = [
   {
     event_id: "EVT002",
     title: `1CINÉ x CHILLIES: “KIM” THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE`,
-    description:
-      "CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE...",
+    description: `CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE | 12.10.2025
+    Sau 4 năm kể từ album đầu tay, Chillies chính thức trở lại với album phòng thu thứ hai mang tên “KIM”. Đặc biệt, bạn sẽ là một trong những khán giả “đầu tiên” được thưởng thức trọn vẹn những bản live đầu tiên của Album "KIM" trước khi album được phát hành, tại buổi pre-listening private showcase duy nhất diễn ra tại Ciné Saigon. 
+    Một đêm diễn đặc biệt dành riêng cho những ai yêu mến âm nhạc Chillies. Sân khấu lần này không chỉ để lắng nghe những ca khúc mới, mà còn là khoảnh khắc kết nối gần gũi giữa Chillies và khán giả. Hãy chuẩn bị tinh thần cho một đêm nhạc bất ngờ và đáng nhớ cùng Chillies!`,
     location: "Nhà Văn Hóa Thanh Niên, TP.HCM",
     start_date: "01 tháng 11, 2025",
     duration: "19:30 - 22:30",
