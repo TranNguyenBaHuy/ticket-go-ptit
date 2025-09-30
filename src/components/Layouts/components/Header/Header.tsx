@@ -7,10 +7,14 @@ const Header = () => {
         {/* Main nav */}
         <div className="flex justify-between items-center py-6">
           {/* Logo */}
-          <div className="text-3xl font-bold text-white">
-            <Link to="/">TicketGo</Link>
-          </div>
-
+          <Link to="/">
+            <img
+              src="https://salt.tkbcdn.com/ts/ds/32/dc/a2/7871f1207e8c4c2747698b5aa6d15a56.png"
+              alt="tkbvnpay"
+              width="127"
+              height="41"
+            ></img>
+          </Link>
           {/* Search */}
           <div className="">
             <input

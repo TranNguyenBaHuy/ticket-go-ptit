@@ -5,7 +5,7 @@ import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
 import EventDetail from "../components/EventDetail";
-import SelectTicket from "../components/Layouts/components/SelectTicket";
+import SelectTicket from "../components/SelectTicket";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
