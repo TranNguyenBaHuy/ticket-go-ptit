@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   return (
@@ -16,7 +18,8 @@ const Header = () => {
             ></img>
           </Link>
           {/* Search */}
-          <div className="">
+          <div className="relative">
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute" />
             <input
               type="text "
               placeholder="Bạn tìm gì hôm nay?"

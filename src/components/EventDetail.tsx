@@ -11,7 +11,7 @@ const EventDetail = () => {
   if (!event)
     return (
       <p className="text-center py-8 text-3xl font-bold">
-        Sự kiện không tồn tại!
+        Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
       </p>
     );
 
