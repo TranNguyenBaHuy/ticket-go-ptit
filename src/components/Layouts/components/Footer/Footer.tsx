@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <>
       <div className="w-full mx-auto bg-[#1d1d1d]">
-        <div className="mx-30 py-10 items-center flex flex-row justify-between">
+        <div className="mx-30 py-8 items-center flex flex-row justify-between">
           <div>
             <Link to="/">
               <img
@@ -20,6 +20,7 @@ const Footer = () => {
           <div className="text-sm text-[#b3b3b3] flex flex-col gap-1">
             <p>Công ty TNHH TicketBox Clone</p>
             <p>Đại diện theo pháp luật: Trịnh Trần Phương Tuấn</p>
+            <p>Mã số đăng ký thuế: 123456</p>
           </div>
           <div>
             <a
