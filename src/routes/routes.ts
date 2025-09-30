@@ -5,6 +5,7 @@ import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
 import EventDetail from "../components/EventDetail";
+import SelectTicket from "../components/Layouts/components/SelectTicket";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -13,6 +14,7 @@ const publicRoutes = [
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/all-events", component: AllEvents, layout: DefaultLayout },
   { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
+  { path: "/events/:id", component: SelectTicket, layout: DefaultLayout },
 ];
 const privateRoutes = [];
 

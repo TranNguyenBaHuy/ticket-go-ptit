@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 
 import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
