@@ -18,15 +18,15 @@ const EventDetail = () => {
   return (
     <>
       {/* TICKET INFO SECTION */}
-      <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-50% to-black text-white">
-        <div className=" relative max-w-6xl mx-auto flex flex-col md:flex-row rounded-lg overflow-hidden shadow-lg ">
+      <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-60% to-black text-white">
+        <div className=" relative mx-30 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg ">
           {/* Left side: Info */}
           <div className="md:w-1/3 p-6 flex flex-col justify-between bg-[#38383d]">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-4">
                 {event.title}
               </h1>
-              <div className="flex items-center mb-2 gap-1.5 text-[#2dc275] ">
+              <div className="flex items-center mb-4 gap-1.5 text-[#2dc275] ">
                 <FontAwesomeIcon
                   icon={faCalendar}
                   className="text-white text-xl"
@@ -43,12 +43,12 @@ const EventDetail = () => {
                 <p className="font-semibold text-sm">{event.location}</p>
               </div>
             </div>
-
-            <div>
+            {/* price action section */}
+            <div className="border-t border-white py-[0.5rem]">
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center font-bold">
                 Giá từ
                 <p className="text-[#2dc275] text-2xl">
-                  {getDisplayPrice(event.tickets)?.toLocaleString()} đ
+                  {getDisplayPrice(event.tickets)?.toLocaleString("de-DE")} đ
                 </p>
               </p>
 
@@ -63,7 +63,7 @@ const EventDetail = () => {
             <div className="w-14 h-8 rounded-b-full bg-[#27272A]"></div>
             <svg
               width="4"
-              height="415"
+              height="100%"
               viewBox="0 0 4 415"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -90,18 +90,16 @@ const EventDetail = () => {
           </div>
         </div>
       </div>
+
       {/* TICKET DETAILS SECTION */}
       <div className="w-full py-6 bg-white text-white">
-        <div className="max-w-6xl mx-auto flex flex-col  rounded-lg overflow-hidden shadow-lg">
+        <div className="mx-30 flex flex-col  rounded-lg overflow-hidden shadow-lg">
           <div className="p-3 flex flex-col gap-6">
             <h1 className="text-black text-2xl font-bold">Giới thiệu</h1>
-            <div className="mb-4 text-sm text-black">
-              {event.description.split("\n").map((line, index) => (
-                <p key={index} className="mb-2">
-                  {line}
-                </p>
-              ))}
-            </div>
+            <div
+              className="mb-4 text-sm text-black"
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            ></div>
           </div>
         </div>
       </div>

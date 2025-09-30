@@ -19,9 +19,12 @@ export const events = [
   {
     event_id: "EVT002",
     title: `1CINÉ x CHILLIES: “KIM” THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE`,
-    description: `CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE | 12.10.2025
-    Sau 4 năm kể từ album đầu tay, Chillies chính thức trở lại với album phòng thu thứ hai mang tên “KIM”. Đặc biệt, bạn sẽ là một trong những khán giả “đầu tiên” được thưởng thức trọn vẹn những bản live đầu tiên của Album "KIM" trước khi album được phát hành, tại buổi pre-listening private showcase duy nhất diễn ra tại Ciné Saigon. 
-    Một đêm diễn đặc biệt dành riêng cho những ai yêu mến âm nhạc Chillies. Sân khấu lần này không chỉ để lắng nghe những ca khúc mới, mà còn là khoảnh khắc kết nối gần gũi giữa Chillies và khán giả. Hãy chuẩn bị tinh thần cho một đêm nhạc bất ngờ và đáng nhớ cùng Chillies!`,
+    description: `
+  <p><strong>CINÉ x CHILLIES: “KIM” - THE 2ND ALBUM PRE-LISTENING PRIVATE SHOWCASE | 12.10.2025</strong></p>
+
+  <p>Sau 4 năm kể từ album đầu tay, Chillies chính thức trở lại với album phòng thu thứ hai mang tên “KIM”. Đặc biệt, bạn sẽ là một trong những khán giả “đầu tiên” được thưởng thức trọn vẹn những bản live đầu tiên của Album "KIM" trước khi album được phát hành, tại buổi pre-listening private showcase duy nhất diễn ra tại Ciné Saigon.</p>
+
+  <p>Một đêm diễn đặc biệt dành riêng cho những ai yêu mến âm nhạc Chillies. Sân khấu lần này không chỉ để lắng nghe những ca khúc mới, mà còn là khoảnh khắc kết nối gần gũi giữa Chillies và khán giả. Hãy chuẩn bị tinh thần cho một đêm nhạc bất ngờ và đáng nhớ cùng Chillies!</p>`,
     location: "Nhà Văn Hóa Thanh Niên, TP.HCM",
     start_date: "01 tháng 11, 2025",
     duration: "19:30 - 22:30",
@@ -95,8 +98,24 @@ export const events = [
   {
     event_id: "EVT006",
     title: "1900 x Vũ. - Bảo Tàng Của Nuối Tiếc Private Show",
-    description:
-      "Tròn một năm kể từ thành công của Album phòng thu thứ 3 và Concert Tour “Bảo Tàng Của Nuối Tiếc”, Vũ. sẽ kết hợp cùng 1900 Lé Théâtre để mang đến một đêm diễn đặc biệt - Private show “Bảo Tàng Của Nuối Tiếc”, như lời tri ân dành cho các khán giả. Đây cũng là lần đầu tiên Vũ. tổ chức Private show “Bảo Tàng Của Nuối Tiếc” dành riêng cho khán giả Hà Nội.",
+    description: `
+  <p>Tròn một năm kể từ thành công của Album phòng thu thứ 3 và Concert Tour “Bảo Tàng Của Nuối Tiếc”, Vũ. sẽ kết hợp cùng 1900 Lé Théâtre để mang đến một đêm diễn đặc biệt - Private show “Bảo Tàng Của Nuối Tiếc”, như lời tri ân dành cho các khán giả. Đây cũng là lần đầu tiên Vũ. tổ chức Private show “Bảo Tàng Của Nuối Tiếc” dành riêng cho khán giả Hà Nội.</p>
+  <br>
+  <p><strong>QUY ĐỊNH CHUNG CỦA SỰ KIỆN</strong></p>
+  <br>
+  <p>Điều 1. Sự kiện chỉ dành cho đối tượng khán giả trên 18 tuổi.</p>
+  <p>Điều 2. Mỗi coupon chỉ dành cho một khán giả tham dự.</p>
+  <p>Điều 3. Coupon đã mua không được đổi hoặc hoàn trả dưới mọi hình thức...</p>
+  <p>Điều 4. Hãy kiểm tra kỹ thông tin trước khi đặt coupon...</p>
+  <p>Điều 5. Vui lòng không mua coupon từ bất kỳ nguồn nào khác ngoài Ticketbox...</p>
+  <p>Điều 6. Khi tham gia chương trình, khán giả đồng ý với việc hình ảnh của mình...</p>
+  <p>Điều 7. Không được phép quay phim/chụp hình bằng máy ảnh chuyên dụng...</p>
+  <p>Điều 8. Khách hàng đồng ý cho phép ban tổ chức quay phim...</p>
+  <p>Điều 9. Không được phép phát sóng trực tiếp (livestream) sự kiện...</p>
+  <p>Điều 10. BTC có quyền kiểm tra giấy tờ tùy thân...</p>
+  <p>Điều 11. BTC có thể hoãn, hủy hoặc tạm ngưng sự kiện...</p>
+  <p>Điều 12. Khán giả tham dự sự kiện phải tự ý thức...</p>
+  <p>Điều 13. Trong mọi trường hợp, quyết định của BTC là quyết định cuối cùng.</p> `,
     location: "SVĐ Quân Khu 7, TP.HCM",
     start_date: "2025-10-30T19:00:00",
     duration: "19:30 - 22:30",
