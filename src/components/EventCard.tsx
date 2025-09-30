@@ -38,7 +38,7 @@ const EventCard: React.FC<EventProps> = ({
             {title}
           </h3>
           <p className="text-md text-[#2dc275] text-1xl mb-2 font-semibold line-clamp-1">
-            Từ {price} VND
+            Từ {price?.toLocaleString()} VND
           </p>
           <p className="text-sm text-white line-clamp-1">
             <FontAwesomeIcon icon={faCalendar} /> {location}
