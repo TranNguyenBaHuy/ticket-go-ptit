@@ -23,9 +23,10 @@ const Home = () => {
             responsive={responsive}
             ssr={true}
             infinite={true}
-            autoPlaySpeed={2000}
+            autoPlay={true}
+            autoPlaySpeed={5000}
             keyBoardControl={true}
-            customTransition="transform 500ms ease"
+            customTransition="transform 1500ms ease-in-out"
             transitionDuration={500}
             containerClass="carousel-container"
             removeArrowOnDeviceType={["tablet", "mobile"]}
@@ -48,13 +49,13 @@ const Home = () => {
           </Carousel>
         </div>
         {/* UPCOMING SECTION */}
-        <EventSection title="Sắp diễn ra" data={events.slice(0, 4)} />
+        <EventSection title="Sắp diễn ra" data={events} />
 
         {/* FOR YOU SECTION */}
-        <EventSection title="Dành cho bạn" data={events.slice(4, 8)} />
+        <EventSection title="Dành cho bạn" data={events.slice(2, 8)} />
 
         {/* ANOTHER SECTION */}
-        <EventSection title="Sự kiện nổi bật" data={events.slice(0, 8)} />
+        <EventSection title="Sự kiện nổi bật" data={events.slice(8, 10)} />
       </div>
     </div>
   );

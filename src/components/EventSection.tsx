@@ -18,7 +18,7 @@ const EventSection = ({ title, data }: EventSectionProps) => {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {data.map((event) => {
+        {data.slice(0, 4).map((event) => {
           return (
             <EventCard
               event_id={event.event_id}
