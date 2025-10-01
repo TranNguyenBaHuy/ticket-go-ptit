@@ -11,7 +11,6 @@ const EventDetail = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("component mount nè");
   }, []);
 
   if (!event)
