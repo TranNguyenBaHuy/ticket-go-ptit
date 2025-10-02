@@ -31,7 +31,7 @@ const Header = () => {
             />
             {/* search button */}
             <button
-              className="border-l border-black px-3.5"
+              className="items-center border-l border-[#E6EBF5] px-3.5"
               onClick={() => {
                 alert("Tìm kiếm");
               }}
