@@ -10,7 +10,7 @@ import EventSection from "../components/EventSection";
 const Home = () => {
   return (
     <div className="py-8 w-full mx-auto bg-[#212121]">
-      <div className="mx-30">
+      <div className="mx-40">
         {/* SPECIAL SECTION*/}
         <div className="mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-white">

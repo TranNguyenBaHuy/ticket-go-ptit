@@ -24,28 +24,28 @@ const EventDetail = () => {
     <>
       {/* TICKET INFO SECTION */}
       <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-60% to-black text-white">
-        <div className=" relative mx-30 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg ">
+        <div className=" relative mx-40 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg ">
           {/* Left side: Info */}
           <div className="md:w-1/3 p-6 flex flex-col justify-between bg-[#38383d]">
             <div>
               <h1 className="text-xl md:text-2xl font-bold mb-4">
                 {event.title}
               </h1>
-              <div className="flex items-center mb-4 gap-1.5 text-[#2dc275] ">
+              <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
                 <FontAwesomeIcon
                   icon={faCalendar}
                   className="text-white text-xl"
                 />
-                <p className="font-semibold text-sm">
+                <p className="font-bold text-sm">
                   {event.duration}, {event.start_date}
                 </p>
               </div>
-              <div className="flex items-center mb-4 gap-1.5 text-[#2dc275] ">
+              <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
                 <FontAwesomeIcon
                   icon={faLocationDot}
                   className="text-white text-xl"
                 />
-                <p className="font-semibold text-sm">{event.location}</p>
+                <p className="font-bold text-sm">{event.location}</p>
               </div>
             </div>
             {/* price action section */}
@@ -98,7 +98,7 @@ const EventDetail = () => {
 
       {/* TICKET DETAILS SECTION */}
       <div className="w-full py-8 bg-[#F5F7FC] text-white">
-        <div className="mx-30 flex gap-8 flex-col">
+        <div className="mx-40 flex gap-8 flex-col">
           {/* details section */}
           <div className="p-3 bg-white">
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">

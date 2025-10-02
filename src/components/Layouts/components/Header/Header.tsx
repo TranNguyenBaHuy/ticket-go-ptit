@@ -5,9 +5,9 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 const Header = () => {
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
-      <div className="mx-30">
+      <div className="mx-40">
         {/* Main nav */}
-        <div className="flex justify-between items-center py-6">
+        <div className="flex justify-between items-center py-5">
           {/* Logo */}
           <Link to="/">
             <img
@@ -18,13 +18,26 @@ const Header = () => {
             ></img>
           </Link>
           {/* Search */}
-          <div className="relative">
-            <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute" />
+          <div className="relative items-center bg-white rounded-md">
+            {/* search icon */}
+            <button className=" py-2.5 px-4 h-full text-2xl">
+              <FontAwesomeIcon icon={faMagnifyingGlass} color="#828BA0" />
+            </button>
+            {/* search input */}
             <input
               type="text "
               placeholder="Bạn tìm gì hôm nay?"
-              className="bg-white px-4 py-2.5 rounded-md w-[20rem]"
+              className="text-md bg-white px-2 py-2.5 rounded-md w-[20rem] focus:outline-none"
             />
+            {/* search button */}
+            <button
+              className="border-l border-black px-3.5"
+              onClick={() => {
+                alert("Tìm kiếm");
+              }}
+            >
+              Tìm kiếm
+            </button>
           </div>
 
           {/* Nav menu */}
