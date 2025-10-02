@@ -18,7 +18,7 @@ const Header = () => {
             ></img>
           </Link>
           {/* Search */}
-          <div className="relative items-center bg-white rounded-md">
+          <div className="flex items-center bg-white rounded-md">
             {/* search icon */}
             <button className=" py-2.5 px-4 h-full text-2xl">
               <FontAwesomeIcon icon={faMagnifyingGlass} color="#828BA0" />
@@ -27,7 +27,7 @@ const Header = () => {
             <input
               type="text "
               placeholder="Bạn tìm gì hôm nay?"
-              className="text-md bg-white px-2 py-2.5 rounded-md w-[20rem] focus:outline-none"
+              className="items-center text-md bg-white px-2 py-2.5 h-full rounded-md w-[20rem] focus:outline-none"
             />
             {/* search button */}
             <button
