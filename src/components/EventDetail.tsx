@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { events } from "../constants/mocks/mockEventData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,6 +8,10 @@ import { getDisplayPrice } from "./utils/getDisplayPrice";
 const EventDetail = () => {
   const { id } = useParams();
   const event = events.find((e) => e.event_id === id);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!event)
     return (

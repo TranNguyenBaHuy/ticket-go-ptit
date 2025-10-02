@@ -3,9 +3,9 @@ import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { responsive } from "../components/Base/ResponsiveBase/Carousel";
-import { Link } from "react-router-dom";
 import EventCard from "../components/EventCard";
 import { getDisplayPrice } from "../components/utils/getDisplayPrice";
+import EventSection from "../components/EventSection";
 
 const Home = () => {
   return (
@@ -23,9 +23,10 @@ const Home = () => {
             responsive={responsive}
             ssr={true}
             infinite={true}
-            autoPlaySpeed={2000}
+            autoPlay={true}
+            autoPlaySpeed={5000}
             keyBoardControl={true}
-            customTransition="transform 500ms ease"
+            customTransition="transform 1500ms ease-in-out"
             transitionDuration={500}
             containerClass="carousel-container"
             removeArrowOnDeviceType={["tablet", "mobile"]}
@@ -48,83 +49,13 @@ const Home = () => {
           </Carousel>
         </div>
         {/* UPCOMING SECTION */}
-        <div className="mt-6 ">
-          <div className="flex flex-row justify-between items-center">
-            <div className="text-2xl text-white font-bold mb-6">
-              Sắp diễn ra
-            </div>
-            <Link to="/all-events" className="text-white hover:text-[#2dc275]">
-              Xem thêm
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {events.slice(0, 4).map((event) => {
-              return (
-                <EventCard
-                  event_id={event.event_id}
-                  key={event.event_id}
-                  banner_url={event.banner_url}
-                  title={event.title}
-                  date={event.start_date}
-                  location={event.location}
-                  price={getDisplayPrice(event.tickets)}
-                />
-              );
-            })}
-          </div>
-        </div>
+        <EventSection title="Sắp diễn ra" data={events} />
+
         {/* FOR YOU SECTION */}
-        <div className="mt-6 ">
-          <div className="flex flex-row justify-between items-center">
-            <div className="text-2xl text-white font-bold mb-6">
-              Dành cho bạn
-            </div>
-            <Link to="/all-events" className="text-white hover:text-[#2dc275]">
-              Xem thêm
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {events.slice(0, 4).map((event) => {
-              return (
-                <EventCard
-                  event_id={event.event_id}
-                  key={event.event_id}
-                  banner_url={event.banner_url}
-                  title={event.title}
-                  date={event.start_date}
-                  location={event.location}
-                  price={getDisplayPrice(event.tickets)}
-                />
-              );
-            })}
-          </div>
-        </div>
-        {/* FOR YOU SECTION */}
-        <div className="mt-6 ">
-          <div className="flex flex-row justify-between items-center">
-            <div className="text-2xl text-white font-bold mb-6">
-              Dành cho bạn
-            </div>
-            <Link to="/all-events" className="text-white hover:text-[#2dc275]">
-              Xem thêm
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {events.slice(0, 4).map((event) => {
-              return (
-                <EventCard
-                  event_id={event.event_id}
-                  key={event.event_id}
-                  banner_url={event.banner_url}
-                  title={event.title}
-                  date={event.start_date}
-                  location={event.location}
-                  price={getDisplayPrice(event.tickets)}
-                />
-              );
-            })}
-          </div>
-        </div>
+        <EventSection title="Dành cho bạn" data={events.slice(2, 8)} />
+
+        {/* ANOTHER SECTION */}
+        <EventSection title="Sự kiện nổi bật" data={events.slice(8, 10)} />
       </div>
     </div>
   );
