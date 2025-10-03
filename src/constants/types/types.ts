@@ -11,6 +11,8 @@ export type Event = {
   description: string;
   location: string;
   start_date: string;
+  duration: string;
+  organizer: string;
   banner_url: string;
   tickets: Ticket[];
 };
