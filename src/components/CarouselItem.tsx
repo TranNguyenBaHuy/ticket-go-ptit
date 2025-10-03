@@ -8,11 +8,11 @@ type Props = {
 const CarouselItem = ({ data }: Props) => {
   return (
     <Link to={`/events/${data.event_id}`}>
-      <div className="relative px-1.5">
+      <div className="relative px-1.5 overflow-hidden rounded-xl group">
         <img
           src={data.banner_url}
           alt={data.title}
-          className="w-full h-full object-cover rounded-xl"
+          className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-102"
         />
         <button className="absolute flex items-center bottom-4 left-6 px-4.5 py-1.5 bg-white rounded-sm hover:bg-[#2dc275] hover:text-white font-semibold transition-colors duration-500">
           Xem chi tiết
