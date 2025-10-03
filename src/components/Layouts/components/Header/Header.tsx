@@ -27,11 +27,11 @@ const Header = () => {
             <input
               type="text "
               placeholder="Bạn tìm gì hôm nay?"
-              className="items-center text-md bg-white px-2 py-2.5 h-full rounded-md w-[20rem] focus:outline-none"
+              className="items-center text-md bg-white py-2.5 h-full rounded-md w-[16rem] focus:outline-none"
             />
             {/* search button */}
             <button
-              className="items-center border-l border-[#E6EBF5] px-3.5"
+              className="items-center border-l border-[#E6EBF5] px-3.5 text-[#2A2D34]"
               onClick={() => {
                 alert("Tìm kiếm");
               }}
