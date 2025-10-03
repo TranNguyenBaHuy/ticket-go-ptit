@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
-import { getDisplayPrice } from "./utils/getDisplayPrice";
+import { getDisplayPrice } from "../utils/getDisplayPrice";
 import type { Event } from "../constants/types/types";
 
 interface EventSectionProps {
@@ -17,18 +17,10 @@ const EventSection = ({ title, data }: EventSectionProps) => {
           Xem thêm
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {data.slice(0, 4).map((event) => {
           return (
-            <EventCard
-              event_id={event.event_id}
-              key={event.event_id}
-              banner_url={event.banner_url}
-              title={event.title}
-              date={event.start_date}
-              location={event.location}
-              price={getDisplayPrice(event.tickets)}
-            />
+            <EventCard event={event} price={getDisplayPrice(event.tickets)} />
           );
         })}
       </div>

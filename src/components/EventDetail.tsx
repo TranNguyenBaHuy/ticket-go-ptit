@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import { events } from "../constants/mocks/mockEventData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import { getDisplayPrice } from "./utils/getDisplayPrice";
-
+import { getDisplayPrice } from "../utils/getDisplayPrice";
 const EventDetail = () => {
   const { id } = useParams();
   const event = events.find((e) => e.event_id === id);

@@ -3,15 +3,14 @@ import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { responsive } from "../components/Base/ResponsiveBase/Carousel";
-import EventCard from "../components/EventCard";
-import { getDisplayPrice } from "../components/utils/getDisplayPrice";
 import EventSection from "../components/EventSection";
+import CarouselItem from "../components/CarouselItem";
 
 const Home = () => {
   return (
-    <div className="py-8 w-full mx-auto bg-[#212121]">
+    <div className="py-8 w-full mx-auto bg-[#27272A]">
       <div className="mx-40">
-        {/* SPECIAL SECTION*/}
+        {/*   CAROUSEL SECTION*/}
         <div className="mx-auto">
           <h2 className="text-2xl font-bold mb-6 text-white">
             Sự kiện đặc biệt
@@ -24,27 +23,16 @@ const Home = () => {
             ssr={true}
             infinite={true}
             autoPlay={true}
-            autoPlaySpeed={5000}
+            autoPlaySpeed={8000}
             keyBoardControl={true}
-            customTransition="transform 1500ms ease-in-out"
+            customTransition="transform 500ms"
             transitionDuration={500}
-            containerClass="carousel-container"
+            containerClass="flex carousel-container"
             removeArrowOnDeviceType={["tablet", "mobile"]}
-            itemClass="mx-2"
             partialVisible={false}
           >
             {events.map((event) => {
-              return (
-                <EventCard
-                  event_id={event.event_id}
-                  key={event.event_id}
-                  banner_url={event.banner_url}
-                  title={event.title}
-                  date={event.start_date}
-                  location={event.location}
-                  price={getDisplayPrice(event.tickets)}
-                />
-              );
+              return <CarouselItem key={event.event_id} data={event} />;
             })}
           </Carousel>
         </div>
