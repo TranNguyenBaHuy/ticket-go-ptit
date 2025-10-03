@@ -12,9 +12,6 @@ const Home = () => {
       <div className="mx-40">
         {/*   CAROUSEL SECTION*/}
         <div className="mx-auto">
-          <h2 className="text-2xl font-bold mb-6 text-white">
-            Sự kiện đặc biệt
-          </h2>
           <Carousel
             swipeable
             draggable

@@ -7,7 +7,7 @@ const Header = () => {
     <header className="w-full bg-[#2dc275] shadow-sm">
       <div className="mx-40">
         {/* Main nav */}
-        <div className="flex justify-between items-center py-5">
+        <div className="flex justify-between items-center py-4.5">
           {/* Logo */}
           <Link to="/">
             <img

@@ -12,7 +12,7 @@ type EventProps = {
 const EventCard: React.FC<EventProps> = ({ event, price }) => {
   return (
     <Link to={`/events/${event.event_id}`}>
-      <div className="max-w-3xl bg-transparent rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
+      <div className="max-w-xl bg-transparent rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
         <div className="relative">
           <img
             src={event.banner_url}
