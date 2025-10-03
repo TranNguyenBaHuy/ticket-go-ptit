@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { events } from "../constants/mocks/mockEventData";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { Calendar, MapPin } from "lucide-react";
 import { getDisplayPrice } from "../utils/getDisplayPrice";
 const EventDetail = () => {
