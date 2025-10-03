@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
 import { getDisplayPrice } from "../utils/getDisplayPrice";
 import type { Event } from "../constants/types/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
+
 interface EventSectionProps {
   title: string;
   data: Event[];
