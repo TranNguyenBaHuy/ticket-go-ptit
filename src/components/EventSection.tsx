@@ -16,10 +16,23 @@ const EventSection = ({ title, data }: EventSectionProps) => {
         <div className="text-2xl text-white font-bold mb-6">{title}</div>
         <Link
           to="/all-events"
-          className="flex items-center text-white hover:text-[#2dc275] transition-colors duration-300"
+          className="flex items-center gap-2 text-[#A6A6B0] hover:text-[#2dc275] transition-colors duration-300"
         >
           <p>Xem thêm</p>
-          <FontAwesomeIcon icon={faCaretRight} />
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill="currentColor"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M4.529 2.529c.26-.26.682-.26.942 0l4 4c.26.26.26.682 0 .942l-4 4a.667.667 0 01-.942-.942L8.057 7 4.53 3.471a.667.667 0 010-.942z"
+            ></path>
+          </svg>
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
