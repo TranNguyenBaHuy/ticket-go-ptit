@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { events } from "../constants/mocks/mockEventData";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { Calendar, MapPin } from "lucide-react";
 import { getDisplayPrice } from "../utils/getDisplayPrice";
 const EventDetail = () => {
   const { id } = useParams();
@@ -31,19 +30,13 @@ const EventDetail = () => {
                 {event.title}
               </h1>
               <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
-                <FontAwesomeIcon
-                  icon={faCalendar}
-                  className="text-white text-xl"
-                />
+                <Calendar size={24} className="text-white" />
                 <p className="font-bold text-sm">
                   {event.duration}, {event.start_date}
                 </p>
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className="text-white text-xl"
-                />
+                <MapPin size={24} className="text-white" />
                 <p className="font-bold text-sm">{event.location}</p>
               </div>
             </div>
@@ -111,7 +104,7 @@ const EventDetail = () => {
       <div className="w-full py-8 bg-[#F5F7FC] text-white">
         <div className="mx-40 flex gap-8 flex-col">
           {/* details section */}
-          <div className="p-3 bg-white">
+          <div className="p-3 bg-white rounded-2xl">
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
