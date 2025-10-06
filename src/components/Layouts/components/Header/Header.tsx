@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-// import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { Ticket, Search } from "lucide-react";
+import { Ticket, Search, Menu } from "lucide-react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,8 +44,11 @@ const Header = () => {
           </div>
 
           {/* Nav menu */}
-          <nav className="flex gap-6 font-semibold">
-            <Link to="/my-tickets" className="hover:text-amber-400 text-white">
+          <nav className="flex items-center gap-6 font-semibold">
+            <Link
+              to="/my-tickets"
+              className="flex items-center gap-2 hover:text-black transition-colors duration-500 text-white"
+            >
               <Ticket size={24} />
               Vé của tôi
             </Link>
@@ -71,17 +71,14 @@ const Header = () => {
             className="md:hidden text-white text-xl"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {/* <FontAwesomeIcon icon={faBars} /> */}
+            <Menu />
           </button>
         </div>
 
         {/* Mobile Search */}
         <div className="md:hidden pb-4">
           <div className="relative">
-            {/* <FontAwesomeIcon
-              icon={faMagnifyingGlass}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            /> */}
+            <Search size={22} className="text-[#828BA0]" />
             <input
               type="text"
               placeholder="Bạn tìm gì hôm nay?"
