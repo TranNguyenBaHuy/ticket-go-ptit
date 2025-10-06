@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 
@@ -14,38 +14,59 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
   initialMode = 'login' 
 }) => {
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialMode);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handleSwitchToLogin = () => {
-    setAuthMode('login');
-  };
+  // Update mode when initialMode changes
+  useEffect(() => {
+    if (isOpen) {
+      setAuthMode(initialMode);
+    }
+  }, [isOpen, initialMode]);
 
-  const handleSwitchToRegister = () => {
-    setAuthMode('register');
-  };
+  const handleSwitchToLogin = useCallback(() => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setAuthMode('login');
+      setIsTransitioning(false);
+    }, 150);
+  }, []);
 
-  const handleClose = () => {
-    setAuthMode('login'); // Reset to login mode when closing
+  const handleSwitchToRegister = useCallback(() => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setAuthMode('register');
+      setIsTransitioning(false);
+    }, 150);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsTransitioning(false);
+    // Reset to login mode after closing animation
+    setTimeout(() => {
+      setAuthMode('login');
+    }, 300);
     onClose();
-  };
+  }, [onClose]);
+
+  // Don't render anything if not open
+  if (!isOpen) return null;
 
   return (
-    <>
-      {authMode === 'login' && (
+    <div className={`auth-container ${isTransitioning ? 'transitioning' : ''}`}>
+      {authMode === 'login' ? (
         <LoginModal
-          isOpen={isOpen}
+          isOpen={isOpen && !isTransitioning}
           onClose={handleClose}
           onSwitchToRegister={handleSwitchToRegister}
         />
-      )}
-      
-      {authMode === 'register' && (
+      ) : (
         <RegisterModal
-          isOpen={isOpen}
+          isOpen={isOpen && !isTransitioning}
           onClose={handleClose}
           onSwitchToLogin={handleSwitchToLogin}
         />
       )}
-    </>
+    </div>
   );
 };
 

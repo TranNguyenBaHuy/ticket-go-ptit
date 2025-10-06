@@ -1,11 +1,15 @@
-export type Ticket = {
+// Ticket & Event types
+export interface Ticket {
   ticket_id: string;
   type: string;
   price: number;
   quantity: number;
-};
+  available?: number;
+  maxPerOrder?: number;
+  description?: string;
+}
 
-export type Event = {
+export interface Event {
   event_id: string;
   title: string;
   description: string;
@@ -15,7 +19,11 @@ export type Event = {
   organizer: string;
   banner_url: string;
   tickets: Ticket[];
-};
+  category?: string;
+  status?: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // Authentication types
 export interface User {
@@ -24,11 +32,16 @@ export interface User {
   phone?: string;
   name: string;
   avatar?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  role?: 'user' | 'admin' | 'organizer';
+  isVerified?: boolean;
 }
 
 export interface LoginCredentials {
   emailOrPhone: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterCredentials {
@@ -37,13 +50,16 @@ export interface RegisterCredentials {
   password: string;
   confirmPassword: string;
   name: string;
+  acceptTerms?: boolean;
 }
 
 export interface AuthResponse {
   success: boolean;
   user?: User;
   token?: string;
+  refreshToken?: string;
   message?: string;
+  expiresIn?: number;
 }
 
 export interface AuthState {
@@ -51,4 +67,38 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+}
+
+// Validation error types
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export interface FormValidationErrors {
+  [key: string]: string | undefined;
+}
+
+// Password reset types
+export interface ForgotPasswordCredentials {
+  email: string;
+}
+
+export interface ResetPasswordCredentials {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// OAuth types
+export interface OAuthProvider {
+  name: 'google' | 'facebook' | 'github';
+  clientId: string;
+}
+
+export interface OAuthResponse {
+  success: boolean;
+  user?: User;
+  token?: string;
+  message?: string;
 }
