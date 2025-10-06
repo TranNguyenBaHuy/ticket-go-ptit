@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Ticket, Search, Menu } from "lucide-react";
+import { useAuth } from "../../../../hooks/useAuth";
+import AuthContainer from "../../../Auth/AuthContainer";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { authState, logout } = useAuth();
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
@@ -58,12 +62,24 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-            <Link
-              to="/products"
-              className="hover:text-black transition-colors duration-500 text-white"
-            >
-              Đăng nhập | Đăng ký
-            </Link>
+            {authState.isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <span className="text-white">Xin chào, {authState.user?.name}</span>
+                <button
+                  onClick={logout}
+                  className="hover:text-black transition-colors duration-500 text-white"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="hover:text-black transition-colors duration-500 text-white"
+              >
+                Đăng nhập | Đăng ký
+              </button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -104,16 +120,40 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-            <Link
-              to="/products"
-              className="hover:text-amber-400 text-white py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Đăng nhập | Đăng ký
-            </Link>
+            {authState.isAuthenticated ? (
+              <div className="flex flex-col gap-2">
+                <span className="text-white py-2">Xin chào, {authState.user?.name}</span>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="hover:text-amber-400 text-white py-2 text-left"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsAuthModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="hover:text-amber-400 text-white py-2 text-left"
+              >
+                Đăng nhập | Đăng ký
+              </button>
+            )}
           </nav>
         )}
       </div>
+      
+      {/* Auth Modal */}
+      <AuthContainer
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode="login"
+      />
     </header>
   );
 };
