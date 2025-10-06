@@ -327,7 +327,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             <a href="#" className="text-green-600 hover:underline font-medium" tabIndex={isSubmitting ? -1 : 0}>
               Chính sách bảo mật
             </a>{' '}
-            của Ticketbox
+            của TicketGo
           </div>
         </form>
       </div>

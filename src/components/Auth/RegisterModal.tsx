@@ -111,17 +111,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     clearError();
     
     if (!validateForm()) return;
-
+  
     setIsSubmitting(true);
-
+  
     try {
       const response = await register(formData);
       if (response.success) {
         setShowSuccess(true);
-        // Show success message briefly before closing
+        // Show success message briefly before switching to login
         setTimeout(() => {
           setShowSuccess(false);
-          onClose();
           // Reset form
           setFormData({
             email: '',
@@ -131,6 +130,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             name: ''
           });
           setErrors({});
+          // Switch to login modal instead of closing
+          onSwitchToLogin();
         }, 1500);
       }
     } catch (error) {
