@@ -1,5 +1,4 @@
 import React from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import type { Event } from "../constants/types/types";
 import { Calendar } from "lucide-react";
