@@ -37,7 +37,11 @@ const EventSection = ({ title, data }: EventSectionProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {data.slice(0, 4).map((event) => {
           return (
-            <EventCard event={event} price={getDisplayPrice(event.tickets)} />
+            <EventCard
+              key={event.event_id}
+              event={event}
+              price={getDisplayPrice(event.tickets)}
+            />
           );
         })}
       </div>
