@@ -25,14 +25,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Focus management
   useEffect(() => {
     if (isOpen && emailInputRef.current) {
       setTimeout(() => emailInputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Handle ESC key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isSubmitting) {
@@ -43,14 +41,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, isSubmitting, onClose]);
 
-  // Validate email or phone
   const validateEmailOrPhone = (value: string): string | undefined => {
     if (!value.trim()) {
       return 'Vui lòng nhập email hoặc số điện thoại';
     }
-    // Check if it's a phone number (Vietnamese format)
     const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
-    // Check if it's an email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     if (!phoneRegex.test(value) && !emailRegex.test(value)) {
@@ -59,7 +54,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
     return undefined;
   };
 
-  // Validate password
   const validatePassword = (value: string): string | undefined => {
     if (!value) {
       return 'Vui lòng nhập mật khẩu';
@@ -70,7 +64,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
     return undefined;
   };
 
-  // Validate form
   const validateForm = (): boolean => {
     const errors: typeof validationErrors = {};
     
@@ -89,7 +82,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
     clearError();
     setValidationErrors({});
 
-    // Validate form
     if (!validateForm()) {
       return;
     }
@@ -100,11 +92,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
       const response = await login(formData);
       if (response.success) {
         setShowSuccess(true);
-        // Show success message briefly before closing
         setTimeout(() => {
           setShowSuccess(false);
           onClose();
-          // Reset form
           setFormData({ emailOrPhone: '', password: '' });
           setValidationErrors({});
         }, 1500);
@@ -119,7 +109,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear errors when user starts typing
     if (authState.error) clearError();
     if (validationErrors[name as keyof typeof validationErrors]) {
       setValidationErrors(prev => ({ ...prev, [name]: undefined }));
@@ -127,7 +116,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Implement Google OAuth when backend is ready
+  // TODO: Thực hiện đăng nhập Google khi có backend
     console.log('Google login clicked');
   };
 
@@ -149,7 +138,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all"
       >
-        {/* Header */}
+  {/* Tiêu đề */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl px-6 py-5 flex items-center justify-between">
           <h2 id="login-modal-title" className="text-white text-2xl font-bold">Đăng nhập</h2>
           <button
@@ -162,9 +151,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
           </button>
         </div>
 
-        {/* Form */}
+  {/* Biểu mẫu */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>
-          {/* Success Message */}
+          {/* Thông báo thành công */}
           {showSuccess && (
             <div className="flex items-center space-x-2 text-green-600 bg-green-50 p-4 rounded-lg border border-green-200 animate-fade-in">
               <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
@@ -172,7 +161,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </div>
           )}
 
-          {/* Email/Phone Input */}
+          {/* Ô nhập Email/SĐT */}
           <div>
             <label htmlFor="emailOrPhone" className="block text-sm font-medium text-gray-700 mb-2">
               Email hoặc Số điện thoại
@@ -202,7 +191,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             )}
           </div>
 
-          {/* Password Input */}
+          {/* Ô nhập mật khẩu */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Mật khẩu
@@ -242,7 +231,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Nút gửi */}
           <button
             type="submit"
             disabled={isSubmitting || showSuccess}
@@ -251,7 +240,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             {isSubmitting ? 'Đang xử lý...' : showSuccess ? 'Thành công!' : 'Đăng nhập'}
           </button>
 
-          {/* Loading State */}
+          {/* Trạng thái tải */}
           {isSubmitting && (
             <div className="flex items-center justify-center space-x-2 text-green-600 bg-green-50 p-3 rounded-lg">
               <div className="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
@@ -259,7 +248,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Thông báo lỗi */}
           {authState.error && !isSubmitting && (
             <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -267,7 +256,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </div>
           )}
 
-          {/* Forgot Password */}
+          {/* Quên mật khẩu */}
           <div className="text-center">
             <a 
               href="#" 
@@ -278,7 +267,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </a>
           </div>
 
-          {/* Register Link */}
+          {/* Liên kết đăng ký */}
           <div className="text-center">
             <span className="text-gray-600 text-sm">Chưa có tài khoản? </span>
             <button
@@ -291,7 +280,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </button>
           </div>
 
-          {/* Divider */}
+          {/* Phân cách */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
@@ -301,7 +290,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             </div>
           </div>
 
-          {/* Google Login */}
+          {/* Đăng nhập Google */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -317,7 +306,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSwitchToRegi
             <span>Đăng nhập với Google</span>
           </button>
 
-          {/* Terms and Conditions */}
+          {/* Điều khoản và chính sách */}
           <div className="text-xs text-gray-500 text-center leading-relaxed pt-2">
             Bằng việc đăng nhập, bạn đã đọc và đồng ý với{' '}
             <a href="#" className="text-green-600 hover:underline font-medium" tabIndex={isSubmitting ? -1 : 0}>

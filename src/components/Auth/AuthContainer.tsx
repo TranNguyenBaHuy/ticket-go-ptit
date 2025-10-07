@@ -16,7 +16,6 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
   const [authMode, setAuthMode] = useState<'login' | 'register'>(initialMode);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Update mode when initialMode changes
   useEffect(() => {
     if (isOpen) {
       setAuthMode(initialMode);
@@ -41,14 +40,12 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
 
   const handleClose = useCallback(() => {
     setIsTransitioning(false);
-    // Reset to login mode after closing animation
     setTimeout(() => {
       setAuthMode('login');
     }, 300);
     onClose();
   }, [onClose]);
 
-  // Don't render anything if not open
   if (!isOpen) return null;
 
   return (
