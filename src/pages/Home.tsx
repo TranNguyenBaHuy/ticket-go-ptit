@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -11,7 +10,7 @@ const Home = () => {
     <div className="py-8 w-full mx-auto bg-[#27272A]">
       <div className="mx-40">
         {/*   CAROUSEL SECTION*/}
-        <div className="mx-auto">
+        <div className="mx-auto mb-8">
           <Carousel
             swipeable
             draggable
@@ -33,6 +32,7 @@ const Home = () => {
             })}
           </Carousel>
         </div>
+
         {/* UPCOMING SECTION */}
         <EventSection title="Sắp diễn ra" data={events} />
 
