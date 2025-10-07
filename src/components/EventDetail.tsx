@@ -131,7 +131,7 @@ const EventDetail = () => {
                   </h1>
                   <div className="">
                     <p
-                      className={`font-bold py-2 ${
+                      className={`font-bold mb-2 ${
                         ticket.quantity === 0
                           ? "text-gray-400"
                           : "text-[#2dc275]"
