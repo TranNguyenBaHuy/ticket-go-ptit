@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { Ticket, Search } from "lucide-react";
+import { Ticket, Search, Menu } from "lucide-react";
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
       <div className="mx-40">
@@ -14,9 +15,10 @@ const Header = () => {
             <img
               src="https://salt.tkbcdn.com/ts/ds/32/dc/a2/7871f1207e8c4c2747698b5aa6d15a56.png"
               alt="tkbvnpay"
-              width="127"
-              height="41"
-            ></img>
+              width="100"
+              height="33"
+              className="md:w-[127px] md:h-[41px]"
+            />
           </Link>
           {/* Search */}
           <div className="flex items-center py-0.5 bg-white rounded-md">
@@ -26,7 +28,7 @@ const Header = () => {
             </button>
             {/* search input */}
             <input
-              type="text "
+              type="text"
               placeholder="Bạn tìm gì hôm nay?"
               className="items-center text-md bg-white py-3 h-full rounded-md w-[16rem] focus:outline-none"
             />
@@ -42,7 +44,7 @@ const Header = () => {
           </div>
 
           {/* Nav menu */}
-          <nav className="flex gap-6 font-semibold">
+          <nav className="flex items-center gap-6 font-semibold">
             <Link
               to="/my-tickets"
               className="flex items-center gap-2 hover:text-black transition-colors duration-500 text-white"
@@ -63,7 +65,54 @@ const Header = () => {
               Đăng nhập | Đăng ký
             </Link>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-white text-xl"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <Menu />
+          </button>
         </div>
+
+        {/* Mobile Search */}
+        <div className="md:hidden pb-4">
+          <div className="relative">
+            <Search size={22} className="text-[#828BA0]" />
+            <input
+              type="text"
+              placeholder="Bạn tìm gì hôm nay?"
+              className="bg-white pl-10 pr-4 py-2.5 rounded-md w-full"
+            />
+          </div>
+        </div>
+
+        {/* Mobile Nav Menu */}
+        {isMenuOpen && (
+          <nav className="md:hidden pb-4 flex flex-col gap-3 font-semibold">
+            <Link
+              to="/my-tickets"
+              className="hover:text-amber-400 text-white py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Vé của tôi
+            </Link>
+            <Link
+              to="/about"
+              className="hover:text-amber-400 text-white py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Về chúng tôi
+            </Link>
+            <Link
+              to="/products"
+              className="hover:text-amber-400 text-white py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Đăng nhập | Đăng ký
+            </Link>
+          </nav>
+        )}
       </div>
     </header>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import type { Event } from "../constants/types/types";
 import { Calendar } from "lucide-react";
@@ -12,7 +11,7 @@ type EventProps = {
 const EventCard: React.FC<EventProps> = ({ event, price }) => {
   return (
     <Link to={`/events/${event.event_id}`}>
-      <div className="max-w-xl bg-transparent rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
+      <div className="max-w-xl bg-transparent rounded-xl overflow-hidden hover:shadow-md hover:shadow-[#2dc275] transition-shadow duration-400 h-full flex flex-col">
         <div className="overflow-hidden rounded-xl mb-3">
           <img
             src={event.banner_url}
@@ -29,7 +28,6 @@ const EventCard: React.FC<EventProps> = ({ event, price }) => {
             Từ {price?.toLocaleString("de-DE")}đ
           </p>
           <p className="flex items-center gap-2 text-md text-white line-clamp-1">
-            {/* <FontAwesomeIcon icon={faCalendar} />  */}
             <Calendar size={14} /> {event.start_date}
           </p>
         </div>
