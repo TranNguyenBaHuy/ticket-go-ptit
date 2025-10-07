@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSidebar from "../components/UserSidebar";
-import { userTickets } from "../constants/mocks/mockTicketData";
+import { userBookings } from "../constants/types/types";
 
 type TabType = "all" | "success" | "pending" | "cancelled";
 type SubTabType = "upcoming" | "past";
@@ -18,7 +18,7 @@ const MyTickets = () => {
     { id: "cancelled" as TabType, label: "Đã hủy" },
   ];
 
-  const filteredTickets = userTickets.filter((ticket) => {
+  const filteredTickets = userBookings.filter((ticket) => {
     if (activeTab === "all") return true;
     return ticket.status === activeTab;
   });
@@ -28,7 +28,7 @@ const MyTickets = () => {
       <div className="mx-4 md:mx-30 py-4 md:py-8">
         {/* Breadcrumb */}
         <div className="text-xs md:text-sm text-gray-400 mb-4 md:mb-8">
-          <button 
+          <button
             onClick={() => navigate("/")}
             className="hover:text-white transition-colors cursor-pointer"
           >
