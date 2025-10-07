@@ -27,14 +27,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const nameInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Focus management
+  // Quản lý focus
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
       setTimeout(() => nameInputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Handle ESC key
+  // Xử lý phím ESC
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isSubmitting) {
@@ -45,7 +45,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, isSubmitting, onClose]);
 
-  // Calculate password strength
+  // Đánh giá độ mạnh mật khẩu
   useEffect(() => {
     if (!formData.password) {
       setPasswordStrength(null);
@@ -63,24 +63,22 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     else setPasswordStrength('strong');
   }, [formData.password]);
 
+  // Kiểm tra hợp lệ của form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = 'Vui lòng nhập họ tên';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Họ tên phải có ít nhất 2 ký tự';
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Vui lòng nhập email';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Email không hợp lệ';
     }
 
-    // Phone validation (Vietnamese format)
     if (formData.phone && formData.phone.trim()) {
       const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
       if (!phoneRegex.test(formData.phone)) {
@@ -88,14 +86,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       }
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Vui lòng nhập mật khẩu';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
     } else if (formData.password !== formData.confirmPassword) {
@@ -106,6 +102,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return Object.keys(newErrors).length === 0;
   };
 
+  // Xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
@@ -118,10 +115,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       const response = await register(formData);
       if (response.success) {
         setShowSuccess(true);
-        // Show success message briefly before switching to login
         setTimeout(() => {
           setShowSuccess(false);
-          // Reset form
           setFormData({
             email: '',
             phone: '',
@@ -130,7 +125,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             name: ''
           });
           setErrors({});
-          // Switch to login modal instead of closing
           onSwitchToLogin();
         }, 1500);
       }
@@ -141,19 +135,19 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     }
   };
 
+  // Xử lý thay đổi dữ liệu ô nhập
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
     if (authState.error) clearError();
   };
 
+  // TODO: Đăng ký Google khi có backend
   const handleGoogleRegister = () => {
-    // TODO: Implement Google OAuth when backend is ready
     console.log('Google register clicked');
   };
 
@@ -175,7 +169,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
       >
-        {/* Header */}
+  {/* Tiêu đề */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl px-6 py-5 flex items-center justify-between sticky top-0 z-10">
           <h2 id="register-modal-title" className="text-white text-2xl font-bold">Đăng ký</h2>
           <button
@@ -188,9 +182,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
           </button>
         </div>
 
-        {/* Form */}
+  {/* Biểu mẫu */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>
-          {/* Success Message */}
+          {/* Thông báo thành công */}
           {showSuccess && (
             <div className="flex items-center space-x-2 text-green-600 bg-green-50 p-4 rounded-lg border border-green-200 animate-fade-in">
               <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
@@ -198,7 +192,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </div>
           )}
 
-          {/* Name Input */}
+          {/* Ô nhập họ tên */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Họ và tên <span className="text-red-500">*</span>
@@ -228,7 +222,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             )}
           </div>
 
-          {/* Email Input */}
+          {/* Ô nhập email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email <span className="text-red-500">*</span>
@@ -257,7 +251,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             )}
           </div>
 
-          {/* Phone Input */}
+          {/* Ô nhập số điện thoại */}
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
               Số điện thoại <span className="text-gray-400 text-xs">(Tùy chọn)</span>
@@ -286,7 +280,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             )}
           </div>
 
-          {/* Password Input */}
+          {/* Ô nhập mật khẩu */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Mật khẩu <span className="text-red-500">*</span>
@@ -318,7 +312,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-            {/* Password Strength Indicator */}
+            {/* Độ mạnh mật khẩu */}
             {passwordStrength && (
               <div className="mt-2">
                 <div className="flex space-x-1">
@@ -353,7 +347,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             )}
           </div>
 
-          {/* Confirm Password Input */}
+          {/* Ô nhập xác nhận mật khẩu */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
               Xác nhận mật khẩu <span className="text-red-500">*</span>
@@ -393,7 +387,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Nút gửi */}
           <button
             type="submit"
             disabled={isSubmitting || showSuccess}
@@ -402,7 +396,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             {isSubmitting ? 'Đang xử lý...' : showSuccess ? 'Thành công!' : 'Đăng ký'}
           </button>
 
-          {/* Loading State */}
+          {/* Trạng thái tải */}
           {isSubmitting && (
             <div className="flex items-center justify-center space-x-2 text-green-600 bg-green-50 p-3 rounded-lg">
               <div className="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
@@ -410,7 +404,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Thông báo lỗi */}
           {authState.error && !isSubmitting && (
             <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
@@ -418,7 +412,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </div>
           )}
 
-          {/* Login Link */}
+          {/* Liên kết đăng nhập */}
           <div className="text-center">
             <span className="text-gray-600 text-sm">Đã có tài khoản? </span>
             <button
@@ -431,7 +425,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </button>
           </div>
 
-          {/* Divider */}
+          {/* Phân cách */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
@@ -441,7 +435,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             </div>
           </div>
 
-          {/* Google Register */}
+          {/* Đăng ký Google */}
           <button
             type="button"
             onClick={handleGoogleRegister}
@@ -457,7 +451,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             <span>Đăng ký với Google</span>
           </button>
 
-          {/* Terms and Conditions */}
+          {/* Điều khoản và chính sách */}
           <div className="text-xs text-gray-500 text-center leading-relaxed pt-2">
             Bằng việc đăng ký, bạn đã đọc và đồng ý với{' '}
             <a href="#" className="text-green-600 hover:underline font-medium" tabIndex={isSubmitting ? -1 : 0}>
