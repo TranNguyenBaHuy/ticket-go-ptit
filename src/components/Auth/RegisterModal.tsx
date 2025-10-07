@@ -153,18 +153,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
   if (!isOpen) return null;
 
-  return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isSubmitting) {
-          onClose();
-        }
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="register-modal-title"
-    >
+return (
+  <div 
+    ref={modalRef}
+    className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
+  >
       <div 
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"

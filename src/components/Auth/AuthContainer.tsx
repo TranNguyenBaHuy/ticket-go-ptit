@@ -46,23 +46,36 @@ const AuthContainer: React.FC<AuthContainerProps> = ({
     onClose();
   }, [onClose]);
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget && !isTransitioning) {
+      handleClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className={`auth-container ${isTransitioning ? 'transitioning' : ''}`}>
-      {authMode === 'login' ? (
-        <LoginModal
-          isOpen={isOpen && !isTransitioning}
-          onClose={handleClose}
-          onSwitchToRegister={handleSwitchToRegister}
-        />
-      ) : (
-        <RegisterModal
-          isOpen={isOpen && !isTransitioning}
-          onClose={handleClose}
-          onSwitchToLogin={handleSwitchToLogin}
-        />
-      )}
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className={`transition-opacity duration-150 ${isTransitioning ? 'opacity-0' : 'opacity-100'} w-full max-w-md`}>
+        {authMode === 'login' ? (
+          <LoginModal
+            isOpen={true}
+            onClose={handleClose}
+            onSwitchToRegister={handleSwitchToRegister}
+          />
+        ) : (
+          <RegisterModal
+            isOpen={true}
+            onClose={handleClose}
+            onSwitchToLogin={handleSwitchToLogin}
+          />
+        )}
+      </div>
     </div>
   );
 };
