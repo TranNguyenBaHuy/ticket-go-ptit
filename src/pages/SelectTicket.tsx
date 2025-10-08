@@ -38,7 +38,7 @@ const SelectTicket = () => {
           </button>
           <p className="mx-auto">Chọn vé</p>
         </div>
-        <div className="mx-45">
+        <div className="mx-45 mb-6">
           <div className="flex items-center justify-between py-2 mx-6">
             <p className="text-white font-bold text-[1.1rem]">Loại vé</p>
             <p className="text-white font-bold text-[1.1rem]">Số lượng</p>
