@@ -14,7 +14,11 @@ const publicRoutes = [
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/all-events", component: AllEvents, layout: DefaultLayout },
   { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
-  { path: "/events/:id", component: SelectTicket, layout: DefaultLayout },
+  {
+    path: "/events/:id/select-ticket",
+    component: SelectTicket,
+    layout: DefaultLayout,
+  },
 ];
 const privateRoutes = [];
 
