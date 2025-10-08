@@ -1,15 +1,22 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { events } from "../constants/mocks/mockEventData";
 import { Calendar, MapPin } from "lucide-react";
 import { getDisplayPrice } from "../utils/getDisplayPrice";
+import PrimaryColorButton from "./PrimaryColorButton";
 const EventDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const event = events.find((e) => e.event_id === id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleSelectTicket = (eventId: string) => {
+    navigate(`/events/${eventId}/select-ticket`);
+  };
 
   if (!event)
     return (
@@ -61,9 +68,11 @@ const EventDetail = () => {
                 </p>
               </p>
 
-              <button className="w-full mt-2 bg-[#2dc275] hover:bg-white hover:text-black transition-colors duration-500 text-white font-bold py-2 px-2.5 rounded">
-                <p>Mua vé ngay</p>
-              </button>
+              <PrimaryColorButton
+                title="Mua vé ngay"
+                fullSize={true}
+                onClick={() => handleSelectTicket(event.event_id)}
+              />
             </div>
           </div>
 
@@ -115,9 +124,14 @@ const EventDetail = () => {
           </div>
           {/* booking section */}
           <div className="bg-[#27272A] rounded-2xl py-4">
-            <h1 className="mx-3 text-white text-md font-bold border-b border-black ">
-              Thông tin vé
-            </h1>
+            <div className="mx-3 flex items-center py-3 justify-between border-b border-black">
+              <h1 className="text-white text-md font-bold  ">Thông tin vé</h1>
+              <PrimaryColorButton
+                title="Mua vé ngay"
+                onClick={() => handleSelectTicket(event.event_id)}
+              />
+            </div>
+
             <div>
               {event.tickets.map((ticket, index) => (
                 <div
