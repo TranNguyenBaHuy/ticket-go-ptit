@@ -73,6 +73,7 @@ const Home = () => {
         <EventSection title="Sự kiện nổi bật" data={events} />
       </div>
 
+      {/* PAGINATION */}
       <div className="flex justify-center mt-8 space-x-2">
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
