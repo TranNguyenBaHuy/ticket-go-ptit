@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import { userBookings } from "../constants/types/types";
 
 type TabType = "all" | "success" | "pending" | "cancelled";

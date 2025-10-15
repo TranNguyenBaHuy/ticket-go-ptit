@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { events } from "../../../../constants/mocks/mockEventData";
-import type { Event } from "../../../../constants/types/types";
+import { events } from "../../../../../constants/mocks/mockEventData";
+import type { Event } from "../../../../../constants/types/types";
 import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {

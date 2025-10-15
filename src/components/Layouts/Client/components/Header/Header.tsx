@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Ticket, Search, Menu } from "lucide-react";
-import { useAuth } from "../../../../hooks/useAuth";
-import AuthContainer from "../../../Auth/AuthContainer";
+import { useAuth } from "../../../../../hooks/useAuth";
+import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 
 const Header = () => {

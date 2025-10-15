@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
-import { getDisplayPrice } from "../utils/getDisplayPrice";
-import type { Event } from "../constants/types/types";
+import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+import type { Event } from "../../../constants/types/types";
 
 interface EventSectionProps {
   title: string;
@@ -27,8 +27,8 @@ const EventSection = ({ title, data }: EventSectionProps) => {
           >
             <path
               fill="currentColor"
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              // fill-rule="evenodd"
+              // clip-rule="evenodd"
               d="M4.529 2.529c.26-.26.682-.26.942 0l4 4c.26.26.26.682 0 .942l-4 4a.667.667 0 01-.942-.942L8.057 7 4.53 3.471a.667.667 0 010-.942z"
             ></path>
           </svg>
@@ -38,9 +38,9 @@ const EventSection = ({ title, data }: EventSectionProps) => {
         {data.slice(0, 4).map((event) => {
           return (
             <EventCard
-              key={event.event_id}
+              key={event.id}
               event={event}
-              price={getDisplayPrice(event.tickets)}
+              price={getDisplayPrice(event.ticketTypes)}
             />
           );
         })}
