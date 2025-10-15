@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
-import { getDisplayPrice } from "../utils/getDisplayPrice";
-import type { Event } from "../constants/types/types";
+import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+import type { Event } from "../../../constants/types/types";
 
 interface EventSectionProps {
   title: string;

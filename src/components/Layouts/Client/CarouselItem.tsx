@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { Event } from "../constants/types/types";
+import type { Event } from "../../../constants/types/types";
 
 type Props = {
   data: Event;

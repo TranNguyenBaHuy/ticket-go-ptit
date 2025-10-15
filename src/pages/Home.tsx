@@ -2,8 +2,8 @@ import { events } from "../constants/mocks/mockEventData";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { responsive } from "../components/Base/ResponsiveBase/Carousel";
-import EventSection from "../components/EventSection";
-import CarouselItem from "../components/CarouselItem";
+import EventSection from "../components/Layouts/Client/EventSection";
+import CarouselItem from "../components/Layouts/Client/CarouselItem";
 
 const Home = () => {
   return (

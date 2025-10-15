@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { events } from "../constants/mocks/mockEventData";
+import { events } from "../../../constants/mocks/mockEventData";
 import { Calendar, MapPin } from "lucide-react";
-import { getDisplayPrice } from "../utils/getDisplayPrice";
+import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import PrimaryColorButton from "./PrimaryColorButton";
 const EventDetail = () => {
   const { id } = useParams();

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import type { Event } from "../constants/types/types";
+import type { Event } from "../../../constants/types/types";
 import { Calendar } from "lucide-react";
 
 type EventProps = {

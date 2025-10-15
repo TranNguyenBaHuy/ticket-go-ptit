@@ -1,10 +1,10 @@
 import Home from "../pages/Home";
 import About from "../pages/About";
 import MyTickets from "../pages/MyTickets";
-import DefaultLayout from "../components/Layouts/DefaultLayout/DefaultLayout";
+import DefaultLayout from "../components/Layouts/Client/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
-import EventDetail from "../components/EventDetail";
+import EventDetail from "../components/Layouts/Client/EventDetail";
 import SelectTicket from "../pages/SelectTicket";
 
 const publicRoutes = [
