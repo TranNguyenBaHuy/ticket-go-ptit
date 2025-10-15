@@ -18,7 +18,7 @@ export type Ticket = {
 
 export const userBookings: Booking[] = [];
 
-export interface Event {
+export type Event = {
   event_id: string;
   title: string;
   description: string;
@@ -32,7 +32,7 @@ export interface Event {
   status?: "upcoming" | "ongoing" | "completed" | "cancelled";
   createdAt?: string;
   updatedAt?: string;
-}
+};
 
 // Authentication types
 export interface User {
