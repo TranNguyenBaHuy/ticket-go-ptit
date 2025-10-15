@@ -9,7 +9,7 @@ export type Booking = {
   ticket_code: string;
 };
 
-export type Ticket = {
+export type TicketType = {
   ticket_id: string;
   type: string;
   price: number;
@@ -19,19 +19,19 @@ export type Ticket = {
 export const userBookings: Booking[] = [];
 
 export type Event = {
-  event_id: string;
+  id: number;
   title: string;
   description: string;
+  category: string;
   location: string;
-  start_date: string;
+  start_date: Date;
   duration: string;
   organizer: string;
-  banner_url: string;
-  tickets: Ticket[];
-  category?: string;
-  status?: "upcoming" | "ongoing" | "completed" | "cancelled";
-  createdAt?: string;
-  updatedAt?: string;
+  bannerUrl: string;
+  ticketTypes: TicketType[];
+  // status?: "upcoming" | "ongoing" | "completed" | "cancelled";
+  // createdAt?: string;
+  // updatedAt?: string;
 };
 
 // Authentication types

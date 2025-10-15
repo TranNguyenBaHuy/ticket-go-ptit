@@ -7,10 +7,10 @@ type Props = {
 
 const CarouselItem = ({ data }: Props) => {
   return (
-    <Link to={`/events/${data.event_id}`}>
+    <Link to={`/events/${data.id}`}>
       <div className="relative px-1.5 overflow-hidden rounded-xl group">
         <img
-          src={data.banner_url}
+          src={data.bannerUrl}
           alt={data.title}
           className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-102"
         />
