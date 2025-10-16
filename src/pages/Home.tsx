@@ -25,7 +25,6 @@ const Home = () => {
         console.log("events result", result.events);
         console.log("total pages result", result.totalPages);
 
-        // Gán dữ liệu
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
       } catch (error) {
