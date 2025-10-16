@@ -10,6 +10,7 @@ const SelectTicket = () => {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
+  const event = events.find((e) => e.id === Number(id));
 
   useEffect(() => {
     window.scrollTo(0, 0);

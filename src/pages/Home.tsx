@@ -25,7 +25,6 @@ const Home = () => {
         console.log("events result", result.events);
         console.log("total pages result", result.totalPages);
 
-        // Gán dữ liệu
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
       } catch (error) {
@@ -73,6 +72,7 @@ const Home = () => {
         <EventSection title="Sự kiện nổi bật" data={events} />
       </div>
 
+      {/* PAGINATION */}
       <div className="flex justify-center mt-8 space-x-2">
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}

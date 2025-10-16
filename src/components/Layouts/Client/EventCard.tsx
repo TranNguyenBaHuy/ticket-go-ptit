@@ -10,7 +10,7 @@ type EventProps = {
 
 const EventCard: React.FC<EventProps> = ({ event, price }) => {
   return (
-    <Link to={`/events/${event.id}`}>
+    <Link to={`/events/${Number(event.id)}`}>
       <div className="max-w-xl bg-transparent rounded-xl overflow-hidden hover:shadow-md hover:shadow-[#2dc275] transition-shadow duration-400 h-full flex flex-col">
         <div className="overflow-hidden rounded-xl mb-3">
           <img

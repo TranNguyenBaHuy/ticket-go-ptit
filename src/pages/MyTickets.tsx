@@ -13,7 +13,7 @@ const MyTickets = () => {
 
   const tabs = [
     { id: "all" as TabType, label: "Tất cả" },
-    { id: "success" as TabType, label: "Thành công" },
+    { id: "completed" as TabType, label: "Thành công" },
     { id: "pending" as TabType, label: "Đang xử lý" },
     { id: "cancelled" as TabType, label: "Đã hủy" },
   ];

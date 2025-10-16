@@ -29,7 +29,6 @@ export type Event = {
   organizer: string;
   bannerUrl: string;
   ticketTypes: TicketType[];
-  // status?: "upcoming" | "ongoing" | "completed" | "cancelled";
   // createdAt?: string;
   // updatedAt?: string;
 };
