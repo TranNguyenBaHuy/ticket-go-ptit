@@ -1,29 +1,75 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { events } from "../../../constants/mocks/mockEventData";
 import { Calendar, MapPin } from "lucide-react";
 import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import PrimaryColorButton from "./PrimaryColorButton";
+import type { Event } from "../../../constants/types/types";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9092";
+
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const event = events.find((e) => e.event_id === id);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/events/${id}`);
+        if (!response.ok) {
+          throw new Error("Event not found");
+        }
+        const data = await response.json();
+        setEvent(data);
+      } catch (error) {
+        console.error("Error fetching event:", error);
+        setEvent(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEvent();
+    }
+  }, [id]);
 
   const handleSelectTicket = (eventId: string) => {
     navigate(`/events/${eventId}/select-ticket`);
   };
 
-  if (!event)
+  if (loading) {
     return (
-      <p className="text-center py-8 text-3xl font-bold">
+      <div className="flex items-center justify-center py-20">
+        <div className="text-white text-xl">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <p className="text-center py-8 text-3xl font-bold text-white">
         Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
       </p>
     );
+  }
+
+  // Format date for display
+  const formatDate = (date: Date | string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  // Get tickets (handle both backend ticketTypes and mock tickets)
+  const tickets = event.ticketTypes || [];
 
   return (
     <>
@@ -39,7 +85,7 @@ const EventDetail = () => {
               <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
                 <Calendar size={24} className="text-white" />
                 <p className="font-bold text-sm">
-                  {event.duration}, {event.start_date}
+                  {event.duration}, {formatDate(event.start_date)}
                 </p>
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
@@ -52,7 +98,7 @@ const EventDetail = () => {
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
                 Giá từ
                 <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
-                  {getDisplayPrice(event.tickets)?.toLocaleString("de-DE")} đ
+                  {getDisplayPrice(tickets)?.toLocaleString("de-DE")} đ
                   <svg
                     width="8"
                     height="14"
@@ -71,7 +117,7 @@ const EventDetail = () => {
               <PrimaryColorButton
                 title="Mua vé ngay"
                 fullSize={true}
-                onClick={() => handleSelectTicket(event.event_id)}
+                onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
           </div>
@@ -101,7 +147,7 @@ const EventDetail = () => {
           {/* Right side: Banner */}
           <div className="md:w-2/3">
             <img
-              src={event.banner_url}
+              src={event.bannerUrl}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -128,12 +174,12 @@ const EventDetail = () => {
               <h1 className="text-white text-md font-bold  ">Thông tin vé</h1>
               <PrimaryColorButton
                 title="Mua vé ngay"
-                onClick={() => handleSelectTicket(event.event_id)}
+                onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
 
             <div>
-              {event.tickets.map((ticket, index) => (
+              {tickets.map((ticket: any, index: number) => (
                 <div
                   key={ticket.ticket_id}
                   className={`flex justify-between items-center py-2 px-4 ${

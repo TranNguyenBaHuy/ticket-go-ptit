@@ -6,6 +6,8 @@ import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
 import EventDetail from "../components/Layouts/Client/EventDetail";
 import SelectTicket from "../pages/SelectTicket";
+import Payment from "../pages/Payment";
+import VNPayReturn from "../pages/VNPayReturn";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -19,6 +21,8 @@ const publicRoutes = [
     component: SelectTicket,
     layout: DefaultLayout,
   },
+  { path: "/payment", component: Payment, layout: DefaultLayout },
+  { path: "/payment/vnpay-return", component: VNPayReturn, layout: DefaultLayout },
 ];
 const privateRoutes = [];
 
