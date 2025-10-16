@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UserSidebar from "../components/UserSidebar";
+import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import { userBookings } from "../constants/types/types";
 
 type TabType = "all" | "success" | "pending" | "cancelled";
@@ -13,7 +13,7 @@ const MyTickets = () => {
 
   const tabs = [
     { id: "all" as TabType, label: "Tất cả" },
-    { id: "success" as TabType, label: "Thành công" },
+    { id: "completed" as TabType, label: "Thành công" },
     { id: "pending" as TabType, label: "Đang xử lý" },
     { id: "cancelled" as TabType, label: "Đã hủy" },
   ];

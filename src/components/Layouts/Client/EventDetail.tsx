@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { events } from "../constants/mocks/mockEventData";
+import { events } from "../../../constants/mocks/mockEventData";
 import { Calendar, MapPin } from "lucide-react";
-import { getDisplayPrice } from "../utils/getDisplayPrice";
+import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import PrimaryColorButton from "./PrimaryColorButton";
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const event = events.find((e) => e.event_id === id);
+  const event = events.find((e) => e.id === Number(id));
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,9 +38,9 @@ const EventDetail = () => {
               </h1>
               <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
                 <Calendar size={24} className="text-white" />
-                <p className="font-bold text-sm">
+                {/* <p className="font-bold text-sm">
                   {event.duration}, {event.start_date}
-                </p>
+                </p> */}
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
                 <MapPin size={24} className="text-white" />
@@ -52,7 +52,8 @@ const EventDetail = () => {
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
                 Giá từ
                 <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
-                  {getDisplayPrice(event.tickets)?.toLocaleString("de-DE")} đ
+                  {getDisplayPrice(event.ticketTypes)?.toLocaleString("de-DE")}{" "}
+                  đ
                   <svg
                     width="8"
                     height="14"
@@ -71,7 +72,7 @@ const EventDetail = () => {
               <PrimaryColorButton
                 title="Mua vé ngay"
                 fullSize={true}
-                onClick={() => handleSelectTicket(event.event_id)}
+                onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
           </div>
@@ -101,7 +102,7 @@ const EventDetail = () => {
           {/* Right side: Banner */}
           <div className="md:w-2/3">
             <img
-              src={event.banner_url}
+              src={event.bannerUrl}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -128,12 +129,12 @@ const EventDetail = () => {
               <h1 className="text-white text-md font-bold  ">Thông tin vé</h1>
               <PrimaryColorButton
                 title="Mua vé ngay"
-                onClick={() => handleSelectTicket(event.event_id)}
+                onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
 
             <div>
-              {event.tickets.map((ticket, index) => (
+              {event.ticketTypes.map((ticket, index) => (
                 <div
                   key={ticket.ticket_id}
                   className={`flex justify-between items-center py-2 px-4 ${

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import bctLogo from "../../../../assets/bct-registered.svg";
+import bctLogo from "../../../../../assets/bct-registered.svg";
 
 const Footer = () => {
   return (

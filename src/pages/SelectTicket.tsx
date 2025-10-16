@@ -6,7 +6,7 @@ const SelectTicket = () => {
   const [count, setCount] = useState(0);
   const { id } = useParams();
   const navigate = useNavigate();
-  const event = events.find((e) => e.event_id === id);
+  const event = events.find((e) => e.id === Number(id));
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -44,7 +44,7 @@ const SelectTicket = () => {
             <p className="text-white font-bold text-[1.1rem]">Số lượng</p>
           </div>
           <div className="py-4">
-            {event?.tickets.map((ticket) => (
+            {event?.ticketTypes.map((ticket) => (
               <div
                 key={ticket.ticket_id}
                 className="flex justify-between items-center py-4 px-4 mx-2 border-b border-dashed border-[#636363]"

@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { events } from "../../../../constants/mocks/mockEventData";
-import type { Event } from "../../../../constants/types/types";
+import { events } from "../../../../../constants/mocks/mockEventData";
+import type { Event } from "../../../../../constants/types/types";
 import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
@@ -74,11 +74,11 @@ const SearchBar = () => {
           {/* {visibleResults.map((result) => ( */}
           {results.map((result) => (
             <div
-              key={result.event_id}
+              key={result.id}
               onMouseDown={() => {
                 setQuery("");
                 setShowResults(false);
-                handleNavigateEvent(result.event_id);
+                handleNavigateEvent(String(result.id));
               }}
             >
               <div className="px-4 py-3 hover:bg-gray-200 cursor-pointer text-sm">

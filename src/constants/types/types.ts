@@ -9,7 +9,7 @@ export type Booking = {
   ticket_code: string;
 };
 
-export type Ticket = {
+export type TicketType = {
   ticket_id: string;
   type: string;
   price: number;
@@ -18,21 +18,20 @@ export type Ticket = {
 
 export const userBookings: Booking[] = [];
 
-export interface Event {
-  event_id: string;
+export type Event = {
+  id: number;
   title: string;
   description: string;
+  category: string;
   location: string;
-  start_date: string;
+  start_date: Date;
   duration: string;
   organizer: string;
-  banner_url: string;
-  tickets: Ticket[];
-  category?: string;
-  status?: "upcoming" | "ongoing" | "completed" | "cancelled";
-  createdAt?: string;
-  updatedAt?: string;
-}
+  bannerUrl: string;
+  ticketTypes: TicketType[];
+  // createdAt?: string;
+  // updatedAt?: string;
+};
 
 // Authentication types
 export interface User {
