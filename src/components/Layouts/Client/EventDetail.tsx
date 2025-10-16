@@ -1,18 +1,52 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { events } from "../../../constants/mocks/mockEventData";
 import { Calendar, MapPin } from "lucide-react";
-import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+// import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import PrimaryColorButton from "./PrimaryColorButton";
+import type { Event } from "../../../constants/types/types";
 const EventDetail = () => {
   const { id } = useParams();
+  const [event, setEvent] = useState<Event>();
+  const [loading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const event = events.find((e) => e.id === Number(id));
-
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          `http://localhost:9092/api/events/${String(id)}`
+        );
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error("Sự kiện không tồn tại. Mời bạn chọn sự kiện khác");
+          }
+          throw new Error(`Error when loaded data: ${response.statusText}`);
+        }
+        const result = await response.json();
+        console.log("event result", result);
+        setEvent(result);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     window.scrollTo(0, 0);
+    fetchEvents();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-1 items-center justify-center text-2xl font-bold text-center text-white">
+        Loading...
+      </div>
+    );
+  }
 
   const handleSelectTicket = (eventId: string) => {
     navigate(`/events/${eventId}/select-ticket`);
@@ -38,9 +72,10 @@ const EventDetail = () => {
               </h1>
               <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
                 <Calendar size={24} className="text-white" />
-                {/* <p className="font-bold text-sm">
-                  {event.duration}, {event.start_date}
-                </p> */}
+                <p className="font-bold text-sm">
+                  {event.duration}
+                  {/* , {event.start_date} */}
+                </p>
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
                 <MapPin size={24} className="text-white" />
@@ -51,7 +86,7 @@ const EventDetail = () => {
             <div className="border-t border-white py-[1rem] font-bold">
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
                 Giá từ
-                <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
+                {/* <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
                   {getDisplayPrice(event.ticketTypes)?.toLocaleString("de-DE")}{" "}
                   đ
                   <svg
@@ -66,7 +101,7 @@ const EventDetail = () => {
                       fill="#2dc275"
                     ></path>
                   </svg>
-                </p>
+                </p> */}
               </p>
 
               <PrimaryColorButton
@@ -133,7 +168,7 @@ const EventDetail = () => {
               />
             </div>
 
-            <div>
+            {/* <div>
               {event.ticketTypes.map((ticket, index) => (
                 <div
                   key={ticket.ticket_id}
@@ -162,7 +197,7 @@ const EventDetail = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
