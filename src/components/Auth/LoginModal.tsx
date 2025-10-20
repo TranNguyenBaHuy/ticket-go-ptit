@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
 import type { LoginCredentials } from "../../constants/types/types";
+// @ts-expect-error - JSX file without type declarations
+import { useAuth } from "../../hooks/AuthContext";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -14,7 +18,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
   onClose,
   onSwitchToRegister,
 }) => {
-  const { login, authState, clearError } = useAuth();
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginCredentials>({
     emailOrPhone: "",
     password: "",
@@ -84,7 +89,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
+    // clearError();
     setValidationErrors({});
 
     if (!validateForm()) {
@@ -93,19 +98,59 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
     setIsSubmitting(true);
 
+    // try {
+    //   const response = await login(formData);
+    //   if (response.success) {
+    //     setShowSuccess(true);
+    //     setTimeout(() => {
+    //       setShowSuccess(false);
+    //       onClose();
+    //       setFormData({ emailOrPhone: "", password: "" });
+    //       setValidationErrors({});
+    //     }, 1500);
+    //   }
+    // } catch (error) {
+    //   console.error("Login error:", error);
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
     try {
-      const response = await login(formData);
-      if (response.success) {
-        setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-          onClose();
-          setFormData({ emailOrPhone: "", password: "" });
-          setValidationErrors({});
-        }, 1500);
+      const response = await axios.post("/api/auth/login", {
+        username: formData.emailOrPhone,
+        password: formData.password,
+      });
+
+      if (!response.data || !response.data.token) {
+        throw new Error("Invalid response from server");
       }
-    } catch (error) {
-      console.error("Login error:", error);
+
+      const { token } = response.data;
+
+      // Store token and update auth state
+      login(token);
+
+      // Decode token to get user info
+      const decodedUser = jwtDecode(token) as { role?: { name?: string } };
+
+      // Close modal first
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+        setFormData({ emailOrPhone: "", password: "" });
+        setValidationErrors({});
+
+        // Navigate after modal closes
+        if (decodedUser.role?.name === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 1500);
+
+    } catch (err: unknown) {
+      console.error("Login error:", err);
+      // You can add error state handling here if needed
     } finally {
       setIsSubmitting(false);
     }
@@ -114,7 +159,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (authState.error) clearError();
+    // if (authState.error) clearError();
     if (validationErrors[name as keyof typeof validationErrors]) {
       setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -177,11 +222,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
               value={formData.emailOrPhone}
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.emailOrPhone
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-              }`}
+              autoComplete="username"
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${validationErrors.emailOrPhone
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!validationErrors.emailOrPhone}
               aria-describedby={
@@ -215,11 +260,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  validationErrors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+                autoComplete="current-password"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${validationErrors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={
@@ -260,8 +305,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-              ? "Thành công!"
-              : "Đăng nhập"}
+                ? "Thành công!"
+                : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}
@@ -273,12 +318,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
           )}
 
           {/* Thông báo lỗi */}
-          {authState.error && !isSubmitting && (
+          {/* {authState.error && !isSubmitting && (
             <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <span className="text-sm font-medium">{authState.error}</span>
             </div>
-          )}
+          )} */}
 
           {/* Quên mật khẩu */}
           <div className="text-center">

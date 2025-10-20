@@ -44,7 +44,22 @@ export default function UserDetail() {
           avatar: null,
         });
         if (user.avatar) {
-          setAvatarPreview(`/images/user/${user.avatar}`);
+          console.log("User avatar:", user.avatar);
+          console.log("User avatar type:", typeof user.avatar);
+          console.log("User avatar length:", user.avatar.length);
+
+          // Check if avatar is a full path or just filename
+          let avatarPath;
+          if (user.avatar.includes("/") || user.avatar.includes("\\")) {
+            // It's already a full path
+            avatarPath = user.avatar;
+          } else {
+            // It's just a filename
+            avatarPath = `/images/user/${user.avatar}`;
+          }
+
+          console.log("Setting avatar path:", avatarPath);
+          setAvatarPreview(avatarPath);
         }
       } catch (err) {
         console.error("Error fetching user:", err);
@@ -350,6 +365,31 @@ export default function UserDetail() {
                   src={avatarPreview}
                   alt="avatar preview"
                   className="h-full w-full object-cover rounded-lg"
+                  onError={(e) => {
+                    console.error("Avatar load error:", avatarPreview);
+                    console.error("Error event:", e);
+
+                    // Try alternative paths for new users
+                    const avatarFilename = avatarPreview.split("/").pop();
+                    const alternatives = [
+                      `/public/images/user/${avatarFilename}`,
+                      `http://localhost:9092/images/user/${avatarFilename}`,
+                      `http://localhost:9092/public/images/user/${avatarFilename}`,
+                      `http://localhost:9092/uploads/user/${avatarFilename}`,
+                    ];
+
+                    console.log("Trying alternatives:", alternatives);
+
+                    // Try first alternative
+                    if (alternatives[0]) {
+                      setAvatarPreview(alternatives[0]);
+                    } else {
+                      setAvatarPreview(null);
+                    }
+                  }}
+                  onLoad={() => {
+                    console.log("Avatar loaded successfully:", avatarPreview);
+                  }}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center py-6">

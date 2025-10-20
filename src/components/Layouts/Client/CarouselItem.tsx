@@ -10,7 +10,7 @@ const CarouselItem = ({ data }: Props) => {
     <Link to={`/events/${data.id}`}>
       <div className="relative px-1.5 overflow-hidden rounded-xl group">
         <img
-          src={data.bannerUrl}
+          src={`/images/event/${data.bannerUrl}`}
           alt={data.title}
           className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-102"
         />

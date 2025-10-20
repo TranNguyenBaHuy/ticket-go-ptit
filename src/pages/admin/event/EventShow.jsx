@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Pagination from "../../../components/Pagination";
+import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
 import axios from "axios";
 
 export default function EventShow() {

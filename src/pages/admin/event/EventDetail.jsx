@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { CATEGORIES } from "../../../../../Backend/src/config/constant.js";
-import TicketManagement from "../../../components/TicketManagement.jsx";
+import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
 
 export default function EventDetail() {
   const [newTicket, setNewTicket] = useState({

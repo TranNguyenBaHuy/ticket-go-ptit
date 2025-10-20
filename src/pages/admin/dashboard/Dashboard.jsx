@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../hooks/AuthContext.jsx";
 
 export default function Dashboard() {
   const { user, token } = useAuth();
