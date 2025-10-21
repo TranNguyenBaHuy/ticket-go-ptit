@@ -24,7 +24,7 @@ export type Event = {
   description: string;
   category: string;
   location: string;
-  start_date: Date;
+  startDate: Date;
   duration: string;
   organizer: string;
   bannerUrl: string;

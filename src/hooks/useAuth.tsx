@@ -56,7 +56,7 @@ const getStoredUser = (): User | null => {
 const mockApiCall = async (endpoint: string, data: any): Promise<AuthResponse> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1200));
-  
+
   // Mock responses based on endpoint
   switch (endpoint) {
     case 'login':
@@ -91,7 +91,7 @@ const mockApiCall = async (endpoint: string, data: any): Promise<AuthResponse> =
           message: 'Email/số điện thoại hoặc mật khẩu không chính xác'
         };
       }
-    
+
     case 'register':
       // Simulate registration logic
       if (data.email === 'existing@example.com') {
@@ -118,7 +118,7 @@ const mockApiCall = async (endpoint: string, data: any): Promise<AuthResponse> =
         user: newUser,
         token: 'mock-jwt-token-' + Date.now()
       };
-    
+
     default:
       return {
         success: false,
@@ -139,7 +139,7 @@ export const authApi = {
       // });
       // const data = await response.json();
       // return data;
-      
+
       return mockApiCall('login', credentials);
     } catch (error) {
       console.error('Login API error:', error);
@@ -149,7 +149,7 @@ export const authApi = {
       };
     }
   },
-  
+
   register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
     try {
       // TODO: Replace with actual API call
@@ -160,7 +160,7 @@ export const authApi = {
       // });
       // const data = await response.json();
       // return data;
-      
+
       return mockApiCall('register', credentials);
     } catch (error) {
       console.error('Register API error:', error);
@@ -170,7 +170,7 @@ export const authApi = {
       };
     }
   },
-  
+
   logout: async (): Promise<void> => {
     try {
       // TODO: Replace with actual API call
@@ -182,14 +182,14 @@ export const authApi = {
       //     'Content-Type': 'application/json'
       //   }
       // });
-      
+
       clearAuthData();
     } catch (error) {
       console.error('Logout API error:', error);
       clearAuthData(); // Clear local data even if API fails
     }
   },
-  
+
   getCurrentUser: async (): Promise<User | null> => {
     try {
       const token = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -197,7 +197,7 @@ export const authApi = {
         clearAuthData();
         return null;
       }
-      
+
       // TODO: Replace with actual API call
       // const response = await fetch(`${API_BASE_URL}/auth/me`, {
       //   headers: { 'Authorization': `Bearer ${token}` }
@@ -208,7 +208,7 @@ export const authApi = {
       // }
       // const data = await response.json();
       // return data.user;
-      
+
       // For now, return stored user
       return getStoredUser();
     } catch (error) {
@@ -217,14 +217,14 @@ export const authApi = {
       return null;
     }
   },
-  
+
   refreshToken: async (): Promise<AuthResponse> => {
     try {
       const token = localStorage.getItem(AUTH_TOKEN_KEY);
       if (!token) {
         return { success: false, message: 'No token found' };
       }
-      
+
       // TODO: Replace with actual API call
       // const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       //   method: 'POST',
@@ -235,7 +235,7 @@ export const authApi = {
       // });
       // const data = await response.json();
       // return data;
-      
+
       // Mock: Just extend the current token
       const user = getStoredUser();
       if (user) {
@@ -293,16 +293,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(async (credentials: LoginCredentials): Promise<AuthResponse> => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+
     try {
       const response = await authApi.login(credentials);
-      
+
       if (response.success && response.user && response.token) {
         // Store token with expiry
         setAuthToken(response.token, 24);
         // Store user data
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.user));
-        
+
         setAuthState({
           user: response.user,
           isAuthenticated: true,
@@ -316,7 +316,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           error: response.message || 'Đăng nhập thất bại. Vui lòng thử lại.'
         }));
       }
-      
+
       return response;
     } catch (error) {
       const errorMessage = 'Có lỗi xảy ra khi đăng nhập. Vui lòng kiểm tra kết nối mạng.';
@@ -331,16 +331,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = useCallback(async (credentials: RegisterCredentials): Promise<AuthResponse> => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+
     try {
       const response = await authApi.register(credentials);
-      
+
       if (response.success && response.user && response.token) {
         // Store token with expiry
         setAuthToken(response.token, 24);
         // Store user data
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.user));
-        
+
         setAuthState({
           user: response.user,
           isAuthenticated: true,
@@ -354,7 +354,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           error: response.message || 'Đăng ký thất bại. Vui lòng thử lại.'
         }));
       }
-      
+
       return response;
     } catch (error) {
       const errorMessage = 'Có lỗi xảy ra khi đăng ký. Vui lòng kiểm tra kết nối mạng.';
@@ -418,15 +418,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        authState, 
-        login, 
-        register, 
-        logout, 
-        clearError, 
-        refreshToken, 
-        isTokenValid 
+    <AuthContext.Provider
+      value={{
+        authState,
+        login,
+        register,
+        logout,
+        clearError,
+        refreshToken,
+        isTokenValid
       }}
     >
       {children}
