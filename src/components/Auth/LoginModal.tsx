@@ -110,14 +110,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
       }
 
       const { token } = response.data;
-
-      // Store token and update auth state
       login(token);
-
-      // Decode token to get user info
       const decodedUser = jwtDecode(token) as { role?: { name?: string } };
 
-      // Show success message
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
@@ -125,7 +120,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
         setFormData({ emailOrPhone: "", password: "" });
         setValidationErrors({});
 
-        // Navigate after modal closes
         if (decodedUser.role?.name === "ADMIN") {
           navigate("/admin");
         } else {
@@ -156,7 +150,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     
-    // Clear errors when user types
     if (validationErrors[name as keyof typeof validationErrors]) {
       setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -166,7 +159,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   const handleGoogleLogin = () => {
-    // Redirect đến Google OAuth endpoint
     window.location.href = '/api/auth/google';
   };
 

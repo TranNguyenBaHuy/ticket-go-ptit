@@ -70,7 +70,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     else setPasswordStrength('strong');
   }, [formData.password]);
 
-  // Kiểm tra hợp lệ của form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -109,7 +108,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return Object.keys(newErrors).length === 0;
   };
 
-  // Xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
@@ -119,7 +117,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     setIsSubmitting(true);
   
     try {
-      // Gửi request đến backend API
       const response = await axios.post('/api/auth/register', {
         email: formData.email,
         password: formData.password
@@ -144,7 +141,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       console.error('Register error:', error);
       if (axios.isAxiosError(error)) {
         if (error.response?.data?.errors) {
-          // Xử lý validation errors từ backend
           const backendErrors = error.response.data.errors;
           if (Array.isArray(backendErrors)) {
             setApiError(backendErrors.join(', '));
@@ -164,7 +160,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     }
   };
 
-  // Xử lý thay đổi dữ liệu ô nhập
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -175,7 +170,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   };
 
   const handleGoogleRegister = () => {
-    // Redirect đến Google OAuth endpoint (cùng endpoint với login)
     window.location.href = '/api/auth/google';
   };
 
