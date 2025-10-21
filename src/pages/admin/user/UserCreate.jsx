@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { GENDERS } from "../../../../../Backend/src/config/constant.js";
+import { GENDERS } from "../../../../../backend_ticketgo/src/config/constant.js";
 
 export default function UserCreate() {
   const [formData, setFormData] = useState({

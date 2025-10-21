@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CATEGORIES } from "../../../../../Backend/src/config/constant.js";
-import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
-
+import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
+// import TicketManagement from "../../../components/Layouts/Admin/"
 export default function EventCreate() {
   const navigate = useNavigate();
 
@@ -615,7 +614,7 @@ export default function EventCreate() {
         </button>
       </form>
 
-      <TicketManagement
+      {/* <TicketManagement
         newTicketErrors={newTicketErrors}
         updateTicketErrors={updateTicketErrors}
         showTicketPopup={showTicketPopup}
@@ -631,7 +630,7 @@ export default function EventCreate() {
         ticketTypes={ticketTypes}
         formatCurrency={formatCurrency}
         showStatistics={false}
-      />
+      /> */}
     </div>
   );
 }

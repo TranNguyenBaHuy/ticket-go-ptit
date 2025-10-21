@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { GENDERS } from "../../../../../Backend/src/config/constant.js";
+import { GENDERS } from "../../../../../backend_ticketgo/src/config/constant.js";
 
 export default function UserDetail() {
   const { id } = useParams();
