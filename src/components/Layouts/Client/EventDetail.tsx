@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
 // import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
 const EventDetail = () => {
@@ -17,9 +18,7 @@ const EventDetail = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `http://localhost:9092/api/events/${String(id)}`
-        );
+        const response = await fetch(`/api/events/${String(id)}`);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -32,6 +31,7 @@ const EventDetail = () => {
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -73,8 +73,7 @@ const EventDetail = () => {
               <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
                 <Calendar size={24} className="text-white" />
                 <p className="font-bold text-sm">
-                  {event.duration}
-                  {/* , {event.start_date} */}
+                  {event.duration}, {formatDateTimeDisplay(event.startDate)}
                 </p>
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
@@ -85,10 +84,9 @@ const EventDetail = () => {
             {/* price action section */}
             <div className="border-t border-white py-[1rem] font-bold">
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
-                Giá từ
-                {/* <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
-                  {getDisplayPrice(event.ticketTypes)?.toLocaleString("de-DE")}{" "}
-                  đ
+                Giá từ{" "}
+                <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
+                  {formatCurrency(event.ticketTypes[0].price)}
                   <svg
                     width="8"
                     height="14"
@@ -101,7 +99,7 @@ const EventDetail = () => {
                       fill="#2dc275"
                     ></path>
                   </svg>
-                </p> */}
+                </p>
               </p>
 
               <PrimaryColorButton
@@ -137,7 +135,7 @@ const EventDetail = () => {
           {/* Right side: Banner */}
           <div className="md:w-2/3">
             <img
-              src={event.bannerUrl}
+              src={`/images/event/${event.bannerUrl}`}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -168,7 +166,7 @@ const EventDetail = () => {
               />
             </div>
 
-            {/* <div>
+            <div>
               {event.ticketTypes.map((ticket, index) => (
                 <div
                   key={ticket.ticket_id}
@@ -197,7 +195,7 @@ const EventDetail = () => {
                   </div>
                 </div>
               ))}
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
