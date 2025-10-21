@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { LoginCredentials } from "../../constants/types/types";
 // @ts-expect-error - JSX file without type declarations
-import { useAuth } from "../../hooks/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -147,7 +147,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
           navigate("/");
         }
       }, 1500);
-
     } catch (err: unknown) {
       console.error("Login error:", err);
       // You can add error state handling here if needed
@@ -223,10 +222,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${validationErrors.emailOrPhone
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                validationErrors.emailOrPhone
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+              }`}
               disabled={isSubmitting}
               aria-invalid={!!validationErrors.emailOrPhone}
               aria-describedby={
@@ -261,10 +261,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${validationErrors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                  }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
+                  validationErrors.password
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
                 disabled={isSubmitting}
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={
@@ -305,8 +306,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-                ? "Thành công!"
-                : "Đăng nhập"}
+              ? "Thành công!"
+              : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}

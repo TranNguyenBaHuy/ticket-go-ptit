@@ -4,7 +4,7 @@ import type { ComponentType, PropsWithChildren } from "react";
 import DefaultLayout from "./components/Layouts/Client/DefaultLayout/DefaultLayout";
 import { Fragment } from "react";
 // @ts-expect-error - JSX file without type declarations
-import { AuthProvider } from "./hooks/AuthContext.jsx";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
 // @ts-expect-error - JSX file without type declarations
 import LayoutAdmin from "./components/Layouts/admin/LayoutAdmin";
 

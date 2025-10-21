@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
 // import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
-const EventDetail = () => {
+const DetailEvent = () => { // Sửa lại có khác trang admin
   const { id } = useParams();
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
@@ -17,9 +18,7 @@ const EventDetail = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `/api/events/${String(id)}`
-        );
+        const response = await fetch(`/api/events/${String(id)}`);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -32,6 +31,7 @@ const EventDetail = () => {
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -59,27 +59,6 @@ const EventDetail = () => {
       </p>
     );
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-  const formatDateTimeDisplay = (date: string) => {
-    if (date) {
-      if (typeof date === "string") {
-        date = date.split("T")[0];
-      } else {
-        date = (date as Date).toISOString().split("T")[0];
-      }
-    }
-    const [year, month, day] = date.split("-");
-    const formattedDate = `${day} tháng ${month}, ${year}`;
-
-    return formattedDate;
-  };
-
-
   return (
     <>
       {/* TICKET INFO SECTION */}
@@ -105,7 +84,7 @@ const EventDetail = () => {
             {/* price action section */}
             <div className="border-t border-white py-[1rem] font-bold">
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
-                Giá từ {" "}
+                Giá từ{" "}
                 <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
                   {formatCurrency(event.ticketTypes[0].price)}
                   <svg
@@ -222,4 +201,4 @@ const EventDetail = () => {
   );
 };
 
-export default EventDetail;
+export default DetailEvent;

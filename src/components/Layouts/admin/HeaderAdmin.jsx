@@ -3,7 +3,7 @@ import logo from "../../../../public/ticketbox_tkb_logo.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../../hooks/AuthContext.jsx";
+import { useAuth } from "../../../contexts/AuthContext";
 import axios from "axios";
 
 export default function HeaderAdmin({ setOpen }) {

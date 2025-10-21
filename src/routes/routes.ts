@@ -1,10 +1,11 @@
 import Home from "../pages/Home";
+import DetailEvent from "../components/Layouts/Client/DetailEvent";
 import About from "../pages/About";
 import MyTickets from "../pages/MyTickets";
 import DefaultLayout from "../components/Layouts/Client/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
-import SelectTicket from "../pages/SelectTicket";
+// import SelectTicket from "../pages/SelectTicket";
 import NotFound from "../pages/NotFound";
 // @ts-expect-error - JSX file without type declarations
 import AdminLayout from "../components/Layouts/admin/LayoutAdmin";
@@ -33,12 +34,12 @@ const publicRoutes = [
   { path: "/my-tickets", component: MyTickets, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/all-events", component: AllEvents, layout: DefaultLayout },
-  { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
-  {
-    path: "/events/:id/select-ticket",
-    component: SelectTicket,
-    layout: DefaultLayout,
-  },
+  { path: "/events/:id", component: DetailEvent, layout: DefaultLayout },
+  // {
+  //   path: "/events/:id/select-ticket",
+  //   component: SelectTicket,
+  //   layout: DefaultLayout,
+  // },
   { path: "*", component: NotFound, layout: null },
 ];
 const privateRoutes = [

@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { events } from "../../../../../constants/mocks/mockEventData";
+// import { events } from "../../../../../constants/mocks/mockEventData";
 import type { Event } from "../../../../../constants/types/types";
 import { useNavigate } from "react-router-dom";
 
@@ -10,23 +10,24 @@ const SearchBar = () => {
   const [results, setResults] = useState<Event[]>([]);
   const [showResults, setShowResults] = useState(false);
   // const [visibleCount, setVisibleCount] = useState(5);
+
   useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      // setVisibleCount(5);
-      return;
-    }
+    // if (!query.trim()) {
+    //   setResults([]);
+    //   // setVisibleCount(5);
+    //   return;
+    // }
+    // const timer = setTimeout(() => {
+    //   const filtered = events.filter((e) =>
+    //     e.title.toLowerCase().includes(query.toLowerCase())
+    //   );
+    //   setResults(filtered);
+    //   setShowResults(true);
+    //   // setVisibleCount(5);
+    // }, 300);
+    // return () => clearTimeout(timer);
 
-    const timer = setTimeout(() => {
-      const filtered = events.filter((e) =>
-        e.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
-      setShowResults(true);
-      // setVisibleCount(5);
-    }, 300);
-
-    return () => clearTimeout(timer);
+    setResults([]);
   }, [query]);
 
   // const handleLoadMore = () => {

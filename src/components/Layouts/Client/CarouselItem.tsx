@@ -12,7 +12,7 @@ const CarouselItem = ({ data }: Props) => {
         <img
           src={`/images/event/${data.bannerUrl}`}
           alt={data.title}
-          className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-102"
+          className="w-full h-full object-cover rounded-xl transform transition-transform duration-500 group-hover:scale-102 aspect-[16/9]"
         />
         <button className="absolute flex items-center bottom-4 left-6 px-4.5 py-1.5 bg-white rounded-sm hover:bg-[#2dc275] hover:text-white font-semibold transition-colors duration-500">
           Xem chi tiết

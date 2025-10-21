@@ -2,38 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import type { Event } from "../../../constants/types/types";
 import { Calendar } from "lucide-react";
+import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 
 type EventProps = {
   event: Event;
   price: number | null;
 };
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-};
-
-const formatDateTimeDisplay = (date: string) => {
-  if (date) {
-    if (typeof date === "string") {
-      date = date.split("T")[0];
-    } else {
-      date = (date as Date).toISOString().split("T")[0];
-    }
-  }
-  const [year, month, day] = date.split("-");
-  const formattedDate = `${day} tháng ${month}, ${year}`;
-
-  return formattedDate;
-};
-
 const EventCard: React.FC<EventProps> = ({ event, price }) => {
   return (
     <Link to={`/events/${Number(event.id)}`}>
       <div className="max-w-xl bg-transparent rounded-xl overflow-hidden hover:shadow-md hover:shadow-[#2dc275] transition-shadow duration-400 h-full flex flex-col">
-        <div className="overflow-hidden rounded-xl mb-3">
+        <div className="overflow-hidden rounded-xl mb-3 aspect-[16/9]">
           <img
             src={`/images/event/${event.bannerUrl}`}
             alt={event.title}
@@ -49,8 +29,7 @@ const EventCard: React.FC<EventProps> = ({ event, price }) => {
             Từ {formatCurrency(price || 0)}
           </p>
           <p className="flex items-center gap-2 text-md text-white line-clamp-1">
-            <Calendar size={14} />{" "}
-            {formatDateTimeDisplay(event.startDate)}
+            <Calendar size={14} /> {formatDateTimeDisplay(event.startDate)}
           </p>
         </div>
       </div>
