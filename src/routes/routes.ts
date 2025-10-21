@@ -5,6 +5,7 @@ import DefaultLayout from "../components/Layouts/Client/DefaultLayout/DefaultLay
 import Contact from "../pages/Contact";
 import AllEvents from "../pages/AllEvents";
 import SelectTicket from "../pages/SelectTicket";
+import EventDetail from "../components/Layouts/Client/EventDetail";
 import NotFound from "../pages/NotFound";
 // @ts-expect-error - JSX file without type declarations
 import AdminLayout from "../components/Layouts/admin/LayoutAdmin";
@@ -19,7 +20,7 @@ import UserCreate from "../pages/admin/user/UserCreate";
 // @ts-expect-error - JSX file without type declarations
 import EventShow from "../pages/admin/event/EventShow";
 // @ts-expect-error - JSX file without type declarations
-import EventDetail from "../pages/admin/event/EventDetail";
+import EventDetailAdmin from "../pages/admin/event/EventDetail";
 // @ts-expect-error - JSX file without type declarations
 import EventCreate from "../pages/admin/event/EventCreate";
 // @ts-expect-error - JSX file without type declarations
@@ -44,13 +45,25 @@ const publicRoutes = [
 const privateRoutes = [
   { path: "/admin", component: Dashboard, layout: AdminLayout },
   { path: "/admin/users", component: UserShow, layout: AdminLayout },
-  { path: "/admin/user-detail/:id", component: UserDetail, layout: AdminLayout },
+  {
+    path: "/admin/user-detail/:id",
+    component: UserDetail,
+    layout: AdminLayout,
+  },
   { path: "/admin/user-create", component: UserCreate, layout: AdminLayout },
   { path: "/admin/events", component: EventShow, layout: AdminLayout },
-  { path: "/admin/event-detail/:id", component: EventDetail, layout: AdminLayout },
+  {
+    path: "/admin/event-detail/:id",
+    component: EventDetail,
+    layout: AdminLayout,
+  },
   { path: "/admin/event-create", component: EventCreate, layout: AdminLayout },
   { path: "/admin/orders", component: OrderShow, layout: AdminLayout },
-  { path: "/admin/order-detail/:id", component: OrderDetail, layout: AdminLayout },
+  {
+    path: "/admin/order-detail/:id",
+    component: OrderDetail,
+    layout: AdminLayout,
+  },
   { path: "*", component: NotFound, layout: null },
 ];
 
