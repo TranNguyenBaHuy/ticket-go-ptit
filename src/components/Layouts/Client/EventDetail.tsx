@@ -137,7 +137,7 @@ const EventDetail = () => {
             <img
               src={`/images/event/${event.bannerUrl}`}
               alt={event.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover aspect-[16/9]"
             />
           </div>
         </div>
