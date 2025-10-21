@@ -31,6 +31,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
     password?: string;
   }>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -89,8 +90,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // clearError();
     setValidationErrors({});
+    setApiError("");
 
     if (!validateForm()) {
       return;
@@ -98,22 +99,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
     setIsSubmitting(true);
 
-    // try {
-    //   const response = await login(formData);
-    //   if (response.success) {
-    //     setShowSuccess(true);
-    //     setTimeout(() => {
-    //       setShowSuccess(false);
-    //       onClose();
-    //       setFormData({ emailOrPhone: "", password: "" });
-    //       setValidationErrors({});
-    //     }, 1500);
-    //   }
-    // } catch (error) {
-    //   console.error("Login error:", error);
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
     try {
       const response = await axios.post("/api/auth/login", {
         username: formData.emailOrPhone,
@@ -121,7 +106,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       });
 
       if (!response.data || !response.data.token) {
-        throw new Error("Invalid response from server");
+        throw new Error("Phản hồi từ server không hợp lệ");
       }
 
       const { token } = response.data;
@@ -132,7 +117,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       // Decode token to get user info
       const decodedUser = jwtDecode(token) as { role?: { name?: string } };
 
-      // Close modal first
+      // Show success message
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
@@ -149,7 +134,19 @@ const LoginModal: React.FC<LoginModalProps> = ({
       }, 1500);
     } catch (err: unknown) {
       console.error("Login error:", err);
-      // You can add error state handling here if needed
+      if (axios.isAxiosError(err)) {
+        if (err.response?.data?.error) {
+          setApiError(err.response.data.error);
+        } else if (err.response?.data?.message) {
+          setApiError(err.response.data.message);
+        } else if (err.response?.status === 401) {
+          setApiError("Email/SĐT hoặc mật khẩu không đúng");
+        } else {
+          setApiError("Đăng nhập thất bại. Vui lòng thử lại!");
+        }
+      } else {
+        setApiError("Có lỗi xảy ra. Vui lòng thử lại!");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -158,15 +155,19 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // if (authState.error) clearError();
+    
+    // Clear errors when user types
     if (validationErrors[name as keyof typeof validationErrors]) {
       setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+    if (apiError) {
+      setApiError("");
     }
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Thực hiện đăng nhập Google khi có backend
-    console.log("Google login clicked");
+    // Redirect đến Google OAuth endpoint
+    window.location.href = '/api/auth/google';
   };
 
   if (!isOpen) return null;
@@ -319,12 +320,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
           )}
 
           {/* Thông báo lỗi */}
-          {/* {authState.error && !isSubmitting && (
+          {apiError && !isSubmitting && (
             <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">{authState.error}</span>
+              <span className="text-sm font-medium">{apiError}</span>
             </div>
-          )} */}
+          )}
 
           {/* Quên mật khẩu */}
           <div className="text-center">
