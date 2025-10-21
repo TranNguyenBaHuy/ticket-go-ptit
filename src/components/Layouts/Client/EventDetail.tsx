@@ -6,6 +6,7 @@ import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
 const EventDetail = () => {
+  // Sửa lại có khác trang admin
   const { id } = useParams();
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
