@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CATEGORIES } from "../../../../../Backend/src/config/constant.js";
+import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
 import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
 
 export default function EventCreate() {
