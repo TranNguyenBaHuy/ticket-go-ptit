@@ -59,6 +59,13 @@ const EventDetail = () => {
       </p>
     );
 
+  // checking if ticket quantity is empty
+  const totalTickets = event.ticketTypes.reduce(
+    (sum, ticket) => sum + ticket.quantity,
+    0
+  );
+  const isSoldOut = totalTickets === 0;
+
   return (
     <>
       {/* TICKET INFO SECTION */}
@@ -104,6 +111,7 @@ const EventDetail = () => {
 
               <PrimaryColorButton
                 title="Mua vé ngay"
+                disabled={isSoldOut}
                 fullSize={true}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
@@ -162,6 +170,7 @@ const EventDetail = () => {
               <h1 className="text-white text-md font-bold  ">Thông tin vé</h1>
               <PrimaryColorButton
                 title="Mua vé ngay"
+                disabled={isSoldOut}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
