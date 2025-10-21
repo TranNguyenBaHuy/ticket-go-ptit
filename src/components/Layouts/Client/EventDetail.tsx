@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
 // import { getDisplayPrice } from "../../../utils/getDisplayPrice";
+import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
 const EventDetail = () => {
@@ -30,6 +31,7 @@ const EventDetail = () => {
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -56,26 +58,6 @@ const EventDetail = () => {
         Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
       </p>
     );
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-  const formatDateTimeDisplay = (date: string) => {
-    if (date) {
-      if (typeof date === "string") {
-        date = date.split("T")[0];
-      } else {
-        date = (date as Date).toISOString().split("T")[0];
-      }
-    }
-    const [year, month, day] = date.split("-");
-    const formattedDate = `${day} tháng ${month}, ${year}`;
-
-    return formattedDate;
-  };
 
   return (
     <>
