@@ -17,9 +17,7 @@ const EventDetail = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `/api/events/${String(id)}`
-        );
+        const response = await fetch(`/api/events/${String(id)}`);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -79,7 +77,6 @@ const EventDetail = () => {
     return formattedDate;
   };
 
-
   return (
     <>
       {/* TICKET INFO SECTION */}
@@ -105,7 +102,7 @@ const EventDetail = () => {
             {/* price action section */}
             <div className="border-t border-white py-[1rem] font-bold">
               <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
-                Giá từ {" "}
+                Giá từ{" "}
                 <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
                   {formatCurrency(event.ticketTypes[0].price)}
                   <svg
@@ -191,18 +188,20 @@ const EventDetail = () => {
               {event.ticketTypes.map((ticket, index) => (
                 <div
                   key={ticket.ticket_id}
-                  className={`flex justify-between items-center py-2 px-4 ${index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
-                    }`}
+                  className={`flex justify-between items-center py-2 px-4 ${
+                    index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                  }`}
                 >
                   <h1 className="py-2 text-white font-semibold">
                     {ticket.type}
                   </h1>
                   <div className="">
                     <p
-                      className={`font-bold py-2 ${ticket.quantity === 0
+                      className={`font-bold py-2 ${
+                        ticket.quantity === 0
                           ? "text-gray-400"
                           : "text-[#2dc275]"
-                        }`}
+                      }`}
                     >
                       {ticket.price.toLocaleString("de-DE")} đ
                     </p>

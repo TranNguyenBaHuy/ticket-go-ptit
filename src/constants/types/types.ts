@@ -24,13 +24,11 @@ export type Event = {
   description: string;
   category: string;
   location: string;
-  startDate: Date;
+  startDate: string;
   duration: string;
   organizer: string;
   bannerUrl: string;
   ticketTypes: TicketType[];
-  // createdAt?: string;
-  // updatedAt?: string;
 };
 
 // Authentication types
