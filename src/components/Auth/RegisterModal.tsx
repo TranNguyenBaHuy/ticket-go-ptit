@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
 import type { RegisterCredentials } from '../../constants/types/types';
+import axios from 'axios';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -10,7 +10,6 @@ interface RegisterModalProps {
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
-  const { register, authState, clearError } = useAuth();
   const [formData, setFormData] = useState<RegisterCredentials>({
     email: '',
     phone: '',
@@ -24,6 +23,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | null>(null);
+  const [apiError, setApiError] = useState<string>('');
   const nameInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +33,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       setTimeout(() => nameInputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  // Clear API error khi form data thay đổi
+  useEffect(() => {
+    if (apiError) {
+      setApiError('');
+    }
+  }, [formData]);
 
   // Xử lý phím ESC
   useEffect(() => {
@@ -63,7 +70,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     else setPasswordStrength('strong');
   }, [formData.password]);
 
-  // Kiểm tra hợp lệ của form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -102,18 +108,21 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return Object.keys(newErrors).length === 0;
   };
 
-  // Xử lý submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
+    setApiError('');
     
     if (!validateForm()) return;
   
     setIsSubmitting(true);
   
     try {
-      const response = await register(formData);
-      if (response.success) {
+      const response = await axios.post('/api/auth/register', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (response.data) {
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
@@ -128,14 +137,29 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
           onSwitchToLogin();
         }, 1500);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Register error:', error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data?.errors) {
+          const backendErrors = error.response.data.errors;
+          if (Array.isArray(backendErrors)) {
+            setApiError(backendErrors.join(', '));
+          } else {
+            setApiError(error.response.data.message || 'Đăng ký thất bại');
+          }
+        } else if (error.response?.data?.message) {
+          setApiError(error.response.data.message);
+        } else {
+          setApiError('Đăng ký thất bại. Vui lòng thử lại!');
+        }
+      } else {
+        setApiError('Có lỗi xảy ra. Vui lòng thử lại!');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Xử lý thay đổi dữ liệu ô nhập
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -143,12 +167,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
-    if (authState.error) clearError();
   };
 
-  // TODO: Đăng ký Google khi có backend
   const handleGoogleRegister = () => {
-    console.log('Google register clicked');
+    window.location.href = '/api/auth/google';
   };
 
   if (!isOpen) return null;
@@ -398,10 +420,10 @@ return (
           )}
 
           {/* Thông báo lỗi */}
-          {authState.error && !isSubmitting && (
+          {apiError && !isSubmitting && (
             <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">{authState.error}</span>
+              <span className="text-sm font-medium">{apiError}</span>
             </div>
           )}
 

@@ -7,6 +7,7 @@ import AllEvents from "../pages/AllEvents";
 import SelectTicket from "../pages/SelectTicket";
 import EventDetail from "../components/Layouts/Client/EventDetail";
 import NotFound from "../pages/NotFound";
+import AuthCallback from "../pages/AuthCallback";
 // @ts-expect-error - JSX file without type declarations
 import AdminLayout from "../components/Layouts/admin/LayoutAdmin";
 // @ts-expect-error - JSX file without type declarations
@@ -41,6 +42,7 @@ const publicRoutes = [
     component: SelectTicket,
     layout: SelectTicketLayout,
   },
+  { path: "/auth/callback", component: AuthCallback, layout: null },
   { path: "*", component: NotFound, layout: null },
 ];
 const privateRoutes = [

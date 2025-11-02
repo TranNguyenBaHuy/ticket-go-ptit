@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import { Ticket, Search, Menu } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
+// @ts-expect-error - JSX file without type declarations
+import { useAuth } from "../../../../../contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
@@ -44,12 +47,26 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
-            >
-              Đăng nhập | Đăng ký
-            </button>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-white">
+                  Xin chào, {user.fullName || user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className="hover:text-black transition-colors duration-500 text-white"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="hover:text-black transition-colors duration-500 text-white"
+              >
+                Đăng nhập | Đăng ký
+              </button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -93,15 +110,32 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-            <button
-              onClick={() => {
-                setIsAuthModalOpen(true);
-                setIsMenuOpen(false);
-              }}
-              className="hover:text-amber-400 text-white py-2 text-left"
-            >
-              Đăng nhập | Đăng ký
-            </button>
+            {user ? (
+              <div className="flex flex-col gap-2">
+                <span className="text-white py-2">
+                  Xin chào, {user.fullName || user.email}
+                </span>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="hover:text-amber-400 text-white py-2 text-left"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsAuthModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="hover:text-amber-400 text-white py-2 text-left"
+              >
+                Đăng nhập | Đăng ký
+              </button>
+            )}
           </nav>
         )}
       </div>
