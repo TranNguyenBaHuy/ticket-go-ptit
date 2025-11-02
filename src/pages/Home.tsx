@@ -7,6 +7,15 @@ import CarouselItem from "../components/Layouts/Client/CarouselItem";
 import { useEffect, useState } from "react";
 import type { Event } from "../constants/types/types";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
+
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,9 +30,6 @@ const Home = () => {
           throw new Error(`Response status: ${response.status}`);
 
         const result = await response.json();
-        console.log("result", result);
-        console.log("events result", result.events);
-        console.log("total pages result", result.totalPages);
 
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
@@ -72,43 +78,57 @@ const Home = () => {
         <EventSection title="Sự kiện nổi bật" data={events} />
       </div>
 
-      {/* PAGINATION */}
-      <div className="flex justify-center mt-8 space-x-2">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded ${
-            currentPage === 1 ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
-          } text-white`}
-        >
-          Trước
-        </button>
+      {/* shadcn PAGINATION  */}
+      <div className="flex justify-center mt-8">
+        <Pagination>
+          <PaginationContent className="text-white">
+            {/* prev btn */}
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                className={`${
+                  currentPage === 1
+                    ? "opacity-40 pointer-events-none"
+                    : "hover:bg-blue-600 hover:text-white"
+                } bg-[#3f3f46] text-white border border-gray-600`}
+              />
+            </PaginationItem>
 
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === i + 1
-                ? "bg-yellow-500 text-black font-bold"
-                : "bg-gray-700 text-white"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
+            {/* page nums */}
+            {Array.from({ length: totalPages }, (_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`${
+                    currentPage === i + 1
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-[#3f3f46] text-gray-300 hover:bg-blue-600 hover:text-white border border-gray-600"
+                  }`}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
 
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded ${
-            currentPage === totalPages
-              ? "bg-gray-500"
-              : "bg-blue-600 hover:bg-blue-700"
-          } text-white`}
-        >
-          Sau
-        </button>
+            {/* next btn */}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                className={`${
+                  currentPage === totalPages
+                    ? "opacity-40 pointer-events-none"
+                    : "hover:bg-blue-600 hover:text-white"
+                } bg-[#3f3f46] text-white border border-gray-600`}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

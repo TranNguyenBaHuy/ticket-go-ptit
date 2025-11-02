@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, MapPin } from "lucide-react";
-// import { getDisplayPrice } from "../../../utils/getDisplayPrice";
 import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
+
 const EventDetail = () => {
-  // Sửa lại có khác trang admin
   const { id } = useParams();
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
@@ -60,7 +59,6 @@ const EventDetail = () => {
       </p>
     );
 
-  // checking if ticket quantity is empty
   const totalTickets = event.ticketTypes.reduce(
     (sum, ticket) => sum + ticket.quantity,
     0
@@ -71,29 +69,29 @@ const EventDetail = () => {
     <>
       {/* TICKET INFO SECTION */}
       <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-60% to-black text-white">
-        <div className=" relative mx-40 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg ">
+        <div className="relative mx-4 md:mx-10 lg:mx-40 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg">
           {/* Left side: Info */}
-          <div className="md:w-1/3 p-8 flex flex-col justify-between bg-[#38383d]">
+          <div className="md:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-between bg-[#38383d]">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold mb-4">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-4">
                 {event.title}
               </h1>
-              <div className="flex items-center mb-6 gap-2 text-[#2dc275] ">
-                <Calendar size={24} className="text-white" />
-                <p className="font-bold text-sm">
+              <div className="flex items-center mb-4 sm:mb-6 gap-2 text-[#2dc275]">
+                <Calendar size={20} className="text-white" />
+                <p className="font-bold text-xs sm:text-sm">
                   {event.duration}, {formatDateTimeDisplay(event.startDate)}
                 </p>
               </div>
-              <div className="flex items-center mb-4 gap-2 text-[#2dc275] ">
-                <MapPin size={24} className="text-white" />
-                <p className="font-bold text-sm">{event.location}</p>
+              <div className="flex items-center mb-4 gap-2 text-[#2dc275]">
+                <MapPin size={20} className="text-white" />
+                <p className="font-bold text-xs sm:text-sm">{event.location}</p>
               </div>
             </div>
             {/* price action section */}
-            <div className="border-t border-white py-[1rem] font-bold">
-              <p className="mb-2 text-xl text-gray-200 flex flex-row gap-1.5 items-center">
+            <div className="border-t border-white py-4 font-bold">
+              <p className="mb-2 text-lg sm:text-xl text-gray-200 flex flex-row gap-1.5 items-center">
                 Giá từ{" "}
-                <p className="flex items-center gap-4 justify-center text-[#2dc275] text-2xl">
+                <span className="flex items-center gap-4 justify-center text-[#2dc275] text-xl sm:text-2xl">
                   {formatCurrency(event.ticketTypes[0].price)}
                   <svg
                     width="8"
@@ -107,7 +105,7 @@ const EventDetail = () => {
                       fill="#2dc275"
                     ></path>
                   </svg>
-                </p>
+                </span>
               </p>
 
               <PrimaryColorButton
@@ -132,9 +130,9 @@ const EventDetail = () => {
             >
               <path
                 stroke="#27272A"
-                stroke-width="4"
-                stroke-linecap="round"
-                stroke-dasharray="4 10"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray="4 10"
                 d="M2 2v411"
               ></path>
             </svg>
@@ -146,7 +144,7 @@ const EventDetail = () => {
             <img
               src={`/images/event/${event.bannerUrl}`}
               alt={event.title}
-              className="w-full h-full object-cover aspect-[16/9]"
+              className="w-full h-auto object-cover aspect-[16/9]"
             />
           </div>
         </div>
@@ -154,9 +152,9 @@ const EventDetail = () => {
 
       {/* TICKET DETAILS SECTION */}
       <div className="w-full py-8 bg-[#F5F7FC] text-white">
-        <div className="mx-40 flex gap-8 flex-col">
+        <div className="mx-4 md:mx-10 lg:mx-40 flex gap-6 md:gap-8 flex-col">
           {/* details section */}
-          <div className="p-3 bg-white rounded-2xl">
+          <div className="p-3 sm:p-5 md:p-8 bg-white rounded-2xl">
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
@@ -165,10 +163,11 @@ const EventDetail = () => {
               dangerouslySetInnerHTML={{ __html: event.description }}
             ></div>
           </div>
+
           {/* booking section */}
           <div className="bg-[#27272A] rounded-2xl py-4">
-            <div className="mx-3 flex items-center py-3 justify-between border-b border-black">
-              <h1 className="text-white text-md font-bold  ">Thông tin vé</h1>
+            <div className="mx-3 flex flex-col sm:flex-row items-start sm:items-center py-3 justify-between border-b border-black gap-3 sm:gap-0">
+              <h1 className="text-white text-md font-bold">Thông tin vé</h1>
               <PrimaryColorButton
                 title="Mua vé ngay"
                 disabled={isSoldOut}
@@ -179,15 +178,15 @@ const EventDetail = () => {
             <div>
               {event.ticketTypes.map((ticket, index) => (
                 <div
-                  key={ticket.ticket_id}
-                  className={`flex justify-between items-center py-2 px-4 ${
+                  key={ticket.id}
+                  className={`flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 px-4 ${
                     index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
                   }`}
                 >
-                  <h1 className="py-2 text-white font-semibold">
+                  <h1 className="py-2 text-white font-semibold text-sm sm:text-base">
                     {ticket.type}
                   </h1>
-                  <div className="">
+                  <div className="text-left sm:text-right">
                     <p
                       className={`font-bold py-2 ${
                         ticket.quantity === 0
@@ -198,7 +197,7 @@ const EventDetail = () => {
                       {ticket.price.toLocaleString("de-DE")} đ
                     </p>
                     {ticket.quantity === 0 && (
-                      <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl">
+                      <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl text-xs sm:text-sm">
                         Hết vé
                       </div>
                     )}

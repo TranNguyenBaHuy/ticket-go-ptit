@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Event } from "../constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
@@ -12,7 +12,9 @@ const SelectTicket = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const [count, setCount] = useState(0);
+  const [ticketCounts, setTicketCounts] = useState<{ [key: number]: number }>(
+    {}
+  );
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -44,6 +46,38 @@ const SelectTicket = () => {
     fetchEvents();
   }, []);
 
+  // increase ticket
+  const handleIncrement = (id: number) => {
+    setTicketCounts((prev) => {
+      const newCounts = {
+        ...prev,
+        [id]: (prev[id] || 0) + 1,
+      };
+      return newCounts;
+    });
+  };
+
+  // decrease ticket
+  const handleDecrement = (id: number) => {
+    setTicketCounts((prev) => {
+      const newCounts = {
+        ...prev,
+        [id]: Math.max((prev[id] || 0) - 1, 0),
+      };
+      return newCounts;
+    });
+  };
+
+  // total money sum
+  const totalPrice = useMemo(() => {
+    if (!event) return 0;
+    return event.ticketTypes.reduce((sum, t) => {
+      const count = ticketCounts[t.id] || 0;
+      return sum + count * t.price;
+    }, 0);
+  }, [event, ticketCounts]);
+
+  // loading handler
   if (loading) {
     return (
       <div className="flex flex-1 items-center bg-black justify-center text-2xl font-bold text-center text-white min-h-screen">
@@ -86,46 +120,54 @@ const SelectTicket = () => {
             <p className="text-white font-bold text-[1.1rem]">Số lượng</p>
           </div>
           <div className="py-4">
-            {event?.ticketTypes.map((ticket) => (
-              <div
-                key={ticket.ticket_id}
-                className="flex justify-between items-center py-4 px-4 mx-2 border-b border-dashed border-[#636363]"
-              >
-                <div>
-                  <h1 className="py-2 text-[#2dc275] font-bold">
-                    {ticket.type.toUpperCase()}
-                  </h1>
-                  <p className="text-white">
-                    {ticket.price.toLocaleString("de-DE")} đ
-                  </p>
-                </div>
+            {event?.ticketTypes.map((ticket) => {
+              console.log("Rendering ticket:", ticket.id);
+              return (
+                <div
+                  key={ticket.id}
+                  className="flex justify-between items-center py-4 px-4 mx-2 border-b border-dashed border-[#636363]"
+                >
+                  <div>
+                    <h1 className="py-2 text-[#2dc275] font-bold">
+                      {ticket.type.toUpperCase()}
+                    </h1>
+                    <p className="text-white">
+                      {ticket.price.toLocaleString("de-DE")} đ
+                    </p>
+                  </div>
 
-                <div className="">
-                  {ticket.quantity === 0 ? (
-                    <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl">
-                      Hết vé
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <button
-                        className="px-4.5 py-2 bg-white rounded-md text-gray-400"
-                        onClick={() => setCount(count - 1)}
-                      >
-                        -
-                      </button>
-                      <p className="px-6 py-2 bg-white rounded-md">{count}</p>
+                  <div className="">
+                    {ticket.quantity === 0 ? (
+                      <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl">
+                        Hết vé
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <button
+                          className="px-4.5 py-2 bg-white rounded-md text-gray-400"
+                          onClick={() => handleDecrement(ticket.id)}
+                          disabled={ticketCounts[ticket.id] === 0}
+                        >
+                          -
+                        </button>
 
-                      <button
-                        className="px-4.5 py-2 bg-white rounded-md border border-[#2dc275] text-[#2dc275]"
-                        onClick={() => setCount(count + 1)}
-                      >
-                        +
-                      </button>
-                    </div>
-                  )}
+                        <p className="px-6 py-2 bg-white rounded-md">
+                          {ticketCounts[ticket.id] || 0}
+                        </p>
+
+                        <button
+                          className="px-4.5 py-2 bg-white rounded-md border border-[#2dc275] text-[#2dc275]"
+                          onClick={() => handleIncrement(ticket.id)}
+                          disabled={ticketCounts[ticket.id] >= ticket.quantity}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -155,7 +197,7 @@ const SelectTicket = () => {
           <div>
             {event?.ticketTypes.map((ticket) => (
               <div
-                key={ticket.ticket_id}
+                key={ticket.id}
                 className="flex items-center justify-between text-[0.85rem] py-2 font-semibold"
               >
                 <p className="text-white">{ticket.type.toUpperCase()}</p>
@@ -166,6 +208,15 @@ const SelectTicket = () => {
             ))}
           </div>
         </div>
+
+        {/* total price */}
+        <div className="px-3 flex justify-between items-center border-t border-[#636363] mt-4 pt-4">
+          <p className="text-white font-semibold">Tổng cộng</p>
+          <p className="text-[#2dc275] font-bold text-lg">
+            {totalPrice.toLocaleString("de-DE")} đ
+          </p>
+        </div>
+
         {/* footer */}
         <div className="flex bg-[#27272A] px-4 pt-12 pb-6 mt-auto">
           <PrimaryColorButton
