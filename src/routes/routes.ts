@@ -28,6 +28,7 @@ import EventCreate from "../pages/admin/event/EventCreate";
 import OrderShow from "../pages/admin/order/OrderShow";
 // @ts-expect-error - JSX file without type declarations
 import OrderDetail from "../pages/admin/order/OrderDetail";
+import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout/SelectTicketLayout";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -39,7 +40,7 @@ const publicRoutes = [
   {
     path: "/events/:id/select-ticket",
     component: SelectTicket,
-    layout: DefaultLayout,
+    layout: SelectTicketLayout,
   },
   { path: "/auth/callback", component: AuthCallback, layout: null },
   { path: "*", component: NotFound, layout: null },

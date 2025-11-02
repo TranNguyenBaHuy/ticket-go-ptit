@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
-// import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
+import TicketManagement from "../../../components/Layouts/admin/components/TicketManagement.jsx";
 
 export default function EventDetail() {
   const [newTicket, setNewTicket] = useState({
@@ -666,7 +666,7 @@ export default function EventDetail() {
         </button>
       </form>
 
-      {/* <TicketManagement
+      <TicketManagement
         newTicketErrors={newTicketErrors}
         updateTicketErrors={updateTicketErrors}
         showTicketPopup={showTicketPopup}
@@ -681,7 +681,7 @@ export default function EventDetail() {
         handleDeleteTicket={handleDeleteTicket}
         ticketTypes={ticketTypes}
         formatCurrency={formatCurrency}
-      /> */}
+      />
     </div>
   );
 }

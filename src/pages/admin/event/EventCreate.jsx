@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant.js";
-// import TicketManagement from "../../../components/Layouts/Admin/"
+import { CATEGORIES } from "../../../../../backend_ticketgo/src/config/constant";
+
 export default function EventCreate() {
   const navigate = useNavigate();
 

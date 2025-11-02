@@ -10,7 +10,7 @@ interface EventSectionProps {
 
 const EventSection = ({ title, data }: EventSectionProps) => {
   return (
-    <div className="mt-6 ">
+    <div className="mt-6">
       <div className="flex flex-row justify-between items-center">
         <div className="text-2xl text-white font-bold mb-6">{title}</div>
         <Link

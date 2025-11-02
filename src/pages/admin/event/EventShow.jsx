@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-// import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
+import Pagination from "../../../components/Layouts/admin/components/Pagination.jsx";
 import axios from "axios";
 
 export default function EventShow() {
@@ -169,11 +169,11 @@ export default function EventShow() {
         </table>
       </div>
 
-      {/* <Pagination
+      <Pagination
         page={page}
         totalPages={totalPages}
         onPageChange={(p) => setPage(p)}
-      /> */}
+      />
     </div>
   );
 }
