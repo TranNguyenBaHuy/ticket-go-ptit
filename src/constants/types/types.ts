@@ -10,7 +10,7 @@ export type Booking = {
 };
 
 export type TicketType = {
-  ticket_id: string;
+  id: number;
   type: string;
   price: number;
   quantity: number;
