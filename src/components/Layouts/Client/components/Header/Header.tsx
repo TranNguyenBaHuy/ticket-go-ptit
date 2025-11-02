@@ -47,7 +47,6 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-<<<<<<< HEAD
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-white">
@@ -68,14 +67,6 @@ const Header = () => {
                 Đăng nhập | Đăng ký
               </button>
             )}
-=======
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
-            >
-              Đăng nhập | Đăng ký
-            </button>
->>>>>>> 44c01f8def79e197b34b45323aa8d961843a4f46
           </nav>
 
           {/* Mobile Menu Button */}
@@ -119,7 +110,6 @@ const Header = () => {
             >
               Về chúng tôi
             </Link>
-<<<<<<< HEAD
             {user ? (
               <div className="flex flex-col gap-2">
                 <span className="text-white py-2">
@@ -146,17 +136,6 @@ const Header = () => {
                 Đăng nhập | Đăng ký
               </button>
             )}
-=======
-            <button
-              onClick={() => {
-                setIsAuthModalOpen(true);
-                setIsMenuOpen(false);
-              }}
-              className="hover:text-amber-400 text-white py-2 text-left"
-            >
-              Đăng nhập | Đăng ký
-            </button>
->>>>>>> 44c01f8def79e197b34b45323aa8d961843a4f46
           </nav>
         )}
       </div>
