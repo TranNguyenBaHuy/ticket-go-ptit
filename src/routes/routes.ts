@@ -57,7 +57,7 @@ const privateRoutes = [
   { path: "/admin/events", component: EventShow, layout: AdminLayout },
   {
     path: "/admin/event-detail/:id",
-    component: EventDetail,
+    component: EventDetailAdmin,
     layout: AdminLayout,
   },
   { path: "/admin/event-create", component: EventCreate, layout: AdminLayout },

@@ -33,8 +33,8 @@ const Home = () => {
 
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
-      } catch (error) {
-        console.error("Lỗi khi fetch sự kiện:", error);
+      } catch (e) {
+        console.error("Lỗi khi fetch sự kiện:", e);
       }
     };
 

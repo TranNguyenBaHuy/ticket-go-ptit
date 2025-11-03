@@ -14,6 +14,7 @@ export type TicketType = {
   type: string;
   price: number;
   quantity: number;
+  description: string;
 };
 
 export const userBookings: Booking[] = [];
