@@ -4,6 +4,12 @@ import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -176,34 +182,57 @@ const EventDetail = () => {
             </div>
 
             <div>
-              {event.ticketTypes.map((ticket, index) => (
-                <div
-                  key={ticket.id}
-                  className={`flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 px-4 ${
-                    index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
-                  }`}
-                >
-                  <h1 className="py-2 text-white font-semibold text-sm sm:text-base">
-                    {ticket.type}
-                  </h1>
-                  <div className="text-left sm:text-right">
-                    <p
-                      className={`font-bold py-2 ${
-                        ticket.quantity === 0
-                          ? "text-gray-400"
-                          : "text-[#2dc275]"
-                      }`}
-                    >
-                      {ticket.price.toLocaleString("de-DE")} đ
-                    </p>
-                    {ticket.quantity === 0 && (
-                      <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl text-xs sm:text-sm">
-                        Hết vé
+              <Accordion type="single" collapsible className="w-full">
+                {event.ticketTypes.map((ticket, index) => (
+                  <AccordionItem
+                    key={ticket.id}
+                    value={`ticket-${ticket.id}`}
+                    className={`border-none ${
+                      index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center py-3 px-4">
+                      {/* LEFT: ticket name + accordion trigger*/}
+                      <AccordionTrigger className="py-0 text-left text-white font-semibold text-sm sm:text-base hover:no-underline">
+                        {ticket.type}
+                      </AccordionTrigger>
+
+                      {/* RIGHT: ticket price and status */}
+                      <div className="text-left sm:text-right">
+                        <p
+                          className={`font-bold py-2 ${
+                            ticket.quantity === 0
+                              ? "text-gray-400"
+                              : "text-[#2dc275]"
+                          }`}
+                        >
+                          {ticket.price.toLocaleString("de-DE")} đ
+                        </p>
+                        {ticket.quantity === 0 && (
+                          <div className="text-center bg-red-200 p-1 text-red-600 font-bold rounded-xl text-xs sm:text-sm">
+                            Hết vé
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    </div>
+
+                    {/* accordion ticket description */}
+                    <AccordionContent className="px-4 pb-4 text-gray-200 text-sm leading-relaxed">
+                      {ticket.description ? (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: ticket.description,
+                          }}
+                        ></div>
+                      ) : (
+                        <p className="italic text-gray-400">
+                          Không có mô tả cho loại vé này.
+                        </p>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </div>
         </div>
