@@ -235,7 +235,7 @@ const EventDetail = () => {
                         ></div>
                       ) : (
                         <p className="italic text-gray-400">
-                          Không có mô tả cho loại vé này.
+                          Chưa có thông tin về loại vé này.
                         </p>
                       )}
                     </AccordionContent>
