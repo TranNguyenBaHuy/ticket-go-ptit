@@ -1,15 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Ticket, Search, Menu } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../../../contexts/AuthContext";
+import { setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { user, logout } = useAuth();
+
+  // Đăng ký handler để mở modal khi có lỗi 401
+  useEffect(() => {
+    setAuthModalHandler(() => setIsAuthModalOpen(true));
+  }, []);
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">

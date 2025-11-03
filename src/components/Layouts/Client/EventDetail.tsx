@@ -4,6 +4,9 @@ import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "../../../utils/utils";
 import PrimaryColorButton from "./PrimaryColorButton";
 import type { Event } from "../../../constants/types/types";
+// @ts-expect-error - JSX file without type declarations
+import { useAuth } from "../../../contexts/AuthContext";
+import { openAuthModal } from "../../../utils/axiosInterceptor";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -11,6 +14,7 @@ const EventDetail = () => {
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -38,7 +42,7 @@ const EventDetail = () => {
     };
     window.scrollTo(0, 0);
     fetchEvents();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (
@@ -49,6 +53,11 @@ const EventDetail = () => {
   }
 
   const handleSelectTicket = (eventId: string) => {
+    // Kiểm tra đăng nhập trước khi chuyển trang
+    if (!user) {
+      openAuthModal(); // Gọi modal từ Header
+      return;
+    }
     navigate(`/events/${eventId}/select-ticket`);
   };
 
