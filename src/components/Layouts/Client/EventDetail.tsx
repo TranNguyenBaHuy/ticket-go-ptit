@@ -37,7 +37,6 @@ const EventDetail = () => {
           throw new Error(`Error when loaded data: ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("event result", result);
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
@@ -69,9 +68,11 @@ const EventDetail = () => {
 
   if (!event)
     return (
-      <p className="text-center py-8 text-3xl font-bold">
-        Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
-      </p>
+      <div className="flex flex-1 min-h-screen items-center justify-center bg-[#27272A]">
+        <p className="text-3xl font-bold text-white">
+          Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
+        </p>
+      </div>
     );
 
   const totalTickets = event.ticketTypes.reduce(
@@ -173,6 +174,7 @@ const EventDetail = () => {
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
+            {/* description section */} 
             <div
               className="mb-4 text-sm text-black"
               dangerouslySetInnerHTML={{ __html: event.description }}

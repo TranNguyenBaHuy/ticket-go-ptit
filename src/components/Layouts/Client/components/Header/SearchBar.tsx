@@ -1,6 +1,5 @@
 import { Search } from "lucide-react";
 import { useState } from "react";
-// import { events } from "../../../../../constants/mocks/mockEventData";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
