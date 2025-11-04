@@ -22,7 +22,7 @@ const Home = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const getData = async () => {
+    const fetchData = async () => {
       const url = `http://localhost:9092/api/events?page=${currentPage}`;
       try {
         const response = await fetch(url);
@@ -30,7 +30,6 @@ const Home = () => {
           throw new Error(`Response status: ${response.status}`);
 
         const result = await response.json();
-
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
       } catch (e) {
@@ -38,7 +37,7 @@ const Home = () => {
       }
     };
 
-    getData();
+    fetchData();
   }, [currentPage]);
 
   return (
