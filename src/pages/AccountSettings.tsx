@@ -87,55 +87,55 @@ const AccountSettings = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    // e.preventDefault();
-    // setLoading(true);
-    // setMessage({ type: "", text: "" });
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ type: "", text: "" });
 
-    // try {
-    //   const formDataToSend = new FormData();
-    //   formDataToSend.append("fullName", formData.fullName);
-    //   formDataToSend.append("phone", formData.phone || "");
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("phone", formData.phone || "");
 
-    //   if (formData.birthDate && formData.birthDate.trim()) {
-    //     const isoDate = formatDateToInput(formData.birthDate);
-    //     if (isoDate) {
-    //       formDataToSend.append("birthDate", isoDate);
-    //     }
-    //   }
+      if (formData.birthDate && formData.birthDate.trim()) {
+        const isoDate = formatDateToInput(formData.birthDate);
+        if (isoDate) {
+          formDataToSend.append("birthDate", isoDate);
+        }
+      }
       
-    //   formDataToSend.append("gender", formData.gender || "");
-    //   formDataToSend.append("roleId", user.role.id.toString());
-    //   formDataToSend.append("accountType", user.accountType);
+      formDataToSend.append("gender", formData.gender || "");
+      formDataToSend.append("roleId", user.role.id.toString());
+      formDataToSend.append("accountType", user.accountType);
       
-    //   if (avatarFile) {
-    //     formDataToSend.append("avatar", avatarFile);
-    //   }
+      if (avatarFile) {
+        formDataToSend.append("avatar", avatarFile);
+      }
 
-    //   const response = await axios.put(`/api/users/${user.id}`, formDataToSend, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
+      const response = await axios.put(`/api/users/${user.id}`, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    //   if (response.data) {
-    //     setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
-    //     setTimeout(() => {
-    //       window.location.reload();
-    //     }, 1500);
-    //   }
-    // } catch (error: any) {
-    //   console.error("Update error:", error);
-    //   const errorMessage = error.response?.data?.message 
-    //     || error.response?.data?.errors?.[0]?.message
-    //     || error.message
-    //     || "Có lỗi xảy ra khi cập nhật thông tin";
-    //   setMessage({ 
-    //     type: "error", 
-    //     text: errorMessage
-    //   });
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (response.data) {
+        setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (error: any) {
+      console.error("Update error:", error);
+      const errorMessage = error.response?.data?.message 
+        || error.response?.data?.errors?.[0]?.message
+        || error.message
+        || "Có lỗi xảy ra khi cập nhật thông tin";
+      setMessage({ 
+        type: "error", 
+        text: errorMessage
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!user) {
