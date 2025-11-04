@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import type { Event } from "../constants/types/types";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 
@@ -77,6 +77,12 @@ const SelectTicket = () => {
     }, 0);
   }, [event, ticketCounts]);
 
+  // total selected
+  const totalSelected = Object.values(ticketCounts || {}).reduce(
+    (sum, count) => sum + Number(count || 0),
+    0
+  );
+
   // loading handler
   if (loading) {
     return (
@@ -85,6 +91,8 @@ const SelectTicket = () => {
       </div>
     );
   }
+
+  // max selected tickets
 
   return (
     <div className="bg-black flex flex-row flex-1 gap-0">
@@ -143,22 +151,28 @@ const SelectTicket = () => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1">
+                        {/* decrease */}
                         <button
-                          className="px-4.5 py-2 bg-white rounded-md text-gray-400"
+                          className="px-4.5 py-2 font-bold bg-white rounded-md order border-[#2dc275] text-[#2dc275] disabled:text-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
                           onClick={() => handleDecrement(ticket.id)}
-                          disabled={ticketCounts[ticket.id] === 0}
+                          disabled={!ticketCounts[ticket.id]}
                         >
                           -
                         </button>
 
-                        <p className="px-6 py-2 bg-white rounded-md">
+                        {/* count */}
+                        <p className="min-w-[48px] text-center py-2 bg-white rounded-md">
                           {ticketCounts[ticket.id] || 0}
                         </p>
 
+                        {/* increase */}
                         <button
-                          className="px-4.5 py-2 bg-white rounded-md border border-[#2dc275] text-[#2dc275]"
+                          className="px-4.5 py-2 font-bold bg-white rounded-md border border-[#2dc275] text-[#2dc275] disabled:text-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
                           onClick={() => handleIncrement(ticket.id)}
-                          disabled={ticketCounts[ticket.id] >= ticket.quantity}
+                          disabled={
+                            ticketCounts[ticket.id] >= ticket.quantity ||
+                            ticketCounts[ticket.id] >= 10
+                          }
                         >
                           +
                         </button>
@@ -218,11 +232,30 @@ const SelectTicket = () => {
         </div>
 
         {/* footer */}
-        <div className="flex bg-[#27272A] px-4 pt-12 pb-6 mt-auto">
+        <div className="flex flex-col gap-4 bg-[#27272A] px-4 py-6 mt-auto text-white">
+          {/* total tickets count */}
+          <div
+            className={`flex gap-2 items-center${
+              totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
+            }`}
+          >
+            <Ticket /> x{totalSelected}
+          </div>
+
           <PrimaryColorButton
-            title="Vui lòng chọn vé"
+            title={
+              Object.values(ticketCounts).some((count) => count > 0)
+                ? `Tiếp tục - ${totalPrice.toLocaleString("de-DE")} đ`
+                : "Vui lòng chọn vé"
+            }
             fullSize={true}
             onClick={() => alert("chọn")}
+            disabled={
+              Object.values(ticketCounts).reduce(
+                (sum, count) => sum + count,
+                0
+              ) === 0
+            }
           />
         </div>
       </div>

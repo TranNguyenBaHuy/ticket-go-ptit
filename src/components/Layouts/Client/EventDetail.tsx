@@ -174,6 +174,7 @@ const EventDetail = () => {
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
+            {/* description section */} 
             <div
               className="mb-4 text-sm text-black"
               dangerouslySetInnerHTML={{ __html: event.description }}
