@@ -84,7 +84,7 @@ const Header = () => {
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"
                   />
                   <span className="text-sm font-medium hidden lg:inline">
-                    Xin chào, {user.fullName || user.email}
+                    Tài khoản
                   </span>
                   <ChevronDown size={16} className="hidden lg:block" />
                 </button>
@@ -184,9 +184,7 @@ const Header = () => {
             </Link>
             {user ? (
               <div className="flex flex-col gap-2">
-                <span className="text-white py-2">
-                  Xin chào, {user.fullName || user.email}
-                </span>
+                <span className="text-white py-2">Tài khoản</span>
                 <button
                   onClick={() => {
                     logout();
