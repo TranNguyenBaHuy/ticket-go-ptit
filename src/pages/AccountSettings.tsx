@@ -95,8 +95,7 @@ const AccountSettings = () => {
       const formDataToSend = new FormData();
       formDataToSend.append("fullName", formData.fullName);
       formDataToSend.append("phone", formData.phone || "");
-      
-      // Chỉ gửi birthDate nếu có giá trị hợp lệ
+
       if (formData.birthDate && formData.birthDate.trim()) {
         const isoDate = formatDateToInput(formData.birthDate);
         if (isoDate) {
@@ -217,7 +216,7 @@ const AccountSettings = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2.5 bg-white text-black rounded-lg text-sm"
+                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
                     required
                   />
                 </div>
@@ -229,7 +228,7 @@ const AccountSettings = () => {
                       type="text"
                       value="+84"
                       disabled
-                      className="w-16 px-3 py-2.5 bg-gray-700 text-gray-300 rounded-lg text-sm text-center"
+                      className="w-16 px-3 py-2.5 bg-gray-700 text-gray-300 rounded text-sm text-center"
                     />
                     <div className="relative flex-1">
                       <input
@@ -237,7 +236,7 @@ const AccountSettings = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2.5 bg-white text-black rounded-lg text-sm pr-10"
+                        className="w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10"
                         placeholder="Nhập số điện thoại"
                       />
                       {formData.phone && (
@@ -261,7 +260,7 @@ const AccountSettings = () => {
                       name="email"
                       value={formData.email}
                       disabled
-                      className="w-full px-3 py-2.5 bg-gray-700 text-gray-300 rounded-lg cursor-not-allowed text-sm pr-10"
+                      className="w-full px-3 py-2.5 bg-gray-700 text-gray-300 rounded cursor-not-allowed text-sm pr-10"
                     />
                     {user.accountType === "GOOGLE" && (
                       <Check size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />
@@ -277,7 +276,7 @@ const AccountSettings = () => {
                     value={formData.birthDate}
                     onChange={handleInputChange}
                     placeholder="dd/mm/yyyy"
-                    className="w-full px-3 py-2.5 bg-white text-black rounded-lg text-sm"
+                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
                   />
                 </div>
 
@@ -325,7 +324,7 @@ const AccountSettings = () => {
               <div className="mt-6">
                 <button
                   type="submit"
-                  className="w-full bg-[#2dc275] hover:bg-[#25a563] text-white py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="w-full bg-[#2dc275] hover:bg-[#25a563] text-white py-2.5 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   disabled={loading}
                 >
                   {loading ? "Đang lưu..." : "Hoàn thành"}
