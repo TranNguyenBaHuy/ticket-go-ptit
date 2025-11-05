@@ -35,7 +35,6 @@ const publicRoutes = [
   { path: "/about", component: About, layout: DefaultLayout },
   { path: "/my-tickets", component: MyTickets, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },
-  { path: "/all-events", component: AllEvents, layout: DefaultLayout },
   { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
   {
     path: "/events/:id/select-ticket",
@@ -43,6 +42,7 @@ const publicRoutes = [
     layout: SelectTicketLayout,
   },
   { path: "/auth/callback", component: AuthCallback, layout: null },
+  { path: "/search/:id", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];
 const privateRoutes = [
