@@ -6,18 +6,20 @@ import type { Event } from "../../../constants/types/types";
 interface EventSectionProps {
   title: string;
   data: Event[];
+  catId?: string;
 }
 
-const EventSection = ({ title, data }: EventSectionProps) => {
+const EventSection = ({ title, data, catId }: EventSectionProps) => {
   return (
     <div className="mt-6">
+      {/* header */}
       <div className="flex flex-row justify-between items-center">
-        <div className="text-2xl text-white font-bold mb-6">{title}</div>
+        <p className="text-2xl text-white font-bold mb-6">{title}</p>
         <Link
-          to="/all-events"
+          to={`search/${catId}`}
           className="flex items-center gap-2 text-[#A6A6B0] hover:text-[#2dc275] transition-colors duration-300"
         >
-          <p>Xem thêm</p>
+          Xem thêm
           <svg
             width="14"
             height="14"
@@ -34,6 +36,8 @@ const EventSection = ({ title, data }: EventSectionProps) => {
           </svg>
         </Link>
       </div>
+
+      {/* cards section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {data.slice(0, 4).map((event) => {
           return (

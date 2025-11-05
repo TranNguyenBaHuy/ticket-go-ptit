@@ -16,13 +16,16 @@ import {
   PaginationPrevious,
 } from "../components/ui/pagination";
 
+import { categories } from "@/constants/data/categories";
+import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
+
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const getData = async () => {
+    const fetchData = async () => {
       const url = `http://localhost:9092/api/events?page=${currentPage}`;
       try {
         const response = await fetch(url);
@@ -30,7 +33,6 @@ const Home = () => {
           throw new Error(`Response status: ${response.status}`);
 
         const result = await response.json();
-
         setEvents(result.events || []);
         setTotalPages(result.totalPages || 1);
       } catch (e) {
@@ -38,12 +40,16 @@ const Home = () => {
       }
     };
 
-    getData();
+    fetchData();
   }, [currentPage]);
 
   return (
-    <div className="py-8 w-full mx-auto bg-[#27272A]">
-      <div className="mx-40">
+    <div className="w-full mx-auto bg-[#27272A]">
+      {/* category filter */}
+      <CategoryFilterBar data={categories} />
+
+      {/* body */}
+      <div className="mx-40 py-8">
         {/*   CAROUSEL SECTION*/}
         <div className="mx-auto mb-8">
           <Carousel
@@ -68,18 +74,18 @@ const Home = () => {
           </Carousel>
         </div>
 
-        {/* UPCOMING SECTION */}
-        <EventSection title="Sắp diễn ra" data={events} />
-
-        {/* FOR YOU SECTION */}
-        <EventSection title="Dành cho bạn" data={events} />
-
-        {/* ANOTHER SECTION */}
-        <EventSection title="Sự kiện nổi bật" data={events} />
+        {categories.map((cat) => (
+          <EventSection
+            key={cat.id}
+            title={cat.label}
+            data={events}
+            catId={cat.id === undefined ? "upcoming" : cat.id}
+          />
+        ))}
       </div>
 
       {/* shadcn PAGINATION  */}
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center py-8">
         <Pagination>
           <PaginationContent className="text-white">
             {/* prev btn */}

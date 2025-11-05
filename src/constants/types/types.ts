@@ -32,6 +32,11 @@ export type Event = {
   ticketTypes: TicketType[];
 };
 
+export type Category = {
+  id: string;
+  label: string;
+};
+
 // Authentication types
 export interface User {
   id: string;

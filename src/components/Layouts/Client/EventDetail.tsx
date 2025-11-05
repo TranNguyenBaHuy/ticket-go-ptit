@@ -13,6 +13,9 @@ import {
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../contexts/AuthContext";
 import { openAuthModal } from "../../../utils/axiosInterceptor";
+import CategoryFilterBar from "./CategoryFilterBar";
+import { categories } from "@/constants/data/categories";
+import { getDisplayPrice } from "@/utils/getDisplayPrice";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -37,7 +40,6 @@ const EventDetail = () => {
           throw new Error(`Error when loaded data: ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("event result", result);
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
@@ -50,10 +52,12 @@ const EventDetail = () => {
     fetchEvents();
   }, [id]);
 
+  const minPrice = getDisplayPrice(event?.ticketTypes ?? []);
+
   if (loading) {
     return (
       <div className="flex flex-1 items-center justify-center text-2xl font-bold text-center text-white">
-        Loading...
+        Đang tải...
       </div>
     );
   }
@@ -69,9 +73,11 @@ const EventDetail = () => {
 
   if (!event)
     return (
-      <p className="text-center py-8 text-3xl font-bold">
-        Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
-      </p>
+      <div className="flex flex-1 min-h-screen items-center justify-center bg-[#27272A]">
+        <p className="text-3xl font-bold text-white">
+          Sự kiện không tồn tại. Mời bạn chọn sự kiện khác
+        </p>
+      </div>
     );
 
   const totalTickets = event.ticketTypes.reduce(
@@ -82,32 +88,35 @@ const EventDetail = () => {
 
   return (
     <>
+      <CategoryFilterBar data={categories} />
       {/* TICKET INFO SECTION */}
       <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-60% to-black text-white">
-        <div className="relative mx-4 md:mx-10 lg:mx-40 flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg">
+        <div className="relative mx-4 md:mx-10 lg:mx-35 flex flex-col md:flex-row rounded-4xl overflow-hidden shadow-lg">
           {/* Left side: Info */}
-          <div className="md:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-between bg-[#38383d]">
+          {/* left upper */}
+          <div className="md:w-[36%] p-3 sm:p-6 md:p-8 flex flex-col justify-between bg-[#38383d]">
             <div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-4">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4">
                 {event.title}
               </h1>
               <div className="flex items-center mb-4 sm:mb-6 gap-2 text-[#2dc275]">
-                <Calendar size={20} className="text-white" />
+                <Calendar strokeWidth={3} size={20} className="text-white" />
                 <p className="font-bold text-xs sm:text-sm">
                   {event.duration}, {formatDateTimeDisplay(event.startDate)}
                 </p>
               </div>
               <div className="flex items-center mb-4 gap-2 text-[#2dc275]">
-                <MapPin size={20} className="text-white" />
+                <MapPin strokeWidth={3} size={20} className="text-white" />
                 <p className="font-bold text-xs sm:text-sm">{event.location}</p>
               </div>
             </div>
-            {/* price action section */}
-            <div className="border-t border-white py-4 font-bold">
-              <p className="mb-2 text-lg sm:text-xl text-gray-200 flex flex-row gap-1.5 items-center">
+
+            {/* left lower - price action section */}
+            <div className="border-t border-gray-300 font-bold">
+              <div className="py-4 text-lg lg:text-xl sm:text-xl text-gray-200 flex flex-row gap-1.5 items-center">
                 Giá từ{" "}
-                <span className="flex items-center gap-4 justify-center text-[#2dc275] text-xl sm:text-2xl">
-                  {formatCurrency(event.ticketTypes[0].price)}
+                <span className="flex items-center gap-4 justify-center text-[#2dc275] text-xl sm:text-2xl lg:text-3xl">
+                  {formatCurrency(minPrice)}
                   <svg
                     width="8"
                     height="14"
@@ -121,7 +130,7 @@ const EventDetail = () => {
                     ></path>
                   </svg>
                 </span>
-              </p>
+              </div>
 
               <PrimaryColorButton
                 title="Mua vé ngay"
@@ -133,7 +142,7 @@ const EventDetail = () => {
           </div>
 
           {/* divider */}
-          <div className="hidden md:flex flex-col absolute justify-center items-center top-0 bottom-0 left-1/3 -translate-x-1/2">
+          <div className="hidden md:flex flex-col absolute justify-center items-center top-0 bottom-0 left-[36%] -translate-x-1/2">
             <div className="w-18 h-10 rounded-b-full bg-[#27272A]"></div>
             <svg
               width="4"
@@ -155,7 +164,7 @@ const EventDetail = () => {
           </div>
 
           {/* Right side: Banner */}
-          <div className="md:w-2/3">
+          <div className="md:w-[64%]">
             <img
               src={`/images/event/${event.bannerUrl}`}
               alt={event.title}
@@ -173,6 +182,7 @@ const EventDetail = () => {
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
               Giới thiệu
             </h1>
+            {/* description section */}
             <div
               className="mb-4 text-sm text-black"
               dangerouslySetInnerHTML={{ __html: event.description }}
@@ -190,6 +200,7 @@ const EventDetail = () => {
               />
             </div>
 
+            {/* ticket tyupe */}
             <div>
               <Accordion type="single" collapsible className="w-full">
                 {event.ticketTypes.map((ticket, index) => (
@@ -235,7 +246,7 @@ const EventDetail = () => {
                         ></div>
                       ) : (
                         <p className="italic text-gray-400">
-                          Không có mô tả cho loại vé này.
+                          Chưa có thông tin về loại vé này.
                         </p>
                       )}
                     </AccordionContent>
