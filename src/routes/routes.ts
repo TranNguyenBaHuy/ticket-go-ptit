@@ -7,7 +7,6 @@ import AllEvents from "../pages/AllEvents";
 import SelectTicket from "../pages/SelectTicket";
 import EventDetail from "../components/Layouts/Client/EventDetail";
 import NotFound from "../pages/NotFound";
-import AuthCallback from "../pages/AuthCallback";
 import AccountSettings from "../pages/AccountSettings";
 // @ts-expect-error - JSX file without type declarations
 import AdminLayout from "../components/Layouts/admin/LayoutAdmin";
@@ -43,7 +42,6 @@ const publicRoutes = [
     component: SelectTicket,
     layout: SelectTicketLayout,
   },
-  { path: "/auth/callback", component: AuthCallback, layout: null },
   { path: "/search/:id", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];
