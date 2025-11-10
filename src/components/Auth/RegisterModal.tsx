@@ -70,49 +70,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     else setPasswordStrength('strong');
   }, [formData.password]);
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Vui lòng nhập họ tên';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Họ tên phải có ít nhất 2 ký tự';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Vui lòng nhập email';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ';
-    }
-
-    if (formData.phone && formData.phone.trim()) {
-      const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
-      if (!phoneRegex.test(formData.phone)) {
-        newErrors.phone = 'Số điện thoại không hợp lệ';
-      }
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Vui lòng nhập mật khẩu';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
-    
-    if (!validateForm()) return;
+    setErrors({});
+  
+    if (formData.password !== formData.confirmPassword) {
+      setErrors({ confirmPassword: 'Mật khẩu xác nhận không khớp' });
+      return;
+    }
   
     setIsSubmitting(true);
   
@@ -140,13 +107,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     } catch (error: unknown) {
       console.error('Register error:', error);
       if (axios.isAxiosError(error)) {
-        if (error.response?.data?.errors) {
-          const backendErrors = error.response.data.errors;
-          if (Array.isArray(backendErrors)) {
-            setApiError(backendErrors.join(', '));
-          } else {
-            setApiError(error.response.data.message || 'Đăng ký thất bại');
-          }
+        if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+          const backendErrors: Record<string, string> = {};
+          error.response.data.errors.forEach((err: { path: string; message: string }) => {
+            backendErrors[err.path] = err.message;
+          });
+          setErrors(backendErrors);
+          setApiError(error.response.data.message || 'Dữ liệu không hợp lệ');
         } else if (error.response?.data?.message) {
           setApiError(error.response.data.message);
         } else {

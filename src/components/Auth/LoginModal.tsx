@@ -26,10 +26,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<{
-    emailOrPhone?: string;
-    password?: string;
-  }>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [apiError, setApiError] = useState<string>("");
   const emailInputRef = useRef<HTMLInputElement>(null);
@@ -51,51 +48,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, isSubmitting, onClose]);
 
-  const validateEmailOrPhone = (value: string): string | undefined => {
-    if (!value.trim()) {
-      return "Vui lòng nhập email hoặc số điện thoại";
-    }
-    const phoneRegex =
-      /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!phoneRegex.test(value) && !emailRegex.test(value)) {
-      return "Email hoặc số điện thoại không hợp lệ";
-    }
-    return undefined;
-  };
-
-  const validatePassword = (value: string): string | undefined => {
-    if (!value) {
-      return "Vui lòng nhập mật khẩu";
-    }
-    if (value.length < 6) {
-      return "Mật khẩu phải có ít nhất 6 ký tự";
-    }
-    return undefined;
-  };
-
-  const validateForm = (): boolean => {
-    const errors: typeof validationErrors = {};
-
-    const emailOrPhoneError = validateEmailOrPhone(formData.emailOrPhone);
-    if (emailOrPhoneError) errors.emailOrPhone = emailOrPhoneError;
-
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) errors.password = passwordError;
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationErrors({});
     setApiError("");
-
-    if (!validateForm()) {
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -129,7 +86,14 @@ const LoginModal: React.FC<LoginModalProps> = ({
     } catch (err: unknown) {
       console.error("Login error:", err);
       if (axios.isAxiosError(err)) {
-        if (err.response?.data?.error) {
+        if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+          const backendErrors: Record<string, string> = {};
+          err.response.data.errors.forEach((error: { path: string; message: string }) => {
+            backendErrors[error.path] = error.message;
+          });
+          setValidationErrors(backendErrors);
+          setApiError(err.response.data.message || "Dữ liệu không hợp lệ");
+        } else if (err.response?.data?.error) {
           setApiError(err.response.data.error);
         } else if (err.response?.data?.message) {
           setApiError(err.response.data.message);
@@ -150,8 +114,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     
-    if (validationErrors[name as keyof typeof validationErrors]) {
-      setValidationErrors((prev) => ({ ...prev, [name]: undefined }));
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: "" }));
     }
     if (apiError) {
       setApiError("");
@@ -216,23 +180,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.emailOrPhone
+                validationErrors.username
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-green-500 focus:border-transparent"
               }`}
               disabled={isSubmitting}
-              aria-invalid={!!validationErrors.emailOrPhone}
+              aria-invalid={!!validationErrors.username}
               aria-describedby={
-                validationErrors.emailOrPhone ? "emailOrPhone-error" : undefined
+                validationErrors.username ? "emailOrPhone-error" : undefined
               }
             />
-            {validationErrors.emailOrPhone && (
+            {validationErrors.username && (
               <div
                 id="emailOrPhone-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.emailOrPhone}</span>
+                <span>{validationErrors.username}</span>
               </div>
             )}
           </div>
