@@ -29,6 +29,7 @@ import OrderShow from "../pages/admin/order/OrderShow";
 // @ts-expect-error - JSX file without type declarations
 import OrderDetail from "../pages/admin/order/OrderDetail";
 import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout/SelectTicketLayout";
+import BookingForm from "@/pages/BookingForm";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
@@ -37,11 +38,15 @@ const publicRoutes = [
   { path: "/contact", component: Contact, layout: DefaultLayout },
   { path: "/events/:id", component: EventDetail, layout: DefaultLayout },
   {
-    path: "/events/:id/select-ticket",
+    path: "/events/:id/bookings/select-ticket",
     component: SelectTicket,
     layout: SelectTicketLayout,
   },
-  { path: "/auth/callback", component: AuthCallback, layout: null },
+  {
+    path: "/events/:id/bookings/select-ticket/booking-form",
+    component: BookingForm,
+    layout: SelectTicketLayout,
+  },
   { path: "/search/:id", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];
