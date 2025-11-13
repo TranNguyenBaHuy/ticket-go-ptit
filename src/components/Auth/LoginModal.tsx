@@ -219,9 +219,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
               >
                 {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
                   <Eye className="w-5 h-5" />
+                ) : (
+                  <EyeOff className="w-5 h-5" />
                 )}
               </button>
             </div>
