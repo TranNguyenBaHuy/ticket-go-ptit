@@ -10,7 +10,7 @@ const AccountSettings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [avatarPreview, setAvatarPreview] = useState<string>("");
   
   const [formData, setFormData] = useState({
@@ -65,6 +65,9 @@ const AccountSettings = () => {
       ...prev,
       [name]: value
     }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleGenderChange = (value: string) => {
@@ -72,6 +75,9 @@ const AccountSettings = () => {
       ...prev,
       gender: value
     }));
+    if (errors.gender) {
+      setErrors(prev => ({ ...prev, gender: "" }));
+    }
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +95,7 @@ const AccountSettings = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage({ type: "", text: "" });
+    setErrors({});
 
     try {
       const formDataToSend = new FormData();
@@ -111,29 +117,30 @@ const AccountSettings = () => {
         formDataToSend.append("avatar", avatarFile);
       }
 
-      const response = await axios.put(`/api/users/${user.id}`, formDataToSend, {
+      await axios.put(`/api/users/${user.id}`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response.data) {
-        setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+      alert("Cập nhật thông tin thành công!");
+      window.location.reload();
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const error = err as any;
+      if (error.response?.data?.errors) {
+        const backendErrors: Record<string, string> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        error.response.data.errors.forEach((err: any) => {
+          if (err.path === "fullName") backendErrors.fullName = err.message;
+          else if (err.path === "phone") backendErrors.phone = err.message;
+          else if (err.path === "birthDate") backendErrors.birthDate = err.message;
+          else if (err.path === "gender") backendErrors.gender = err.message;
+        });
+        setErrors(backendErrors);
+      } else {
+        alert("Lỗi: " + (error.response?.data?.message || error.message));
       }
-    } catch (error: any) {
-      console.error("Update error:", error);
-      const errorMessage = error.response?.data?.message 
-        || error.response?.data?.errors?.[0]?.message
-        || error.message
-        || "Có lỗi xảy ra khi cập nhật thông tin";
-      setMessage({ 
-        type: "error", 
-        text: errorMessage
-      });
-    } finally {
       setLoading(false);
     }
   };
@@ -198,31 +205,34 @@ const AccountSettings = () => {
                 </p>
               </div>
 
-              {/* Message */}
-              {message.text && (
-                <div className={`mb-4 p-3 rounded-lg text-sm ${
-                  message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                }`}>
-                  {message.text}
-                </div>
-              )}
-
               {/* Form Fields - Compact */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Họ và tên</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Họ và tên
+                    {errors.fullName && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.fullName}</span>
+                    )}
+                  </label>
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
+                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
+                      errors.fullName ? "border-2 border-red-500" : ""
+                    }`}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Số điện thoại</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Số điện thoại
+                    {errors.phone && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.phone}</span>
+                    )}
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -236,7 +246,9 @@ const AccountSettings = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10"
+                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
+                          errors.phone ? "border-2 border-red-500" : ""
+                        }`}
                         placeholder="Nhập số điện thoại"
                       />
                       {formData.phone && (
@@ -269,19 +281,31 @@ const AccountSettings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Ngày tháng năm sinh</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Ngày tháng năm sinh
+                    {errors.birthDate && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.birthDate}</span>
+                    )}
+                  </label>
                   <input
                     type="text"
                     name="birthDate"
                     value={formData.birthDate}
                     onChange={handleInputChange}
                     placeholder="dd/mm/yyyy"
-                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
+                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
+                      errors.birthDate ? "border-2 border-red-500" : ""
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Giới tính</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Giới tính
+                    {errors.gender && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.gender}</span>
+                    )}
+                  </label>
                   <div className="flex gap-6">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input

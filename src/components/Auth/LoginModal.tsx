@@ -28,7 +28,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const [apiError, setApiError] = useState<string>("");
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +51,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationErrors({});
-    setApiError("");
 
     setIsSubmitting(true);
 
@@ -83,29 +81,20 @@ const LoginModal: React.FC<LoginModalProps> = ({
           navigate("/");
         }
       }, 1500);
-    } catch (err: unknown) {
-      console.error("Login error:", err);
-      if (axios.isAxiosError(err)) {
-        if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
-          const backendErrors: Record<string, string> = {};
-          err.response.data.errors.forEach((error: { path: string; message: string }) => {
-            backendErrors[error.path] = error.message;
-          });
-          setValidationErrors(backendErrors);
-          setApiError(err.response.data.message || "Dữ liệu không hợp lệ");
-        } else if (err.response?.data?.error) {
-          setApiError(err.response.data.error);
-        } else if (err.response?.data?.message) {
-          setApiError(err.response.data.message);
-        } else if (err.response?.status === 401) {
-          setApiError("Email/SĐT hoặc mật khẩu không đúng");
-        } else {
-          setApiError("Đăng nhập thất bại. Vui lòng thử lại!");
-        }
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const err = error as any;
+      if (err.response?.data?.errors) {
+        const backendErrors: Record<string, string> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        err.response.data.errors.forEach((error: any) => {
+          if (error.path === "username") backendErrors.username = error.message;
+          else if (error.path === "password") backendErrors.password = error.message;
+        });
+        setValidationErrors(backendErrors);
       } else {
-        setApiError("Có lỗi xảy ra. Vui lòng thử lại!");
+        alert("Lỗi: " + (err.response?.data?.message || err.response?.data?.error || err.message));
       }
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -116,9 +105,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
     
     if (validationErrors[name]) {
       setValidationErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-    if (apiError) {
-      setApiError("");
     }
   };
 
@@ -268,14 +254,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
             <div className="flex items-center justify-center space-x-2 text-green-600 bg-green-50 p-3 rounded-lg">
               <div className="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
               <span className="font-medium">Đang xác minh thông tin...</span>
-            </div>
-          )}
-
-          {/* Thông báo lỗi */}
-          {apiError && !isSubmitting && (
-            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">{apiError}</span>
             </div>
           )}
 
