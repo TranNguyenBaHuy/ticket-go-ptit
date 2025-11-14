@@ -38,6 +38,8 @@ export function AuthProvider({ children }) {
       setUser(null);
       setToken(null);
       delete axios.defaults.headers.common["Authorization"];
+
+      window.location.href = "/";
     }
   };
 
