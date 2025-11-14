@@ -8,11 +8,11 @@ import axios from "axios";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [avatarPreview, setAvatarPreview] = useState<string>("");
-  
+
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -47,10 +47,10 @@ const AccountSettings = () => {
         birthDate: user.birthDate ? formatDateToDisplay(user.birthDate) : "",
         gender: user.gender || "",
       });
-      
+
       if (user.avatar) {
-        const avatarUrl = user.avatar.startsWith('http') 
-          ? user.avatar 
+        const avatarUrl = user.avatar.startsWith('http')
+          ? user.avatar
           : `/images/user/${user.avatar}`;
         setAvatarPreview(avatarUrl);
       } else {
@@ -102,11 +102,11 @@ const AccountSettings = () => {
           formDataToSend.append("birthDate", isoDate);
         }
       }
-      
+
       formDataToSend.append("gender", formData.gender || "");
       formDataToSend.append("roleId", user.role.id.toString());
       formDataToSend.append("accountType", user.accountType);
-      
+
       if (avatarFile) {
         formDataToSend.append("avatar", avatarFile);
       }
@@ -119,18 +119,29 @@ const AccountSettings = () => {
 
       if (response.data) {
         setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
+
+        // Update token if backend returns new token
+        if (response.data.token) {
+          updateUser(response.data.token);
+        }
+
         setTimeout(() => {
-          window.location.reload();
+          navigate(0); // Refresh page to show updated info
         }, 1500);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Update error:", error);
-      const errorMessage = error.response?.data?.message 
-        || error.response?.data?.errors?.[0]?.message
-        || error.message
-        || "Có lỗi xảy ra khi cập nhật thông tin";
-      setMessage({ 
-        type: "error", 
+      let errorMessage = "Có lỗi xảy ra khi cập nhật thông tin";
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message
+          || error.response?.data?.errors?.[0]?.message
+          || error.message
+          || errorMessage;
+      }
+
+      setMessage({
+        type: "error",
         text: errorMessage
       });
     } finally {
@@ -200,9 +211,8 @@ const AccountSettings = () => {
 
               {/* Message */}
               {message.text && (
-                <div className={`mb-4 p-3 rounded-lg text-sm ${
-                  message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                }`}>
+                <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
                   {message.text}
                 </div>
               )}

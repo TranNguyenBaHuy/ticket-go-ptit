@@ -41,6 +41,18 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateUser = (newToken) => {
+    try {
+      const decodedUser = jwtDecode(newToken);
+      setUser(decodedUser);
+      setToken(newToken);
+      localStorage.setItem("token", newToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
+  };
+
   const value = {
     user,
     token,
@@ -48,6 +60,7 @@ export function AuthProvider({ children }) {
     isLoggedIn: !!user,
     login,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
