@@ -28,11 +28,17 @@ export function AuthProvider({ children }) {
     setToken(newToken);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setToken(null);
-    delete axios.defaults.headers.common["Authorization"];
+  const logout = async () => {
+    try {
+      await axios.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+      setToken(null);
+      delete axios.defaults.headers.common["Authorization"];
+    }
   };
 
   const value = {
