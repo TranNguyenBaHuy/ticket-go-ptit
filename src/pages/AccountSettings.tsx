@@ -8,7 +8,7 @@ import axios from "axios";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [avatarPreview, setAvatarPreview] = useState<string>("");
@@ -117,42 +117,16 @@ const AccountSettings = () => {
         formDataToSend.append("avatar", avatarFile);
       }
 
-      await axios.put(`/api/users/${user.id}`, formDataToSend, {
+      const response = await axios.put(`/api/users/${user.id}`, formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (response.data) {
-        setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
-
-        // Update token if backend returns new token
-        if (response.data.token) {
-          updateUser(response.data.token);
-        }
-
-        setTimeout(() => {
-          navigate(0); // Refresh page to show updated info
-        }, 1500);
+      if (response.data.token) {
+        login(response.data.token);
+        alert("Cập nhật thông tin thành công!");
       }
-    } catch (error: unknown) {
-      console.error("Update error:", error);
-      let errorMessage = "Có lỗi xảy ra khi cập nhật thông tin";
-
-      if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message
-          || error.response?.data?.errors?.[0]?.message
-          || error.message
-          || errorMessage;
-      }
-
-      setMessage({
-        type: "error",
-        text: errorMessage
-      });
-    } finally {
-      alert("Cập nhật thông tin thành công!");
-      window.location.reload();
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error = err as any;
@@ -169,6 +143,7 @@ const AccountSettings = () => {
       } else {
         alert("Lỗi: " + (error.response?.data?.message || error.message));
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -232,14 +207,6 @@ const AccountSettings = () => {
                   quá trình mua vé, hoặc khi cần thực hiện vé
                 </p>
               </div>
-
-              {/* Message */}
-              {message.text && (
-                <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                  }`}>
-                  {message.text}
-                </div>
-              )}
 
               {/* Form Fields - Compact */}
               <div className="space-y-4">
