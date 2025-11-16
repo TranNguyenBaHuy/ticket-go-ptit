@@ -4,6 +4,7 @@ import type { Event } from "../constants/types/types";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
+import { toast } from "sonner";
 
 const SelectTicket = () => {
   const { id } = useParams();
@@ -22,6 +23,7 @@ const SelectTicket = () => {
       return;
     }
     navigate(`/events/${eventId}/bookings/select-ticket/booking-form`);
+    toast.success("Bạn đã vào hàng đợi");
   };
 
   useEffect(() => {
