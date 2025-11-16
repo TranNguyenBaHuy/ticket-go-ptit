@@ -4,6 +4,7 @@ import type { Event } from "../constants/types/types";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
+import { toast } from "sonner";
 
 const SelectTicket = () => {
   const { id } = useParams();
@@ -15,6 +16,15 @@ const SelectTicket = () => {
   const [ticketCounts, setTicketCounts] = useState<{ [key: number]: number }>(
     {}
   );
+
+  const handleToBookingForm = (eventId: string) => {
+    if (!eventId) {
+      alert("Không có eventId hợp lệ");
+      return;
+    }
+    navigate(`/events/${eventId}/bookings/select-ticket/booking-form`);
+    toast.success("Bạn đã vào hàng đợi");
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -249,7 +259,7 @@ const SelectTicket = () => {
                 : "Vui lòng chọn vé"
             }
             fullSize={true}
-            onClick={() => alert("chọn")}
+            onClick={() => handleToBookingForm(String(event?.id))}
             disabled={
               Object.values(ticketCounts).reduce(
                 (sum, count) => sum + count,

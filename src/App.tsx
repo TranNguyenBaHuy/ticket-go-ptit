@@ -3,6 +3,7 @@ import { publicRoutes, privateRoutes } from "./routes/routes";
 import type { ComponentType, PropsWithChildren } from "react";
 import DefaultLayout from "./components/Layouts/Client/DefaultLayout/DefaultLayout";
 import { Fragment } from "react";
+import { Toaster } from "sonner";
 // @ts-expect-error - JSX file without type declarations
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 // @ts-expect-error - JSX file without type declarations
@@ -57,6 +58,7 @@ function App() {
           );
         })}
       </Routes>
+      <Toaster />
     </AuthProvider>
   );
 }
