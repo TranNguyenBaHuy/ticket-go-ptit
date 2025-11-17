@@ -64,9 +64,9 @@ const Home = () => {
 
         {categories.map((cat) => (
           <EventSection
-            key={cat.id}
+            key={cat.id ?? cat.label}
             title={cat.label}
-            catId={cat.id === undefined ? "upcoming" : cat.id}
+            catId={cat.id}
           />
         ))}
       </div>
