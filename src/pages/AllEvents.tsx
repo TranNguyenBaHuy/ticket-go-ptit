@@ -19,11 +19,15 @@ const AllEvents = () => {
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const categoryName = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       let url = `/api/events?page=${currentPage}&limit=20`;
+      if (searchQuery) {
+        url += `&search=${encodeURIComponent(searchQuery)}`;
+      }
       if (categoryName) {
         url += `&category=${encodeURIComponent(categoryName)}`;
       }
@@ -44,7 +48,7 @@ const AllEvents = () => {
     };
 
     fetchData();
-  }, [categoryName, currentPage]);
+  }, [categoryName, searchQuery, currentPage]);
 
   return (
     <div className="min-h-screen bg-[#000]">
