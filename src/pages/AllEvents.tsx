@@ -26,7 +26,7 @@ const AllEvents = () => {
 
   return (
     <div className="min-h-screen bg-[#000]">
-      <div className="mx-40 py-10">
+      <div className="mx-10 lg:mx-auto max-w-[1250px]">
         {/* header */}
         <div className="text-white container py-6">
           <p className="text-[#2dc275] font-semibold">Kết quả tìm kiếm:</p>

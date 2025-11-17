@@ -105,7 +105,7 @@ const SelectTicket = () => {
   // max selected tickets
 
   return (
-    <div className="bg-black flex flex-row flex-1 gap-0">
+    <div className="flex flex-row flex-1 gap-0 bg-black w-full h-full">
       {/* LEFT */}
       <div className="flex flex-col flex-[7.5] mx-10">
         <div className="flex items-center text-[#2dc275] font-bold text-xl py-8">
@@ -195,7 +195,6 @@ const SelectTicket = () => {
           </div>
         </div>
       </div>
-
       {/* RIGHT */}
       <div className="flex flex-[3] flex-col  bg-[#38383D]">
         {/* ticket title */}

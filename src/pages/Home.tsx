@@ -49,7 +49,7 @@ const Home = () => {
       <CategoryFilterBar data={categories} />
 
       {/* body */}
-      <div className="mx-40 py-8">
+      <div className="mx-10 lg:mx-auto max-w-[1250px] py-8">
         {/*   CAROUSEL SECTION*/}
         <div className="mx-auto mb-8">
           <Carousel
