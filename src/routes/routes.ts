@@ -48,7 +48,7 @@ const publicRoutes = [
     component: BookingForm,
     layout: SelectTicketLayout,
   },
-  { path: "/search/:id", component: AllEvents, layout: DefaultLayout },
+  { path: "/search", component: AllEvents, layout: DefaultLayout },
   { path: "*", component: NotFound, layout: null },
 ];
 const privateRoutes = [

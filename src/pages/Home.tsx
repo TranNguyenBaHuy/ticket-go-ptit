@@ -3,30 +3,19 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { responsive } from "../components/Base/ResponsiveBase/Carousel";
 import EventSection from "../components/Layouts/Client/EventSection";
-import CarouselItem from "../components/Layouts/Client/CarouselItem";
 import { useEffect, useState } from "react";
 import type { Event } from "../constants/types/types";
-
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../components/ui/pagination";
-
 import { categories } from "@/constants/data/categories";
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
+import CarouselItem from "@/components/Layouts/Client/CarouselItem";
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = `http://localhost:9092/api/events?page=${currentPage}`;
+      // Fetch các sự kiện (trong tháng/tuần) cho carousel
+      const url = `/api/events?page=1&limit=8&week=true&month=true`;
       try {
         const response = await fetch(url);
         if (!response.ok)
@@ -34,14 +23,13 @@ const Home = () => {
 
         const result = await response.json();
         setEvents(result.events || []);
-        setTotalPages(result.totalPages || 1);
       } catch (e) {
-        console.error("Lỗi khi fetch sự kiện:", e);
+        console.error("Lỗi khi fetch sự kiện cho carousel:", e);
       }
     };
 
     fetchData();
-  }, [currentPage]);
+  }, []);
 
   return (
     <div className="w-full mx-auto bg-[#27272A]">
@@ -68,73 +56,19 @@ const Home = () => {
             removeArrowOnDeviceType={["tablet", "mobile"]}
             partialVisible={false}
           >
-            {events.map((event) => {
-              return <CarouselItem key={event.id} data={event} />;
-            })}
+            {events.map((event) => (
+              <CarouselItem key={event.id} data={event} />
+            ))}
           </Carousel>
         </div>
 
         {categories.map((cat) => (
           <EventSection
-            key={cat.id}
+            key={cat.id ?? cat.label}
             title={cat.label}
-            data={events}
-            catId={cat.id === undefined ? "upcoming" : cat.id}
+            catId={cat.id}
           />
         ))}
-      </div>
-
-      {/* shadcn PAGINATION  */}
-      <div className="flex justify-center py-8">
-        <Pagination>
-          <PaginationContent className="text-white">
-            {/* prev btn */}
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                className={`${
-                  currentPage === 1
-                    ? "opacity-40 pointer-events-none"
-                    : "hover:bg-blue-600 hover:text-white"
-                } bg-[#3f3f46] text-white border border-gray-600`}
-              />
-            </PaginationItem>
-
-            {/* page nums */}
-            {Array.from({ length: totalPages }, (_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  href="#"
-                  isActive={currentPage === i + 1}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`${
-                    currentPage === i + 1
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-[#3f3f46] text-gray-300 hover:bg-blue-600 hover:text-white border border-gray-600"
-                  }`}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-
-            {/* next btn */}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
-                }
-                className={`${
-                  currentPage === totalPages
-                    ? "opacity-40 pointer-events-none"
-                    : "hover:bg-blue-600 hover:text-white"
-                } bg-[#3f3f46] text-white border border-gray-600`}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
       </div>
     </div>
   );
