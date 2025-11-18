@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Check, X } from "lucide-react";
+import { Camera, Check, X, Calendar } from "lucide-react";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../contexts/AuthContext";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
@@ -12,6 +12,7 @@ const AccountSettings = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -21,19 +22,13 @@ const AccountSettings = () => {
     gender: "",
   });
 
-  const formatDateToDisplay = (isoDate: string) => {
+  const formatDateForInput = (isoDate: string) => {
     if (!isoDate) return "";
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const formatDateToInput = (displayDate: string) => {
-    if (!displayDate) return "";
-    const [day, month, year] = displayDate.split('/');
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}`; 
   };
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -44,7 +39,7 @@ const AccountSettings = () => {
         fullName: user.fullName || "",
         phone: user.phone || "",
         email: user.email || "",
-        birthDate: user.birthDate ? formatDateToDisplay(user.birthDate) : "",
+        birthDate: user.birthDate ? formatDateForInput(user.birthDate) : "",
         gender: user.gender || "",
       });
 
@@ -103,10 +98,7 @@ const AccountSettings = () => {
       formDataToSend.append("phone", formData.phone || "");
 
       if (formData.birthDate && formData.birthDate.trim()) {
-        const isoDate = formatDateToInput(formData.birthDate);
-        if (isoDate) {
-          formDataToSend.append("birthDate", isoDate);
-        }
+        formDataToSend.append("birthDate", formData.birthDate);
       }
 
       formDataToSend.append("gender", formData.gender || "");
@@ -290,16 +282,32 @@ const AccountSettings = () => {
                       <span className="text-red-400 text-xs ml-2">* {errors.birthDate}</span>
                     )}
                   </label>
-                  <input
-                    type="text"
-                    name="birthDate"
-                    value={formData.birthDate}
-                    onChange={handleInputChange}
-                    placeholder="dd/mm/yyyy"
-                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
-                      errors.birthDate ? "border-2 border-red-500" : ""
-                    }`}
-                  />
+                   <div className="relative group">
+                     <input
+                       ref={dateInputRef}
+                       type="date"
+                       name="birthDate"
+                       value={formData.birthDate}
+                       onChange={handleInputChange}
+                       max={new Date().toISOString().split('T')[0]}
+                       className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${
+                         errors.birthDate 
+                           ? "border-2 border-red-500" 
+                           : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
+                       }`}
+                     />
+                     <button
+                       type="button"
+                       onClick={() => dateInputRef.current?.showPicker()}
+                       className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded transition-colors duration-200"
+                       aria-label="Chọn ngày"
+                     >
+                       <Calendar 
+                         className="w-5 h-5 text-gray-400 group-hover:text-[#2dc275] transition-colors duration-200"
+                         strokeWidth={2.5}
+                       />
+                     </button>
+                   </div>
                 </div>
 
                 <div>
