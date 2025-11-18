@@ -101,7 +101,7 @@ const BookingForm = () => {
           </div>
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
-            <CountdownTimer initialMinutes={15} />
+            <CountdownTimer initialMinutes={0.2} />
           </div>
         </div>
       </div>

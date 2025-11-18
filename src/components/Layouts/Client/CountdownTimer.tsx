@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface CountdownTimerProps {
   initialMinutes?: number;
@@ -19,7 +20,7 @@ const CountdownTimer = ({ initialMinutes = 15 }: CountdownTimerProps) => {
 
   useEffect(() => {
     if (timeLeft === 0) {
-      alert("Hết thời gian giữ vé, vui lòng chọn lại!");
+      toast.error("Đã hết thời gian giữ vé! Mời bạn chọn lại");
       navigate("/");
     }
   }, [timeLeft, navigate]);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import { userBookings } from "../constants/types/types";
@@ -10,6 +10,32 @@ const MyTickets = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>("all");
   const [activeSubTab, setActiveSubTab] = useState<SubTabType>("upcoming");
+  const [loading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const handleFetchMyTicket = async () => {
+      setIsLoading(true);
+
+      const url = `/api/orders/history`;
+
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok)
+          throw new Error(`Response status: ${response.status}`);
+
+        const result = await response.json;
+
+        console.log("FETCH TICKET DETAILS", result);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    handleFetchMyTicket();
+  }, [activeTab]);
 
   const tabs = [
     { id: "all" as TabType, label: "Tất cả" },
@@ -22,6 +48,13 @@ const MyTickets = () => {
     if (activeTab === "all") return true;
     return ticket.status === activeTab;
   });
+
+  if (loading)
+    return (
+      <div className="flex flex-1 items-center justify-center min-h-screen bg-black font-bold text-white">
+        Đang tải...
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-[#212121]">

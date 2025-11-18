@@ -17,6 +17,8 @@ const SelectTicket = () => {
     {}
   );
 
+  // const [tickets, setTickets] = useState<Event>
+
   const handleToBookingForm = (eventId: string) => {
     if (!eventId) {
       alert("Không có eventId hợp lệ");
