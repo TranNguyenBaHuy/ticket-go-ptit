@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "@/utils/utils";
@@ -24,6 +24,7 @@ const BookingForm = () => {
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token = localStorage.getItem("token");
   // const navigate = useNavigate();
 
   const {
@@ -53,7 +54,6 @@ const BookingForm = () => {
           throw new Error(`Error when loaded data: ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("event result", result.data);
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
@@ -67,6 +67,44 @@ const BookingForm = () => {
 
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        setIsLoading(true);
+
+        const response = await fetch(`/api/carts/checkout?page=1&limit=1`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        console.log("FETCH CART DATA", result.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchCartData();
+    }
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-1 min-h-screen bg-black text-white text-xl items-center justify-center">
+        Đang tải...
+      </div>
+    );
+  }
 
   return (
     <>
@@ -101,7 +139,7 @@ const BookingForm = () => {
           </div>
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
-            <CountdownTimer initialMinutes={0.2} />
+            <CountdownTimer initialMinutes={15} />
           </div>
         </div>
       </div>

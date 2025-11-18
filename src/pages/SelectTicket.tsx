@@ -1,10 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import type { Event } from "../constants/types/types";
+import type { Event, TicketType } from "../constants/types/types";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
 
 const SelectTicket = () => {
   const { id } = useParams();
@@ -17,16 +18,7 @@ const SelectTicket = () => {
     {}
   );
 
-  // const [tickets, setTickets] = useState<Event>
-
-  const handleToBookingForm = (eventId: string) => {
-    if (!eventId) {
-      alert("Không có eventId hợp lệ");
-      return;
-    }
-    navigate(`/events/${eventId}/bookings/select-ticket/booking-form`);
-    toast.success("Bạn đã vào hàng đợi");
-  };
+  const [tickets, setTickets] = useState<TicketType[]>([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -67,9 +59,66 @@ const SelectTicket = () => {
       };
       return newCounts;
     });
+
+    const selectedTicket = event?.ticketTypes.find((t) => t.id === id);
+    if (selectedTicket) {
+      setTickets((prevTickets) => [...prevTickets, selectedTicket]);
+    }
   };
 
-  // decrease ticket
+  const handleToBookingForm = (eventId: string) => {
+    navigate(`/events/${eventId}/bookings/select-ticket/booking-form`);
+    toast.success("Bạn đã vào hàng đợi");
+  };
+
+  const handleAddToCart = async (data: TicketType[]) => {
+    if (data.length === 0) return;
+    const token = localStorage.getItem("token");
+
+    if (!token) return;
+
+    const decodedUser = jwtDecode(token) as { id?: number };
+    console.log(decodedUser);
+
+    try {
+      setIsLoading(true);
+
+      const requests = data.map(async (ticket) => {
+        const payload = {
+          ticketTypeId: ticket.id,
+          quantity: 1,
+          userId: decodedUser.id,
+        };
+
+        const response = await fetch(`/api/carts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          console.log(response);
+          throw new Error(`bug vé ${1}`);
+        }
+
+        return await response.json();
+      });
+
+      await Promise.all(requests);
+
+      handleToBookingForm(String(event?.id));
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra khi chọn vé");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // decrease
   const handleDecrement = (id: number) => {
     setTicketCounts((prev) => {
       const newCounts = {
@@ -77,6 +126,17 @@ const SelectTicket = () => {
         [id]: Math.max((prev[id] || 0) - 1, 0),
       };
       return newCounts;
+    });
+
+    setTickets((prevTickets) => {
+      const indexToRemove = prevTickets.findIndex((t) => t.id === id);
+
+      if (indexToRemove !== -1) {
+        const newTickets = [...prevTickets];
+        newTickets.splice(indexToRemove, 1);
+        return newTickets;
+      }
+      return prevTickets;
     });
   };
 
@@ -141,7 +201,6 @@ const SelectTicket = () => {
           </div>
           <div className="py-4">
             {event?.ticketTypes.map((ticket) => {
-              console.log("Rendering ticket:", ticket.id);
               return (
                 <div
                   key={ticket.id}
@@ -260,7 +319,7 @@ const SelectTicket = () => {
                 : "Vui lòng chọn vé"
             }
             fullSize={true}
-            onClick={() => handleToBookingForm(String(event?.id))}
+            onClick={() => handleAddToCart(tickets)}
             disabled={
               Object.values(ticketCounts).reduce(
                 (sum, count) => sum + count,
