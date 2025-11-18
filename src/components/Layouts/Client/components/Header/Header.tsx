@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Ticket, Search, Menu, ChevronDown, User, History, LogOut } from "lucide-react";
+import {
+  Ticket,
+  Search,
+  Menu,
+  ChevronDown,
+  User,
+  History,
+  LogOut,
+} from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
@@ -22,7 +30,10 @@ const Header = () => {
   // Đóng user menu khi click bên ngoài
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
         setIsUserMenuOpen(false);
       }
     }
@@ -34,7 +45,7 @@ const Header = () => {
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
-      <div className="mx-4 sm:mx-10 md:mx-20 lg:mx-40">
+      <div className="mx-5 lg:mx-auto max-w-[1250px]">
         {/* Main nav */}
         <div className="flex justify-between items-center py-4.5 flex-wrap md:flex-nowrap">
           {/* Logo */}
@@ -77,8 +88,12 @@ const Header = () => {
                   <img
                     src={
                       user.avatar
-                        ? (user.avatar.startsWith('http') ? user.avatar : `/images/user/${user.avatar}`)
-                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email}&background=0D8ABC&color=fff`
+                        ? user.avatar.startsWith("http")
+                          ? user.avatar
+                          : `/images/user/${user.avatar}`
+                        : `https://ui-avatars.com/api/?name=${
+                            user.fullName || user.email
+                          }&background=0D8ABC&color=fff`
                     }
                     alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"

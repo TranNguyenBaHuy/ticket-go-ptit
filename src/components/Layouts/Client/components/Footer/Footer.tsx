@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <>
       <div className="w-full mx-auto bg-[#1d1d1d]">
-        <div className="mx-12 py-8 items-center flex flex-row justify-between">
+        <div className="mx-5 md:mx-20 lg:mx-40 py-8 md:items-center flex md:flex-row justify-between flex-col items-start gap-10">
           <div>
             <Link to="/" className="flex flex-col gap-4">
               <img
@@ -42,7 +42,7 @@ const Footer = () => {
             </a>
           </div>
         </div>
-        <div className="mx-12 py-8">
+        <div className="mx-5 md:mx-40 py-8">
           <p className="text-xl text-white font-semibold py-2">
             Công ty TNHH TicketGo
           </p>
@@ -56,7 +56,7 @@ const Footer = () => {
             <p>Email: support@ticketgo.vn</p>
           </div>
         </div>
-        <div className="mx-12 py-8 items-center border-t border-[#1D2939]">
+        <div className="mx-10 md:mx-40 py-8 items-center border-t border-[#1D2939]">
           <p className="text-md text-white ">
             All rights reserved 2025 © TicketGo
           </p>

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Check, X } from "lucide-react";
+import { Camera, Check, X, Calendar } from "lucide-react";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../contexts/AuthContext";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
@@ -8,10 +8,11 @@ import axios from "axios";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -21,19 +22,13 @@ const AccountSettings = () => {
     gender: "",
   });
 
-  const formatDateToDisplay = (isoDate: string) => {
+  const formatDateForInput = (isoDate: string) => {
     if (!isoDate) return "";
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-
-  const formatDateToInput = (displayDate: string) => {
-    if (!displayDate) return "";
-    const [day, month, year] = displayDate.split('/');
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}`; 
   };
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -44,7 +39,7 @@ const AccountSettings = () => {
         fullName: user.fullName || "",
         phone: user.phone || "",
         email: user.email || "",
-        birthDate: user.birthDate ? formatDateToDisplay(user.birthDate) : "",
+        birthDate: user.birthDate ? formatDateForInput(user.birthDate) : "",
         gender: user.gender || "",
       });
 
@@ -65,6 +60,9 @@ const AccountSettings = () => {
       ...prev,
       [name]: value
     }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
   };
 
   const handleGenderChange = (value: string) => {
@@ -72,6 +70,9 @@ const AccountSettings = () => {
       ...prev,
       gender: value
     }));
+    if (errors.gender) {
+      setErrors(prev => ({ ...prev, gender: "" }));
+    }
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +90,7 @@ const AccountSettings = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage({ type: "", text: "" });
+    setErrors({});
 
     try {
       const formDataToSend = new FormData();
@@ -97,10 +98,7 @@ const AccountSettings = () => {
       formDataToSend.append("phone", formData.phone || "");
 
       if (formData.birthDate && formData.birthDate.trim()) {
-        const isoDate = formatDateToInput(formData.birthDate);
-        if (isoDate) {
-          formDataToSend.append("birthDate", isoDate);
-        }
+        formDataToSend.append("birthDate", formData.birthDate);
       }
 
       formDataToSend.append("gender", formData.gender || "");
@@ -117,33 +115,26 @@ const AccountSettings = () => {
         },
       });
 
-      if (response.data) {
-        setMessage({ type: "success", text: "Cập nhật thông tin thành công!" });
-
-        // Update token if backend returns new token
-        if (response.data.token) {
-          updateUser(response.data.token);
-        }
-
-        setTimeout(() => {
-          navigate(0); // Refresh page to show updated info
-        }, 1500);
+      if (response.data.token) {
+        login(response.data.token);
+        alert("Cập nhật thông tin thành công!");
       }
-    } catch (error: unknown) {
-      console.error("Update error:", error);
-      let errorMessage = "Có lỗi xảy ra khi cập nhật thông tin";
-
-      if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message
-          || error.response?.data?.errors?.[0]?.message
-          || error.message
-          || errorMessage;
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const error = err as any;
+      if (error.response?.data?.errors) {
+        const backendErrors: Record<string, string> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        error.response.data.errors.forEach((err: any) => {
+          if (err.path === "fullName") backendErrors.fullName = err.message;
+          else if (err.path === "phone") backendErrors.phone = err.message;
+          else if (err.path === "birthDate") backendErrors.birthDate = err.message;
+          else if (err.path === "gender") backendErrors.gender = err.message;
+        });
+        setErrors(backendErrors);
+      } else {
+        alert("Lỗi: " + (error.response?.data?.message || error.message));
       }
-
-      setMessage({
-        type: "error",
-        text: errorMessage
-      });
     } finally {
       setLoading(false);
     }
@@ -209,30 +200,34 @@ const AccountSettings = () => {
                 </p>
               </div>
 
-              {/* Message */}
-              {message.text && (
-                <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                  }`}>
-                  {message.text}
-                </div>
-              )}
-
               {/* Form Fields - Compact */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Họ và tên</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Họ và tên
+                    {errors.fullName && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.fullName}</span>
+                    )}
+                  </label>
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
+                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
+                      errors.fullName ? "border-2 border-red-500" : ""
+                    }`}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Số điện thoại</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Số điện thoại
+                    {errors.phone && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.phone}</span>
+                    )}
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -246,7 +241,9 @@ const AccountSettings = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10"
+                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
+                          errors.phone ? "border-2 border-red-500" : ""
+                        }`}
                         placeholder="Nhập số điện thoại"
                       />
                       {formData.phone && (
@@ -279,19 +276,47 @@ const AccountSettings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Ngày tháng năm sinh</label>
-                  <input
-                    type="text"
-                    name="birthDate"
-                    value={formData.birthDate}
-                    onChange={handleInputChange}
-                    placeholder="dd/mm/yyyy"
-                    className="w-full px-3 py-2.5 bg-white text-black rounded text-sm"
-                  />
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Ngày tháng năm sinh
+                    {errors.birthDate && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.birthDate}</span>
+                    )}
+                  </label>
+                   <div className="relative group">
+                     <input
+                       ref={dateInputRef}
+                       type="date"
+                       name="birthDate"
+                       value={formData.birthDate}
+                       onChange={handleInputChange}
+                       max={new Date().toISOString().split('T')[0]}
+                       className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${
+                         errors.birthDate 
+                           ? "border-2 border-red-500" 
+                           : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
+                       }`}
+                     />
+                     <button
+                       type="button"
+                       onClick={() => dateInputRef.current?.showPicker()}
+                       className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 rounded transition-colors duration-200"
+                       aria-label="Chọn ngày"
+                     >
+                       <Calendar 
+                         className="w-5 h-5 text-gray-400 group-hover:text-[#2dc275] transition-colors duration-200"
+                         strokeWidth={2.5}
+                       />
+                     </button>
+                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1.5">Giới tính</label>
+                  <label className="block text-sm text-gray-300 mb-1.5">
+                    Giới tính
+                    {errors.gender && (
+                      <span className="text-red-400 text-xs ml-2">* {errors.gender}</span>
+                    )}
+                  </label>
                   <div className="flex gap-6">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input

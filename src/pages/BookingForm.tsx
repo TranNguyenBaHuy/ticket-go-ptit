@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "@/utils/utils";
@@ -24,6 +24,7 @@ const BookingForm = () => {
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token = localStorage.getItem("token");
   // const navigate = useNavigate();
 
   const {
@@ -53,7 +54,6 @@ const BookingForm = () => {
           throw new Error(`Error when loaded data: ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("event result", result.data);
         setEvent(result);
       } catch (err: any) {
         setError(err.message);
@@ -68,6 +68,44 @@ const BookingForm = () => {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        setIsLoading(true);
+
+        const response = await fetch(`/api/carts/checkout?page=1&limit=1`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        console.log("FETCH CART DATA", result.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchCartData();
+    }
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-1 min-h-screen bg-black text-white text-xl items-center justify-center">
+        Đang tải...
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="relative w-full h-62 md:h-72 lg:h-62 overflow-hidden">
@@ -77,7 +115,7 @@ const BookingForm = () => {
           className="absolute inset-0 w-full h-full object-cover blur-lg"
         />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="flex flex-row items-center justify-between relative mx-10 md:mx-10 lg:mx-105 gap-6 md:gap-8  text-white h-full ">
+        <div className="flex flex-row items-center justify-between relative mx-10 lg:mx-auto max-w-[1250px] gap-6 md:gap-8  text-white h-full ">
           {/* INFO SECTION */}
           <div className="flex flex-col flex-9 gap-2">
             <h1 className="flex-1 w-full lg:text-3xl sm:text-xl md:text-2xl font-bold mb-2 py-5 border-b-white border-b-1 ">
@@ -106,8 +144,8 @@ const BookingForm = () => {
         </div>
       </div>
 
-      <div className="bg-black w-full flex flex-1">
-        <div className="flex flex-1 gap-5 mx-10 md:mx-10 lg:mx-105">
+      <div className="bg-black w-full flex flex-1 pb-10">
+        <div className="flex flex-1 gap-5 mx-10 lg:mx-auto max-w-[1200px]">
           {/* FORM */}
           <div className="flex-7">
             <h1 className="text-2xl font-bold my-10 text-[#2dc275]">
@@ -180,7 +218,7 @@ const BookingForm = () => {
           <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
             <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
 
-            <div className="flex flex-col gap-3 border-b-1 border-dashed border-b-gray-600 pb-4">
+            <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
               {/* TITLE */}
               <div className="flex justify-between">
                 <p className="font-semibold text-md">Loại vé</p>
