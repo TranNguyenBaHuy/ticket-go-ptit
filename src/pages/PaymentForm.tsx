@@ -1,21 +1,57 @@
 import PaymentMethods from "@/components/Layouts/Client/PaymentMethods";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { use, useState } from "react";
 import { toast } from "sonner";
+import axios from "@/utils/axiosInterceptor";
 
-// type Props = {
-//   visible: boolean;
-// };
+type Props = {
+  receiverName: string;
+  receiverPhone: string;
+  receiverEmail: string;
+  cartDetails: any[];
+};
 
-const PaymentForm = () => {
+const PaymentForm = ({ userId, receiverName, receiverPhone, receiverEmail }: Props) => {
   const [paymentMethod, setPaymentMethod] = useState("vnpay");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSelect = (value: string) => {
     setPaymentMethod(value);
   };
 
-  const handleSubmit = () => {
-    toast.success("Thành công");
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      // const totalPrice = cartDetails.reduce(
+      //   (sum, item) => sum + (item.price * item.quantity),
+      //   0
+      // );
+
+      const payload = {
+        userId: "1",
+        receiverName: "Nguyễn Chí Thịnh 2812",
+        receiverPhone: "0123456789",
+        receiverEmail: "thinh@example.com",
+        totalPrice: 100000,
+        paymentMethod: "VNPAY",
+      };
+
+      const response = await axios.post("/api/carts/place-order", payload);
+      console.log("Place order success:", response.data);
+
+      if (response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      } else {
+        toast.success(response.data.message || "Đặt hàng thành công!");
+      }
+    } catch (error) {
+      console.error("Place order error:", (error as any).response?.data?.message);
+      // toast.error(
+      //   (error as any).response?.data?.message || "Lỗi khi đặt hàng"
+      // );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -82,12 +118,12 @@ const PaymentForm = () => {
           </p>
 
           <Button
-            // type="submit"
             type="button"
-            className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg"
+            disabled={isLoading}
+            className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
           >
-            Tiếp tục
+            {isLoading ? "Đang xử lý..." : "Tiếp tục"}
           </Button>
         </div>
       </div>

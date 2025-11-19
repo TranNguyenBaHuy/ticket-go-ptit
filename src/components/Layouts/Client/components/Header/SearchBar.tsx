@@ -10,6 +10,9 @@ const SearchBar = () => {
     if (query.trim()) {
       navigate(`/search?search=${encodeURIComponent(query.trim())}`);
     }
+    else if (query.trim() === "") {
+      navigate(`/`);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

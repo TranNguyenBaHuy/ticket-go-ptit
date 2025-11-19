@@ -26,9 +26,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -51,7 +49,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationErrors({});
+    setErrors({});
 
     setIsSubmitting(true);
 
@@ -74,7 +72,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
         setShowSuccess(false);
         onClose();
         setFormData({ emailOrPhone: "", password: "" });
-        setValidationErrors({});
+        setErrors({});
 
         if (decodedUser.role?.name === "ADMIN") {
           navigate("/admin");
@@ -82,25 +80,17 @@ const LoginModal: React.FC<LoginModalProps> = ({
           navigate("/");
         }
       }, 1500);
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
+    } catch (err: any) {
       if (err.response?.data?.errors) {
-        const backendErrors: Record<string, string> = {};
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        err.response.data.errors.forEach((error: any) => {
+        type BackendError = { path?: string; message?: string };
+        const backendErrors: { username?: string; password?: string } = {};
+        (err.response.data.errors as BackendError[]).forEach((error) => {
           if (error.path === "username") backendErrors.username = error.message;
-          else if (error.path === "password")
-            backendErrors.password = error.message;
+          else if (error.path === "password") backendErrors.password = error.message;
         });
-        setValidationErrors(backendErrors);
+        setErrors(backendErrors);
       } else {
-        alert(
-          "Lỗi: " +
-            (err.response?.data?.message ||
-              err.response?.data?.error ||
-              err.message)
-        );
+        alert("Lỗi: " + (err.response?.data?.message || err.message));
       }
       setIsSubmitting(false);
     }
@@ -110,8 +100,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (validationErrors[name]) {
-      setValidationErrors((prev) => ({ ...prev, [name]: "" }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -168,24 +158,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.username
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.username
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
               disabled={isSubmitting}
-              aria-invalid={!!validationErrors.username}
+              aria-invalid={!!errors.username}
               aria-describedby={
-                validationErrors.username ? "emailOrPhone-error" : undefined
+                errors.username ? "emailOrPhone-error" : undefined
               }
             />
-            {validationErrors.username && (
+            {errors.username && (
               <div
                 id="emailOrPhone-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.username}</span>
+                <span>{errors.username}</span>
               </div>
             )}
           </div>
@@ -207,15 +196,14 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  validationErrors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                  }`}
                 disabled={isSubmitting}
-                aria-invalid={!!validationErrors.password}
+                aria-invalid={!!errors.password}
                 aria-describedby={
-                  validationErrors.password ? "password-error" : undefined
+                  errors.password ? "password-error" : undefined
                 }
               />
               <button
@@ -232,13 +220,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 )}
               </button>
             </div>
-            {validationErrors.password && (
+            {errors.password && (
               <div
                 id="password-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.password}</span>
+                <span>{errors.password}</span>
               </div>
             )}
           </div>
@@ -252,8 +240,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-              ? "Thành công!"
-              : "Đăng nhập"}
+                ? "Thành công!"
+                : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}
