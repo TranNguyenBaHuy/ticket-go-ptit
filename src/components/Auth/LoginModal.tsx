@@ -6,7 +6,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { any } from "zod";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -102,15 +101,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name as keyof LoginCredentials;
-    const value = e.target.value;
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Map the input field name to the corresponding error key used in state/backend
-    const errorKey: keyof typeof errors =
-      name === "emailOrPhone" ? "username" : "password";
-    if (errors[errorKey]) {
-      setErrors((prev) => ({ ...prev, [errorKey]: "" }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 

@@ -22,15 +22,26 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | null>(null);
+  const [apiError, setApiError] = useState<string>('');
   const nameInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // Quản lý focus
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
       setTimeout(() => nameInputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
+  // Clear API error khi form data thay đổi
+  useEffect(() => {
+    if (apiError) {
+      setApiError('');
+    }
+  }, [formData]);
+
+  // Xử lý phím ESC
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isSubmitting) {
@@ -41,9 +52,28 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, isSubmitting, onClose]);
 
+  // Đánh giá độ mạnh mật khẩu
+  useEffect(() => {
+    if (!formData.password) {
+      setPasswordStrength(null);
+      return;
+    }
+    
+    let strength = 0;
+    if (formData.password.length >= 8) strength++;
+    if (/[a-z]/.test(formData.password) && /[A-Z]/.test(formData.password)) strength++;
+    if (/\d/.test(formData.password)) strength++;
+    if (/[^a-zA-Z\d]/.test(formData.password)) strength++;
+    
+    if (strength <= 1) setPasswordStrength('weak');
+    else if (strength <= 2) setPasswordStrength('medium');
+    else setPasswordStrength('strong');
+  }, [formData.password]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError('');
     setErrors({});
   
     if (formData.password !== formData.confirmPassword) {
@@ -74,20 +104,25 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
           onSwitchToLogin();
         }, 1500);
       }
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
-      if (err.response?.data?.errors) {
-        const backendErrors: Record<string, string> = {};
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        err.response.data.errors.forEach((error: any) => {
-          if (error.path === "email") backendErrors.email = error.message;
-          else if (error.path === "password") backendErrors.password = error.message;
-        });
-        setErrors(backendErrors);
+    } catch (error: unknown) {
+      console.error('Register error:', error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+          const backendErrors: Record<string, string> = {};
+          error.response.data.errors.forEach((err: { path: string; message: string }) => {
+            backendErrors[err.path] = err.message;
+          });
+          setErrors(backendErrors);
+          setApiError(error.response.data.message || 'Dữ liệu không hợp lệ');
+        } else if (error.response?.data?.message) {
+          setApiError(error.response.data.message);
+        } else {
+          setApiError('Đăng ký thất bại. Vui lòng thử lại!');
+        }
       } else {
-        alert("Lỗi: " + (err.response?.data?.message || err.message));
+        setApiError('Có lỗi xảy ra. Vui lòng thử lại!');
       }
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -252,9 +287,36 @@ return (
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1"
                 aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
-                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+            {/* Độ mạnh mật khẩu */}
+            {passwordStrength && (
+              <div className="mt-2">
+                <div className="flex space-x-1">
+                  <div className={`h-1 flex-1 rounded ${
+                    passwordStrength === 'weak' ? 'bg-red-500' :
+                    passwordStrength === 'medium' ? 'bg-yellow-500' :
+                    'bg-green-500'
+                  }`} />
+                  <div className={`h-1 flex-1 rounded ${
+                    passwordStrength === 'medium' || passwordStrength === 'strong' ? 
+                    (passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500') :
+                    'bg-gray-200'
+                  }`} />
+                  <div className={`h-1 flex-1 rounded ${
+                    passwordStrength === 'strong' ? 'bg-green-500' : 'bg-gray-200'
+                  }`} />
+                </div>
+                <p className={`text-xs mt-1 ${
+                  passwordStrength === 'weak' ? 'text-red-600' :
+                  passwordStrength === 'medium' ? 'text-yellow-600' :
+                  'text-green-600'
+                }`}>
+                  Độ mạnh: {passwordStrength === 'weak' ? 'Yếu' : passwordStrength === 'medium' ? 'Trung bình' : 'Mạnh'}
+                </p>
+              </div>
+            )}
             {errors.password && (
               <div id="password-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
                 <AlertCircle className="w-4 h-4" />
@@ -292,7 +354,7 @@ return (
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1"
                 aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
-                {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -317,6 +379,14 @@ return (
             <div className="flex items-center justify-center space-x-2 text-green-600 bg-green-50 p-3 rounded-lg">
               <div className="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
               <span className="font-medium">Đang tạo tài khoản...</span>
+            </div>
+          )}
+
+          {/* Thông báo lỗi */}
+          {apiError && !isSubmitting && (
+            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="text-sm font-medium">{apiError}</span>
             </div>
           )}
 

@@ -4,7 +4,7 @@ import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "../components/Layouts/Client/CountdownTimer";
-import PaymentForm from "./PaymentForm";
+// import PaymentForm from "./PaymentForm";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";

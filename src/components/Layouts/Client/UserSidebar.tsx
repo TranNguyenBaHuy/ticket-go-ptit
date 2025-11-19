@@ -33,7 +33,7 @@ const UserSidebar = () => {
   return (
     <div className="w-64 bg-[#27272A] text-white p-6 rounded-lg">
       <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-600">
-        <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="w-12 h-12 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden">
           <img
             src={
               user?.avatar
@@ -44,11 +44,9 @@ const UserSidebar = () => {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="flex-1 min-w-0">
+        <div>
           <p className="text-xs text-gray-400">Tài khoản của</p>
-          <p className="font-semibold truncate" title={user?.fullName || user?.email || 'User'}>
-            {user?.fullName || user?.email || 'User'}
-          </p>
+          <p className="font-semibold truncate">{user?.fullName || user?.email || 'User'}</p>
         </div>
       </div>
 
