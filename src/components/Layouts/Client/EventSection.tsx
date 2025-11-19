@@ -15,10 +15,9 @@ const EventSection = ({ title, catId }: EventSectionProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Sử dụng catId để tạo query, nếu không có thì fetch các sự kiện chung
-      // Hiển thị 4 sự kiện trên mỗi section
-      const url = `/api/events?page=1&limit=4${catId ? `&category=${encodeURIComponent(title)}` : ""
-        }`;
+      const url = `/api/events?page=1&limit=4${
+        catId ? `&category=${encodeURIComponent(title)}` : ""
+      }`;
       try {
         setLoading(true);
         const response = await fetch(url);
@@ -65,22 +64,20 @@ const EventSection = ({ title, catId }: EventSectionProps) => {
 
       {/* cards section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
-            ></div>
-          ))
-        ) : (
-          events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              price={getDisplayPrice(event.ticketTypes)}
-            />
-          ))
-        )}
+        {loading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
+              ></div>
+            ))
+          : events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                price={getDisplayPrice(event.ticketTypes)}
+              />
+            ))}
       </div>
     </div>
   );

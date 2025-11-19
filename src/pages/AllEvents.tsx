@@ -49,6 +49,12 @@ const AllEvents = () => {
       }
     };
 
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+
     fetchData();
   }, [categoryName, searchQuery, currentPage]);
 
