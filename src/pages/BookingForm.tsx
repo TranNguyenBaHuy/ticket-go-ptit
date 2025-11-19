@@ -1,94 +1,52 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "../components/Layouts/Client/CountdownTimer";
 import PaymentForm from "./PaymentForm";
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import axios from "@/utils/axiosInterceptor";
 
-// const Schema = z.object({
-//   name: z.string().min(1, "Vui lòng nhập họ tên"),
-//   email: z.string().email("Email không hợp lệ"),
-//   phone: z.string().min(9, "Số điện thoại không hợp lệ"),
-// });
+const Schema = z.object({
+  name: z.string().min(1, "Vui lòng nhập họ tên"),
+  email: z.string().email("Email không hợp lệ"),
+  phone: z.string().min(9, "Số điện thoại không hợp lệ"),
+});
 
 const BookingForm = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [event, setEvent] = useState<Event>();
   const [loading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ receiverName?: string; receiverEmail?: string; receiverPhone?: string }>({});
+  const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
   const [showPayment, setShowPayment] = useState(false);
-  const [formData, setFormData] = useState({
-    receiverName: "",
-    receiverPhone: "",
-    receiverEmail: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(Schema),
   });
-  const [cartDetails, setCartDetails] = useState<any[]>([]);
-  const [cartId, setCartId] = useState<number | null>(null);
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: zodResolver(Schema),
-  // });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
-    }
-  }
-
-  const onSubmit = async () => {
-    setErrors({});
-    try {
-      const payload = {
-        cartId: cartId,
-        currentCartDetails: cartDetails.map(d => ({
-          id: d.id,
-          quantity: d.quantity
-        })),
-        receiverName: formData.receiverName,
-        receiverPhone: formData.receiverPhone,
-        receiverEmail: formData.receiverEmail || null,
-      };
-
-      const response = await axios.post("/api/carts/prepare-checkout", payload);
-      console.log("Prepare checkout success:", response.data);
-      toast.success("Thông tin hợp lệ! Chuyển sang thanh toán.");
-      navigate(`/events/${id}/bookings/select-ticket/booking-form/payment`);
-      // setShowPayment(true);
-    } catch (err: any) {
-      console.log(err);
-      if (err.response?.data?.errors) {
-        type BackendError = { path?: string; message?: string };
-        const backendErrors: { receiverName?: string; receiverEmail?: string; receiverPhone?: string } = {};
-        (err.response.data.errors as BackendError[]).forEach((error) => {
-          if (error.path === "receiverName") backendErrors.receiverName = error.message;
-          else if (error.path === "receiverEmail") backendErrors.receiverEmail = error.message;
-          else if (error.path === "receiverPhone") backendErrors.receiverPhone = error.message;
-        });
-        setErrors(backendErrors);
-      } else {
-        alert("Lỗi: " + (err.response?.data?.message || err.message));
-      }
-    }
+  const onSubmit = (data: any) => {
+    console.log("Form data:", data);
+    toast.success("Thành công! Mời bạn thanh toán");
+    setShowPayment(true);
   };
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
-        setErrors({});
+        setError(null);
 
         const response = await fetch(`/api/events/${String(id)}`);
 
@@ -101,8 +59,8 @@ const BookingForm = () => {
         const result = await response.json();
         setEvent(result);
       } catch (err: any) {
-        setErrors(err.message);
-        console.log(err);
+        setError(err.message);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -118,9 +76,10 @@ const BookingForm = () => {
       try {
         setIsLoading(true);
 
-        const response = await fetch(`/api/carts`, {
+        const response = await fetch(`/api/carts/checkout?page=1&limit=1`, {
           method: "GET",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
@@ -129,13 +88,7 @@ const BookingForm = () => {
 
         const result = await response.json();
 
-        // Store cart details and ID for checkout payload
-        if (result.cartDetails && Array.isArray(result.cartDetails)) {
-          setCartDetails(result.cartDetails);
-          // Use cartId from response top level, or extract from first detail
-          setCartId(result.cartId || (result.cartDetails.length > 0 ? result.cartDetails[0].cartId : null));
-        }
-        console.log("FETCH CART DATA", result);
+        console.log("FETCH CART DATA", result.data);
       } catch (error) {
         console.error(error);
       } finally {
@@ -209,22 +162,19 @@ const BookingForm = () => {
               </h1>
 
               <div className="bg-[#38383d] px-4 py-10 rounded-xl shadow-lg">
-                <form onSubmit={onSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* NAME */}
                   <div className="flex flex-col gap-3">
                     <Label className="text-white">Họ và tên / Fullname</Label>
-                    <input
-                      name="receiverName"
+                    <Input
                       type="text"
                       placeholder="Nhập họ và tên"
-                      value={formData.receiverName}
-                      onChange={handleChange}
                       className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverName")}
+                      {...register("name")}
                     />
-                    {errors.receiverName && (
+                    {errors.name && (
                       <p className="text-red-500 text-sm">
-                        {errors.receiverName}
+                        {errors.name.message}
                       </p>
                     )}
                   </div>
@@ -232,18 +182,15 @@ const BookingForm = () => {
                   {/* EMAIL */}
                   <div className="flex flex-col gap-3">
                     <Label className="text-white">Email</Label>
-                    <input
-                      name="receiverEmail"
+                    <Input
                       type="email"
                       placeholder="Nhập email"
-                      value={formData.receiverEmail}
-                      onChange={handleChange}
                       className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverEmail")}
+                      {...register("email")}
                     />
-                    {errors.receiverEmail && (
+                    {errors.email && (
                       <p className="text-red-500 text-sm">
-                        {errors.receiverEmail}
+                        {errors.email.message}
                       </p>
                     )}
                   </div>
@@ -253,18 +200,15 @@ const BookingForm = () => {
                     <Label className="text-white">
                       Số điện thoại / Phone Number
                     </Label>
-                    <input
-                      name="receiverPhone"
+                    <Input
                       type="text"
                       placeholder="Nhập số điện thoại"
-                      value={formData.receiverPhone}
-                      onChange={handleChange}
                       className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverPhone")}
+                      {...register("phone")}
                     />
-                    {errors.receiverPhone && (
+                    {errors.phone && (
                       <p className="text-red-500 text-sm">
-                        {errors.receiverPhone}
+                        {errors.phone.message}
                       </p>
                     )}
                   </div>
@@ -292,7 +236,7 @@ const BookingForm = () => {
 
               <Button
                 type="button"
-                onClick={onSubmit}
+                onClick={handleSubmit(onSubmit)}
                 className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg"
               >
                 Tiếp tục
@@ -302,14 +246,7 @@ const BookingForm = () => {
         )}
         {/* FORM SECTION */}
 
-        {showPayment && (
-          <PaymentForm
-            receiverName={formData.receiverName}
-            receiverPhone={formData.receiverPhone}
-            receiverEmail={formData.receiverEmail}
-            cartDetails={cartDetails}
-          />
-        )}
+        {showPayment && <PaymentForm />}
       </div>
     </>
   );
