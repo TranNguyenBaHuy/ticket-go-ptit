@@ -85,13 +85,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const err = error as any;
       if (err.response?.data?.errors) {
-        const backendErrors: Record<string, string> = {};
+          const backendErrors: Record<string, string> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
           if (error.path === "username") backendErrors.username = error.message;
           else if (error.path === "password") backendErrors.password = error.message;
-        });
-        setValidationErrors(backendErrors);
+          });
+          setValidationErrors(backendErrors);
       } else {
         alert("Lỗi: " + (err.response?.data?.message || err.response?.data?.error || err.message));
       }
