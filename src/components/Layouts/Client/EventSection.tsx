@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import EventCard from "./EventCard";
 import { getDisplayPrice } from "../../../utils/getDisplayPrice";
@@ -5,18 +6,42 @@ import type { Event } from "../../../constants/types/types";
 
 interface EventSectionProps {
   title: string;
-  data: Event[];
   catId?: string;
 }
 
-const EventSection = ({ title, data, catId }: EventSectionProps) => {
+const EventSection = ({ title, catId }: EventSectionProps) => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `/api/events?page=1&limit=4${
+        catId ? `&category=${encodeURIComponent(title)}` : ""
+      }`;
+      try {
+        setLoading(true);
+        const response = await fetch(url);
+        if (!response.ok)
+          throw new Error(`Response status: ${response.status}`);
+        const result = await response.json();
+        setEvents(result.events || []);
+      } catch (e) {
+        console.error(`Lỗi khi fetch sự kiện cho "${title}":`, e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [catId, title]);
+
   return (
     <div className="mt-6">
       {/* header */}
       <div className="flex flex-row justify-between items-center">
         <p className="text-2xl text-white font-bold mb-6">{title}</p>
         <Link
-          to={`search/${catId}`}
+          to={`search?category=${catId ? encodeURIComponent(title) : ""}`}
           className="flex items-center gap-2 text-[#A6A6B0] hover:text-[#2dc275] transition-colors duration-300"
         >
           Xem thêm
@@ -39,15 +64,20 @@ const EventSection = ({ title, data, catId }: EventSectionProps) => {
 
       {/* cards section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {data.slice(0, 4).map((event) => {
-          return (
-            <EventCard
-              key={event.id}
-              event={event}
-              price={getDisplayPrice(event.ticketTypes)}
-            />
-          );
-        })}
+        {loading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-[#3f3f46] rounded-xl aspect-[16/9] animate-pulse"
+              ></div>
+            ))
+          : events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                price={getDisplayPrice(event.ticketTypes)}
+              />
+            ))}
       </div>
     </div>
   );

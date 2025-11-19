@@ -1,0 +1,28 @@
+export const paymentMethods = [
+  {
+    value: "vnpay",
+    label: "VNPAY/Ứng dụng ngân hàng",
+    icon: "https://salt.tkbcdn.com/ts/ds/e5/6d/9a/a5262401410b7057b04114ad15b93d85.png",
+  },
+  {
+    value: "vietqr",
+    label: "VietQR",
+    icon: "	https://salt.tkbcdn.com/ts/ds/0c/ae/fb/6bdb675e0df2f9f13a47726f432934e6.png",
+  },
+  {
+    value: "shopeepay",
+    label: "ShopeePay",
+    icon: "https://salt.tkbcdn.com/ts/ds/4b/d5/12/084658724105b22e6d4e1f9c7645b293.png",
+  },
+  {
+    value: "zalopay",
+    label: "Zalopay",
+    icon: "	https://salt.tkbcdn.com/ts/ds/ac/2c/68/ee062970f97385ed9e28757b0270e249.png",
+  },
+  {
+    value: "card",
+    label: "Thẻ ghi nợ/Thẻ tín dụng",
+    icon: "	https://salt.tkbcdn.com/ts/ds/db/74/b5/5eee074088b8549fe8417dd82d17dabc.png",
+    // brands: ["/icons/visa.png", "/icons/mastercard.png", "/icons/jcb.png"],
+  },
+];

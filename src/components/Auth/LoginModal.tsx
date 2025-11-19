@@ -26,7 +26,9 @@ const LoginModal: React.FC<LoginModalProps> = ({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [showSuccess, setShowSuccess] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, isSubmitting, onClose]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,11 +90,17 @@ const LoginModal: React.FC<LoginModalProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
           if (error.path === "username") backendErrors.username = error.message;
-          else if (error.path === "password") backendErrors.password = error.message;
-          });
-          setValidationErrors(backendErrors);
+          else if (error.path === "password")
+            backendErrors.password = error.message;
+        });
+        setValidationErrors(backendErrors);
       } else {
-        alert("Lỗi: " + (err.response?.data?.message || err.response?.data?.error || err.message));
+        alert(
+          "Lỗi: " +
+            (err.response?.data?.message ||
+              err.response?.data?.error ||
+              err.message)
+        );
       }
       setIsSubmitting(false);
     }
@@ -102,7 +109,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     if (validationErrors[name]) {
       setValidationErrors((prev) => ({ ...prev, [name]: "" }));
     }

@@ -90,7 +90,7 @@ const EventDetail = () => {
       <CategoryFilterBar data={categories} />
       {/* TICKET INFO SECTION */}
       <div className="w-full py-8 bg-gradient-to-b from-[#27272A] from-60% to-black text-white">
-        <div className="relative mx-4 md:mx-10 lg:mx-35 flex flex-col md:flex-row rounded-4xl overflow-hidden shadow-lg">
+        <div className="relative mx-5 lg:mx-auto max-w-[1250px] flex flex-col md:flex-row rounded-4xl overflow-hidden shadow-lg">
           {/* Left side: Info */}
           {/* left upper */}
           <div className="md:w-[36%] p-3 sm:p-6 md:p-8 flex flex-col justify-between bg-[#38383d]">
@@ -175,7 +175,7 @@ const EventDetail = () => {
 
       {/* TICKET DETAILS SECTION */}
       <div className="w-full py-8 bg-[#F5F7FC] text-white">
-        <div className="mx-4 md:mx-10 lg:mx-40 flex gap-6 md:gap-8 flex-col">
+        <div className="mx-10 lg:mx-auto max-w-[1250px] flex gap-6 md:gap-8 flex-col">
           {/* details section */}
           <div className="p-3 sm:p-5 md:p-8 bg-white rounded-2xl">
             <h1 className="py-2 mb-6 text-black text-md font-bold border-b border-[#ebebf0]">
