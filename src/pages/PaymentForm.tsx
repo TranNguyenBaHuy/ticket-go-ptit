@@ -11,7 +11,9 @@ type Props = {
   cartDetails: any[];
 };
 
-const PaymentForm = ({ userId, receiverName, receiverPhone, receiverEmail }: Props) => {
+// { userId, receiverName, receiverPhone, receiverEmail }: Props
+
+const PaymentForm = () => {
   const [paymentMethod, setPaymentMethod] = useState("vnpay");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +47,10 @@ const PaymentForm = ({ userId, receiverName, receiverPhone, receiverEmail }: Pro
         toast.success(response.data.message || "Đặt hàng thành công!");
       }
     } catch (error) {
-      console.error("Place order error:", (error as any).response?.data?.message);
+      console.error(
+        "Place order error:",
+        (error as any).response?.data?.message
+      );
       // toast.error(
       //   (error as any).response?.data?.message || "Lỗi khi đặt hàng"
       // );

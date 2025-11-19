@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { any } from "zod";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -26,7 +27,10 @@ const LoginModal: React.FC<LoginModalProps> = ({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -86,7 +90,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
         const backendErrors: { username?: string; password?: string } = {};
         (err.response.data.errors as BackendError[]).forEach((error) => {
           if (error.path === "username") backendErrors.username = error.message;
-          else if (error.path === "password") backendErrors.password = error.message;
+          else if (error.path === "password")
+            backendErrors.password = error.message;
         });
         setErrors(backendErrors);
       } else {
@@ -97,11 +102,15 @@ const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const name = e.target.name as keyof LoginCredentials;
+    const value = e.target.value;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    // Map the input field name to the corresponding error key used in state/backend
+    const errorKey: keyof typeof errors =
+      name === "emailOrPhone" ? "username" : "password";
+    if (errors[errorKey]) {
+      setErrors((prev) => ({ ...prev, [errorKey]: "" }));
     }
   };
 
@@ -158,10 +167,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.username
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                errors.username
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+              }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.username}
               aria-describedby={
@@ -196,10 +206,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                  }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
+                  errors.password
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.password}
                 aria-describedby={
@@ -240,8 +251,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-                ? "Thành công!"
-                : "Đăng nhập"}
+              ? "Thành công!"
+              : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}

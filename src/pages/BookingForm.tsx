@@ -246,7 +246,7 @@ const BookingForm = () => {
         )}
         {/* FORM SECTION */}
 
-        {showPayment && <PaymentForm />}
+        {/* {showPayment && <PaymentForm />} */}
       </div>
     </>
   );
