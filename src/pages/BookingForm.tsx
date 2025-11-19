@@ -38,7 +38,7 @@ const BookingForm = () => {
 
   const onSubmit = (data: any) => {
     console.log("Form data:", data);
-    toast.success("Đặt vé thành công! Mời bạn thanh toán");
+    toast.success("Thành công! Mời bạn thanh toán");
     setShowPayment(true);
   };
 
