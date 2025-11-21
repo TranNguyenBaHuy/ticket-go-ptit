@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
-import { formatDateTimeDisplay } from "@/utils/utils";
+import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "../components/Layouts/Client/CountdownTimer";
-import PaymentForm from "./PaymentForm";
+// import PaymentForm from "./PaymentForm";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ const BookingForm = () => {
     receiverPhone?: string;
   }>({});
   const token = localStorage.getItem("token");
-  const [showPayment, setShowPayment] = useState(false);
+  // const [showPayment, setShowPayment] = useState(false);
   const [formData, setFormData] = useState({
     receiverName: "",
     receiverPhone: "",
@@ -63,11 +63,11 @@ const BookingForm = () => {
         })),
         receiverName: formData.receiverName,
         receiverPhone: formData.receiverPhone,
-        receiverEmail: formData.receiverEmail || null,
+        receiverEmail: formData.receiverEmail,
       };
 
-      const response = await axios.post("/api/carts/prepare-checkout", payload);
-      console.log("Prepare checkout success:", response.data);
+      await axios.post("/api/carts/prepare-checkout", payload);
+      // console.log("Prepare checkout success:", response.data);
       toast.success("Thông tin hợp lệ! Chuyển sang thanh toán.");
       navigate(`/events/${id}/bookings/select-ticket/booking-form/payment`);
       // setShowPayment(true);
@@ -99,7 +99,6 @@ const BookingForm = () => {
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
-        setErrors({});
 
         const response = await fetch(`/api/events/${String(id)}`);
 
@@ -112,7 +111,6 @@ const BookingForm = () => {
         const result = await response.json();
         setEvent(result);
       } catch (err: any) {
-        setErrors(err.message);
         console.log(err);
       } finally {
         setIsLoading(false);
@@ -146,9 +144,9 @@ const BookingForm = () => {
           // Use cartId from response top level, or extract from first detail
           setCartId(
             result.cartId ||
-              (result.cartDetails.length > 0
-                ? result.cartDetails[0].cartId
-                : null)
+            (result.cartDetails.length > 0
+              ? result.cartDetails[0].cartId
+              : null)
           );
         }
         console.log("FETCH CART DATA", result);
@@ -216,116 +214,136 @@ const BookingForm = () => {
       </div>
 
       <div className="bg-black w-full flex flex-1 pb-10">
-        {!showPayment && (
-          <div className="flex flex-1 gap-5 mx-10 lg:mx-auto max-w-[1200px]">
-            {/* FORM */}
-            <div className="flex-7">
-              <h1 className="text-2xl font-bold my-10 text-[#2dc275]">
-                BẢNG CÂU HỎI
-              </h1>
+        <div className="flex flex-1 gap-5 mx-10 lg:mx-auto max-w-[1200px]">
+          {/* FORM */}
+          <div className="flex-7">
+            <h1 className="text-2xl font-bold my-10 text-[#2dc275]">
+              BẢNG CÂU HỎI
+            </h1>
 
-              <div className="bg-[#38383d] px-4 py-10 rounded-xl shadow-lg">
-                <form onSubmit={onSubmit} className="space-y-6">
-                  {/* NAME */}
-                  <div className="flex flex-col gap-3">
-                    <Label className="text-white">Họ và tên / Fullname</Label>
-                    <Input
-                      name="receiverName"
-                      type="text"
-                      placeholder="Nhập họ và tên"
-                      value={formData.receiverName}
-                      onChange={handleChange}
-                      className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                      // {...register("receiverName")}
-                    />
-                    {errors.receiverName && (
-                      <p className="text-red-500 text-sm">
-                        {errors.receiverName}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* EMAIL */}
-                  <div className="flex flex-col gap-3">
-                    <Label className="text-white">Email</Label>
-                    <Input
-                      name="receiverEmail"
-                      type="email"
-                      placeholder="Nhập email"
-                      value={formData.receiverEmail}
-                      onChange={handleChange}
-                      className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                      // {...register("receiverEmail")}
-                    />
-                    {errors.receiverEmail && (
-                      <p className="text-red-500 text-sm">
-                        {errors.receiverEmail}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* PHONE NUM */}
-                  <div className="flex flex-col gap-3">
-                    <Label className="text-white">
-                      Số điện thoại / Phone Number
-                    </Label>
-                    <Input
-                      name="receiverPhone"
-                      type="text"
-                      placeholder="Nhập số điện thoại"
-                      value={formData.receiverPhone}
-                      onChange={handleChange}
-                      className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                      // {...register("receiverPhone")}
-                    />
-                    {errors.receiverPhone && (
-                      <p className="text-red-500 text-sm">
-                        {errors.receiverPhone}
-                      </p>
-                    )}
-                  </div>
-                </form>
-              </div>
-            </div>
-            {/* ORDER INFO  */}
-            <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
-              <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
-
-              <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
-                {/* TITLE */}
-                <div className="flex justify-between">
-                  <p className="font-semibold text-md">Loại vé</p>
-                  <p className="font-semibold text-md">Số lượng</p>
+            <div className="bg-[#38383d] px-4 py-10 rounded-xl shadow-lg">
+              <form onSubmit={onSubmit} className="space-y-6">
+                {/* NAME */}
+                <div className="flex flex-col gap-3">
+                  <Label className="text-white">Họ và tên</Label>
+                  <Input
+                    name="receiverName"
+                    type="text"
+                    placeholder="Nhập họ và tên"
+                    value={formData.receiverName}
+                    onChange={handleChange}
+                    className="bg-[#2c2c30] border-gray-600 text-white py-6"
+                  // {...register("receiverName")}
+                  />
+                  {errors.receiverName && (
+                    <p className="text-red-500 text-sm">
+                      {errors.receiverName}
+                    </p>
+                  )}
                 </div>
 
-                {/* INFO  */}
-                <div className="flex">KHOA VÀ PHƯƠNG</div>
-              </div>
+                {/* EMAIL */}
+                <div className="flex flex-col gap-3">
+                  <Label className="text-white">Email</Label>
+                  <Input
+                    name="receiverEmail"
+                    type="email"
+                    placeholder="Nhập email"
+                    value={formData.receiverEmail}
+                    onChange={handleChange}
+                    className="bg-[#2c2c30] border-gray-600 text-white py-6"
+                  // {...register("receiverEmail")}
+                  />
+                  {errors.receiverEmail && (
+                    <p className="text-red-500 text-sm">
+                      {errors.receiverEmail}
+                    </p>
+                  )}
+                </div>
 
-              <p className="text-sm text-center text-black/30 font-semibold">
-                Vui lòng trả lời tất cả các câu hỏi để tiếp tục
-              </p>
-
-              <Button
-                type="button"
-                onClick={onSubmit}
-                className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg"
-              >
-                Tiếp tục
-              </Button>
+                {/* PHONE NUM */}
+                <div className="flex flex-col gap-3">
+                  <Label className="text-white">
+                    Số điện thoại
+                  </Label>
+                  <Input
+                    name="receiverPhone"
+                    type="tel"
+                    placeholder="Nhập số điện thoại"
+                    value={formData.receiverPhone}
+                    onChange={handleChange}
+                    className="bg-[#2c2c30] border-gray-600 text-white py-6"
+                  // {...register("receiverPhone")}
+                  />
+                  {errors.receiverPhone && (
+                    <p className="text-red-500 text-sm">
+                      {errors.receiverPhone}
+                    </p>
+                  )}
+                </div>
+              </form>
             </div>
           </div>
-        )}
+          {/* ORDER INFO  */}
+          <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
+            <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+
+            <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
+              {/* TITLE */}
+              <div className="flex justify-between">
+                <p className="font-semibold text-md">Loại vé</p>
+                <p className="font-semibold text-md">Số lượng</p>
+              </div>
+
+              {/* INFO  */}
+              <div className="flex flex-col gap-2">
+                {cartDetails && cartDetails.length > 0 ? (
+                  cartDetails.map((item) => (
+                    <div key={item.id} className="flex justify-between items-center">
+                      <div className="flex flex-col">
+                        <p className="font-normal">{item.ticketType?.type ?? 'Loại vé'}</p>
+                        <p className="font-normal text-gray-500">{formatCurrency(item.price)}</p>
+                      </div>
+                      <div className="flex flex-col text-end">
+                        <p className="font-normal text-gray-500">{item.quantity}</p>
+                        <p className="font-normal text-gray-500">{formatCurrency(item.price * item.quantity)}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex">Giỏ hàng trống</div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <p className="font-semibold text-md">Tạm tính {cartDetails.length > 0 ? cartDetails.reduce((total, item) => total + item.quantity, 0) : 0} ghế</p>
+              <p className="font-bold text-lg text-[#2dc275]">{cartDetails.length > 0 ? formatCurrency(cartDetails.reduce((total, item) => total + item.price * item.quantity, 0)) : formatCurrency(0)}</p>
+            </div>
+
+            <p className="text-sm text-center text-black/30 font-semibold">
+              Vui lòng trả lời tất cả các câu hỏi để tiếp tục
+            </p>
+
+            <Button
+              type="button"
+              onClick={onSubmit}
+              className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg"
+            >
+              Tiếp tục
+            </Button>
+          </div>
+        </div>
         {/* FORM SECTION */}
 
-        {showPayment && (
+        {/* {showPayment && (
           <PaymentForm
             receiverName={formData.receiverName}
             receiverPhone={formData.receiverPhone}
             receiverEmail={formData.receiverEmail}
             cartDetails={cartDetails}
           />
-        )}
+        )} */}
       </div>
     </>
   );
