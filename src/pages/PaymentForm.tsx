@@ -7,9 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "@/components/Layouts/Client/CountdownTimer";
-import { useParams } from "react-router-dom";
-
-// { userId, receiverName, receiverPhone, receiverEmail }: Props
+import { useLocation, useParams } from "react-router-dom";
 
 const PaymentForm = () => {
   const { id } = useParams();
@@ -21,6 +19,16 @@ const PaymentForm = () => {
   const [cartDetails, setCartDetails] = useState<any[]>([]);
 
   const decodedUser = jwtDecode(token);
+  const location = useLocation();
+  const state = (location.state as {
+    receiverName?: string;
+    receiverPhone?: string | null;
+    receiverEmail?: string | null;
+  }) || {};
+
+  const receiverName = state.receiverName ?? '';
+  const receiverPhone = state.receiverPhone ?? null;
+  const receiverEmail = state.receiverEmail ?? null;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -89,22 +97,21 @@ const PaymentForm = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const totalPrice = cartDetails.reduce(
-        (sum, item) => sum + (item.price * item.quantity),
-        0
-      );
+      // const totalPrice = cartDetails.reduce(
+      //   (sum, item) => sum + (item.price * item.quantity),
+      //   0
+      // );
 
       const payload = {
         userId: decodedUser.id,
-        receiverName: "Nguyễn Chí Thịnh 2812",
-        receiverPhone: "0123456789",
-        receiverEmail: "thinh@example.com",
-        totalPrice: totalPrice,
+        receiverName,
+        receiverPhone,
+        receiverEmail,
+        // totalPrice: totalPrice,
         paymentMethod,
       };
 
       const response = await axios.post("/api/carts/place-order", payload);
-      console.log("Place order success:", response.data);
 
       if (response.data.paymentUrl) {
         window.location.href = response.data.paymentUrl;

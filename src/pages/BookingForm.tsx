@@ -66,11 +66,16 @@ const BookingForm = () => {
         receiverEmail: formData.receiverEmail,
       };
 
-      await axios.post("/api/carts/prepare-checkout", payload);
-      // console.log("Prepare checkout success:", response.data);
-      toast.success("Thông tin hợp lệ! Chuyển sang thanh toán.");
-      navigate(`/events/${id}/bookings/select-ticket/booking-form/payment`);
-      // setShowPayment(true);
+      const res = await axios.post("/api/carts/prepare-checkout", payload);
+      if (res.data.success) {
+        navigate(`/events/${id}/bookings/select-ticket/booking-form/payment`, {
+          state: {
+            receiverName: payload.receiverName,
+            receiverPhone: payload.receiverPhone,
+            receiverEmail: payload.receiverEmail,
+          },
+        });
+      }
     } catch (err: any) {
       console.log(err);
       if (err.response?.data?.errors) {
