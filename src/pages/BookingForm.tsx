@@ -36,6 +36,7 @@ const BookingForm = () => {
   });
   const [cartDetails, setCartDetails] = useState<any[]>([]);
   const [cartId, setCartId] = useState<number | null>(null);
+  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
   // const {
   //   register,
   //   handleSubmit,
@@ -73,6 +74,7 @@ const BookingForm = () => {
             receiverName: payload.receiverName,
             receiverPhone: payload.receiverPhone,
             receiverEmail: payload.receiverEmail,
+            paymentExpiresAt: paymentExpiresAt,
           },
         });
       }
@@ -143,18 +145,28 @@ const BookingForm = () => {
 
         const result = await response.json();
 
-        // Store cart details and ID for checkout payload
         if (result.cartDetails && Array.isArray(result.cartDetails)) {
           setCartDetails(result.cartDetails);
-          // Use cartId from response top level, or extract from first detail
-          setCartId(
-            result.cartId ||
+          const currentCartId = result.cartId ||
             (result.cartDetails.length > 0
               ? result.cartDetails[0].cartId
-              : null)
-          );
+              : null);
+          setCartId(currentCartId);
+
+          if (currentCartId) {
+            const storageKey = `checkoutEnd_${currentCartId}`;
+            const storedExpiresAt = localStorage.getItem(storageKey);
+            let expiresAt: number;
+            if (storedExpiresAt) {
+              expiresAt = Number(storedExpiresAt);
+            } else {
+              expiresAt = Date.now() + 15 * 60 * 1000;
+              localStorage.setItem(storageKey, String(expiresAt));
+            }
+            setPaymentExpiresAt(expiresAt);
+          }
         }
-        console.log("FETCH CART DATA", result);
+        // console.log("FETCH CART DATA", result);
       } catch (error) {
         console.error(error);
       } finally {
@@ -179,6 +191,10 @@ const BookingForm = () => {
   // if (showPayment) {
   //   return <PaymentForm visible={true} />;
   // }
+
+  const initialMinutes = paymentExpiresAt
+    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
+    : 15;
 
   return (
     <>
@@ -213,7 +229,7 @@ const BookingForm = () => {
           </div>
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
-            <CountdownTimer initialMinutes={15} />
+            <CountdownTimer initialMinutes={initialMinutes} />
           </div>
         </div>
       </div>

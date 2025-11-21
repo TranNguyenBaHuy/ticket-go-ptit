@@ -24,11 +24,17 @@ const PaymentForm = () => {
     receiverName?: string;
     receiverPhone?: string | null;
     receiverEmail?: string | null;
+    paymentExpiresAt?: number;
   }) || {};
 
   const receiverName = state.receiverName ?? '';
   const receiverPhone = state.receiverPhone ?? null;
   const receiverEmail = state.receiverEmail ?? null;
+  const paymentExpiresAt = state.paymentExpiresAt;
+
+  const initialMinutes = paymentExpiresAt
+    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
+    : 15;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -77,7 +83,7 @@ const PaymentForm = () => {
         if (result.cartDetails && Array.isArray(result.cartDetails)) {
           setCartDetails(result.cartDetails);
         }
-        console.log("FETCH CART DATA", result);
+        // console.log("FETCH CART DATA", result);
       } catch (error) {
         console.error(error);
       } finally {
@@ -164,7 +170,7 @@ const PaymentForm = () => {
           </div>
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
-            <CountdownTimer initialMinutes={15} />
+            <CountdownTimer initialMinutes={initialMinutes} />
           </div>
         </div>
       </div>
