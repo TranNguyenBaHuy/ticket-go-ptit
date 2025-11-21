@@ -57,11 +57,11 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
+  fullName: string;
   email: string;
   phone?: string;
   password: string;
   confirmPassword: string;
-  name: string;
   acceptTerms?: boolean;
 }
 

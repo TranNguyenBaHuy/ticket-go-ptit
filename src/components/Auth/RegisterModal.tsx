@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { RegisterCredentials } from '../../constants/types/types';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -11,37 +12,26 @@ interface RegisterModalProps {
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState<RegisterCredentials>({
+    fullName: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    name: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | null>(null);
-  const [apiError, setApiError] = useState<string>('');
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Quản lý focus
-  useEffect(() => {
-    if (isOpen && nameInputRef.current) {
-      setTimeout(() => nameInputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
-
-  // Clear API error khi form data thay đổi
-  useEffect(() => {
-    if (apiError) {
-      setApiError('');
-    }
-  }, [formData]);
-
-  // Xử lý phím ESC
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isSubmitting) {
@@ -52,77 +42,60 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, isSubmitting, onClose]);
 
-  // Đánh giá độ mạnh mật khẩu
-  useEffect(() => {
-    if (!formData.password) {
-      setPasswordStrength(null);
-      return;
-    }
-    
-    let strength = 0;
-    if (formData.password.length >= 8) strength++;
-    if (/[a-z]/.test(formData.password) && /[A-Z]/.test(formData.password)) strength++;
-    if (/\d/.test(formData.password)) strength++;
-    if (/[^a-zA-Z\d]/.test(formData.password)) strength++;
-    
-    if (strength <= 1) setPasswordStrength('weak');
-    else if (strength <= 2) setPasswordStrength('medium');
-    else setPasswordStrength('strong');
-  }, [formData.password]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setApiError('');
     setErrors({});
-  
-    if (formData.password !== formData.confirmPassword) {
-      setErrors({ confirmPassword: 'Mật khẩu xác nhận không khớp' });
-      return;
-    }
-  
+    setGeneralError(null);
+
     setIsSubmitting(true);
-  
+
     try {
-      const response = await axios.post('/api/auth/register', {
+      const payload: any = {
+        fullName: formData.fullName,
         email: formData.email,
-        password: formData.password
-      });
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      };
+      if (formData.phone && formData.phone.trim() !== '') {
+        payload.phone = formData.phone.trim();
+      }
+
+      const response = await axios.post('/api/auth/register', payload);
 
       if (response.data) {
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({
+            fullName: '',
             email: '',
             phone: '',
             password: '',
             confirmPassword: '',
-            name: ''
           });
           setErrors({});
+          setIsSubmitting(false);
           onSwitchToLogin();
+          toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
         }, 1500);
       }
-    } catch (error: unknown) {
-      console.error('Register error:', error);
-      if (axios.isAxiosError(error)) {
-        if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
-          const backendErrors: Record<string, string> = {};
-          error.response.data.errors.forEach((err: { path: string; message: string }) => {
-            backendErrors[err.path] = err.message;
-          });
-          setErrors(backendErrors);
-          setApiError(error.response.data.message || 'Dữ liệu không hợp lệ');
-        } else if (error.response?.data?.message) {
-          setApiError(error.response.data.message);
-        } else {
-          setApiError('Đăng ký thất bại. Vui lòng thử lại!');
-        }
+    } catch (err: any) {
+      if (err.response?.data?.errors) {
+        type BackendError = { path?: string; message?: string };
+        const backendErrors: { fullName?: string; email?: string; phone?: string; password?: string; confirmPassword?: string } = {};
+        (err.response.data.errors as BackendError[]).forEach((error) => {
+          if (error.path === "fullName") backendErrors.fullName = error.message;
+          else if (error.path === "email") backendErrors.email = error.message;
+          else if (error.path === "phone") backendErrors.phone = error.message;
+          else if (error.path === "password") backendErrors.password = error.message;
+          else if (error.path === "confirmPassword") backendErrors.confirmPassword = error.message;
+        });
+        setErrors(backendErrors);
       } else {
-        setApiError('Có lỗi xảy ra. Vui lòng thử lại!');
+        const message = err.response?.data?.message || err.response?.data?.error || err.message;
+        setGeneralError(message);
       }
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -130,7 +103,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -138,16 +111,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
   if (!isOpen) return null;
 
-return (
-  <div 
-    ref={modalRef}
-    className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
-  >
-      <div 
+  return (
+    <div
+      ref={modalRef}
+      className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
+    >
+      <div
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
       >
-  {/* Tiêu đề */}
+        {/* Tiêu đề */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl px-6 py-5 flex items-center justify-between sticky top-0 z-10">
           <h2 id="register-modal-title" className="text-white text-2xl font-bold">Đăng ký</h2>
           <button
@@ -160,7 +133,7 @@ return (
           </button>
         </div>
 
-  {/* Biểu mẫu */}
+        {/* Biểu mẫu */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>
           {/* Thông báo thành công */}
           {showSuccess && (
@@ -170,32 +143,37 @@ return (
             </div>
           )}
 
+          {generalError && (
+            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">{generalError}</span>
+            </div>
+          )}
+
           {/* Ô nhập họ tên */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Họ và tên <span className="text-red-500">*</span>
             </label>
             <input
-              ref={nameInputRef}
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Nguyễn Văn A"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.name
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.fullName
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? 'name-error' : undefined}
+              aria-invalid={!!errors.fullName}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
             />
-            {errors.name && (
-              <div id="name-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
+            {errors.fullName && (
+              <div id="fullName-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
                 <AlertCircle className="w-4 h-4" />
-                <span>{errors.name}</span>
+                <span>{errors.fullName}</span>
               </div>
             )}
           </div>
@@ -212,11 +190,10 @@ return (
               value={formData.email}
               onChange={handleInputChange}
               placeholder="example@email.com"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.email
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.email
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
@@ -241,11 +218,10 @@ return (
               value={formData.phone}
               onChange={handleInputChange}
               placeholder="0912345678"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.phone
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.phone
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? 'phone-error' : undefined}
@@ -271,11 +247,10 @@ return (
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.password
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'password-error' : undefined}
@@ -287,36 +262,9 @@ return (
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1"
                 aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
               </button>
             </div>
-            {/* Độ mạnh mật khẩu */}
-            {passwordStrength && (
-              <div className="mt-2">
-                <div className="flex space-x-1">
-                  <div className={`h-1 flex-1 rounded ${
-                    passwordStrength === 'weak' ? 'bg-red-500' :
-                    passwordStrength === 'medium' ? 'bg-yellow-500' :
-                    'bg-green-500'
-                  }`} />
-                  <div className={`h-1 flex-1 rounded ${
-                    passwordStrength === 'medium' || passwordStrength === 'strong' ? 
-                    (passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-green-500') :
-                    'bg-gray-200'
-                  }`} />
-                  <div className={`h-1 flex-1 rounded ${
-                    passwordStrength === 'strong' ? 'bg-green-500' : 'bg-gray-200'
-                  }`} />
-                </div>
-                <p className={`text-xs mt-1 ${
-                  passwordStrength === 'weak' ? 'text-red-600' :
-                  passwordStrength === 'medium' ? 'text-yellow-600' :
-                  'text-green-600'
-                }`}>
-                  Độ mạnh: {passwordStrength === 'weak' ? 'Yếu' : passwordStrength === 'medium' ? 'Trung bình' : 'Mạnh'}
-                </p>
-              </div>
-            )}
             {errors.password && (
               <div id="password-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
                 <AlertCircle className="w-4 h-4" />
@@ -332,30 +280,29 @@ return (
             </label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? 'text' : 'password'}
+                type='password'
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Nhập lại mật khẩu"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.confirmPassword
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.confirmPassword}
                 aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
               />
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 disabled={isSubmitting}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1"
                 aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+                {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+              </button> */}
             </div>
             {errors.confirmPassword && (
               <div id="confirmPassword-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
@@ -379,14 +326,6 @@ return (
             <div className="flex items-center justify-center space-x-2 text-green-600 bg-green-50 p-3 rounded-lg">
               <div className="animate-spin w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
               <span className="font-medium">Đang tạo tài khoản...</span>
-            </div>
-          )}
-
-          {/* Thông báo lỗi */}
-          {apiError && !isSubmitting && (
-            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="text-sm font-medium">{apiError}</span>
             </div>
           )}
 
