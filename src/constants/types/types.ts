@@ -101,3 +101,9 @@ export interface ResetPasswordCredentials {
   password: string;
   confirmPassword: string;
 }
+
+export type MyJwtPayload = {
+  id: number;
+  email: string;
+  name?: string;
+};

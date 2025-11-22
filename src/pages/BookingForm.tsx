@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "../components/Layouts/Client/CountdownTimer";
-// import PaymentForm from "./PaymentForm";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
@@ -16,6 +15,14 @@ import axios from "@/utils/axiosInterceptor";
 //   email: z.string().email("Email không hợp lệ"),
 //   phone: z.string().min(9, "Số điện thoại không hợp lệ"),
 // });
+
+type BookingFields = "receiverName" | "receiverPhone" | "receiverEmail";
+
+interface BookingFormData {
+  receiverName: string;
+  receiverPhone: string;
+  receiverEmail: string;
+}
 
 const BookingForm = () => {
   const { id } = useParams();
@@ -29,11 +36,12 @@ const BookingForm = () => {
   }>({});
   const token = localStorage.getItem("token");
   // const [showPayment, setShowPayment] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BookingFormData>({
     receiverName: "",
     receiverPhone: "",
     receiverEmail: "",
   });
+
   const [cartDetails, setCartDetails] = useState<any[]>([]);
   const [cartId, setCartId] = useState<number | null>(null);
   const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
@@ -45,15 +53,16 @@ const BookingForm = () => {
   //   resolver: zodResolver(Schema),
   // });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.name as BookingFields;
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors({ ...errors, [name]: "" });
     }
   };
 
-  const onSubmit = async () => {
+  const handleSubmit = async () => {
     setErrors({});
     try {
       const payload = {
@@ -77,6 +86,8 @@ const BookingForm = () => {
             paymentExpiresAt: paymentExpiresAt,
           },
         });
+
+        toast.success("Thành công! Mời bạn tiến hành thanh toán");
       }
     } catch (err: any) {
       console.log(err);
@@ -147,7 +158,8 @@ const BookingForm = () => {
 
         if (result.cartDetails && Array.isArray(result.cartDetails)) {
           setCartDetails(result.cartDetails);
-          const currentCartId = result.cartId ||
+          const currentCartId =
+            result.cartId ||
             (result.cartDetails.length > 0
               ? result.cartDetails[0].cartId
               : null);
@@ -243,7 +255,7 @@ const BookingForm = () => {
             </h1>
 
             <div className="bg-[#38383d] px-4 py-10 rounded-xl shadow-lg">
-              <form onSubmit={onSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* NAME */}
                 <div className="flex flex-col gap-3">
                   <Label className="text-white">Họ và tên</Label>
@@ -254,7 +266,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverName")}
+                    // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -273,7 +285,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverEmail")}
+                    // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -284,9 +296,7 @@ const BookingForm = () => {
 
                 {/* PHONE NUM */}
                 <div className="flex flex-col gap-3">
-                  <Label className="text-white">
-                    Số điện thoại
-                  </Label>
+                  <Label className="text-white">Số điện thoại</Label>
                   <Input
                     name="receiverPhone"
                     type="tel"
@@ -294,7 +304,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverPhone")}
+                    // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -320,14 +330,25 @@ const BookingForm = () => {
               <div className="flex flex-col gap-2">
                 {cartDetails && cartDetails.length > 0 ? (
                   cartDetails.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center"
+                    >
                       <div className="flex flex-col">
-                        <p className="font-normal">{item.ticketType?.type ?? 'Loại vé'}</p>
-                        <p className="font-normal text-gray-500">{formatCurrency(item.price)}</p>
+                        <p className="font-normal">
+                          {item.ticketType?.type ?? "Loại vé"}
+                        </p>
+                        <p className="font-normal text-gray-500">
+                          {formatCurrency(item.price)}
+                        </p>
                       </div>
                       <div className="flex flex-col text-end">
-                        <p className="font-normal text-gray-500">{item.quantity}</p>
-                        <p className="font-normal text-gray-500">{formatCurrency(item.price * item.quantity)}</p>
+                        <p className="font-normal text-gray-500">
+                          {item.quantity}
+                        </p>
+                        <p className="font-normal text-gray-500">
+                          {formatCurrency(item.price * item.quantity)}
+                        </p>
                       </div>
                     </div>
                   ))
@@ -338,8 +359,26 @@ const BookingForm = () => {
             </div>
 
             <div className="flex justify-between">
-              <p className="font-semibold text-md">Tạm tính {cartDetails.length > 0 ? cartDetails.reduce((total, item) => total + item.quantity, 0) : 0} ghế</p>
-              <p className="font-bold text-lg text-[#2dc275]">{cartDetails.length > 0 ? formatCurrency(cartDetails.reduce((total, item) => total + item.price * item.quantity, 0)) : formatCurrency(0)}</p>
+              <p className="font-semibold text-md">
+                Tạm tính{" "}
+                {cartDetails.length > 0
+                  ? cartDetails.reduce(
+                      (total, item) => total + item.quantity,
+                      0
+                    )
+                  : 0}{" "}
+                ghế
+              </p>
+              <p className="font-bold text-lg text-[#2dc275]">
+                {cartDetails.length > 0
+                  ? formatCurrency(
+                      cartDetails.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                    )
+                  : formatCurrency(0)}
+              </p>
             </div>
 
             <p className="text-sm text-center text-black/30 font-semibold">
@@ -348,7 +387,7 @@ const BookingForm = () => {
 
             <Button
               type="button"
-              onClick={onSubmit}
+              onClick={handleSubmit}
               className="w-full bg-[#2dc275] hover:bg-black hover:text-white text-white py-6 rounded-lg text-lg"
             >
               Tiếp tục

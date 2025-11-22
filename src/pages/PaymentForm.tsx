@@ -8,6 +8,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "@/components/Layouts/Client/CountdownTimer";
 import { useLocation, useParams } from "react-router-dom";
+import type { Event, MyJwtPayload } from "@/constants/types/types";
 
 const PaymentForm = () => {
   const { id } = useParams();
@@ -18,16 +19,16 @@ const PaymentForm = () => {
   const token = localStorage.getItem("token");
   const [cartDetails, setCartDetails] = useState<any[]>([]);
 
-  const decodedUser = jwtDecode(token);
   const location = useLocation();
-  const state = (location.state as {
-    receiverName?: string;
-    receiverPhone?: string | null;
-    receiverEmail?: string | null;
-    paymentExpiresAt?: number;
-  }) || {};
+  const state =
+    (location.state as {
+      receiverName?: string;
+      receiverPhone?: string | null;
+      receiverEmail?: string | null;
+      paymentExpiresAt?: number;
+    }) || {};
 
-  const receiverName = state.receiverName ?? '';
+  const receiverName = state.receiverName ?? "";
   const receiverPhone = state.receiverPhone ?? null;
   const receiverEmail = state.receiverEmail ?? null;
   const paymentExpiresAt = state.paymentExpiresAt;
@@ -35,6 +36,8 @@ const PaymentForm = () => {
   const initialMinutes = paymentExpiresAt
     ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
     : 15;
+
+  const decodedUser = token ? jwtDecode<MyJwtPayload>(token) : null;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -109,7 +112,7 @@ const PaymentForm = () => {
       // );
 
       const payload = {
-        userId: decodedUser.id,
+        userId: decodedUser?.id,
         receiverName,
         receiverPhone,
         receiverEmail,
@@ -232,14 +235,25 @@ const PaymentForm = () => {
               <div className="flex flex-col gap-2">
                 {cartDetails && cartDetails.length > 0 ? (
                   cartDetails.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center"
+                    >
                       <div className="flex flex-col">
-                        <p className="font-normal">{item.ticketType?.type ?? 'Loại vé'}</p>
-                        <p className="font-normal text-gray-500">{formatCurrency(item.price)}</p>
+                        <p className="font-normal">
+                          {item.ticketType?.type ?? "Loại vé"}
+                        </p>
+                        <p className="font-normal text-gray-500">
+                          {formatCurrency(item.price)}
+                        </p>
                       </div>
                       <div className="flex flex-col text-end">
-                        <p className="font-normal text-gray-500">{item.quantity}</p>
-                        <p className="font-normal text-gray-500">{formatCurrency(item.price * item.quantity)}</p>
+                        <p className="font-normal text-gray-500">
+                          {item.quantity}
+                        </p>
+                        <p className="font-normal text-gray-500">
+                          {formatCurrency(item.price * item.quantity)}
+                        </p>
                       </div>
                     </div>
                   ))
@@ -250,8 +264,26 @@ const PaymentForm = () => {
             </div>
 
             <div className="flex justify-between">
-              <p className="font-semibold text-md">Tạm tính {cartDetails.length > 0 ? cartDetails.reduce((total, item) => total + item.quantity, 0) : 0} ghế</p>
-              <p className="font-bold text-lg text-[#2dc275]">{cartDetails.length > 0 ? formatCurrency(cartDetails.reduce((total, item) => total + item.price * item.quantity, 0)) : formatCurrency(0)}</p>
+              <p className="font-semibold text-md">
+                Tạm tính{" "}
+                {cartDetails.length > 0
+                  ? cartDetails.reduce(
+                      (total, item) => total + item.quantity,
+                      0
+                    )
+                  : 0}{" "}
+                ghế
+              </p>
+              <p className="font-bold text-lg text-[#2dc275]">
+                {cartDetails.length > 0
+                  ? formatCurrency(
+                      cartDetails.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
+                    )
+                  : formatCurrency(0)}
+              </p>
             </div>
 
             <p className="text-sm text-center text-black/30 font-semibold">
@@ -267,7 +299,7 @@ const PaymentForm = () => {
               {isLoading ? "Đang xử lý..." : "Tiếp tục"}
             </Button>
           </div>
-        </div >
+        </div>
       </div>
     </>
   );
