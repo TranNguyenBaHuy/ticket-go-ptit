@@ -178,7 +178,6 @@ const BookingForm = () => {
             setPaymentExpiresAt(expiresAt);
           }
         }
-        // console.log("FETCH CART DATA", result);
       } catch (error) {
         console.error(error);
       } finally {
@@ -210,6 +209,7 @@ const BookingForm = () => {
 
   return (
     <>
+      {/* HEADER */}
       <div className="relative w-full h-62 md:h-72 lg:h-62 overflow-hidden">
         <img
           src={`/images/event/${event?.bannerUrl}`}
@@ -246,6 +246,7 @@ const BookingForm = () => {
         </div>
       </div>
 
+      {/* BODY */}
       <div className="bg-black w-full flex flex-1 pb-10">
         <div className="flex flex-1 gap-5 mx-10 lg:mx-auto max-w-[1200px]">
           {/* FORM */}
@@ -394,16 +395,6 @@ const BookingForm = () => {
             </Button>
           </div>
         </div>
-        {/* FORM SECTION */}
-
-        {/* {showPayment && (
-          <PaymentForm
-            receiverName={formData.receiverName}
-            receiverPhone={formData.receiverPhone}
-            receiverEmail={formData.receiverEmail}
-            cartDetails={cartDetails}
-          />
-        )} */}
       </div>
     </>
   );
