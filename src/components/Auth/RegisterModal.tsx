@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { RegisterCredentials } from '../../constants/types/types';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -11,25 +12,25 @@ interface RegisterModalProps {
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState<RegisterCredentials>({
+    fullName: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    name: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && nameInputRef.current) {
-      setTimeout(() => nameInputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -45,48 +46,55 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-  
-    if (formData.password !== formData.confirmPassword) {
-      setErrors({ confirmPassword: 'Mật khẩu xác nhận không khớp' });
-      return;
-    }
-  
+    setGeneralError(null);
+
     setIsSubmitting(true);
-  
+
     try {
-      const response = await axios.post('/api/auth/register', {
+      const payload: any = {
+        fullName: formData.fullName,
         email: formData.email,
-        password: formData.password
-      });
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      };
+      if (formData.phone && formData.phone.trim() !== '') {
+        payload.phone = formData.phone.trim();
+      }
+
+      const response = await axios.post('/api/auth/register', payload);
 
       if (response.data) {
         setShowSuccess(true);
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({
+            fullName: '',
             email: '',
             phone: '',
             password: '',
             confirmPassword: '',
-            name: ''
           });
           setErrors({});
+          setIsSubmitting(false);
           onSwitchToLogin();
+          toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
         }, 1500);
       }
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
+    } catch (err: any) {
       if (err.response?.data?.errors) {
-        const backendErrors: Record<string, string> = {};
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        err.response.data.errors.forEach((error: any) => {
-          if (error.path === "email") backendErrors.email = error.message;
+        type BackendError = { path?: string; message?: string };
+        const backendErrors: { fullName?: string; email?: string; phone?: string; password?: string; confirmPassword?: string } = {};
+        (err.response.data.errors as BackendError[]).forEach((error) => {
+          if (error.path === "fullName") backendErrors.fullName = error.message;
+          else if (error.path === "email") backendErrors.email = error.message;
+          else if (error.path === "phone") backendErrors.phone = error.message;
           else if (error.path === "password") backendErrors.password = error.message;
+          else if (error.path === "confirmPassword") backendErrors.confirmPassword = error.message;
         });
         setErrors(backendErrors);
       } else {
-        alert("Lỗi: " + (err.response?.data?.message || err.message));
+        const message = err.response?.data?.message || err.response?.data?.error || err.message;
+        setGeneralError(message);
       }
       setIsSubmitting(false);
     }
@@ -95,7 +103,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -103,16 +111,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
 
   if (!isOpen) return null;
 
-return (
-  <div 
-    ref={modalRef}
-    className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
-  >
-      <div 
+  return (
+    <div
+      ref={modalRef}
+      className="bg-white rounded-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
+    >
+      <div
         ref={modalRef}
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto"
       >
-  {/* Tiêu đề */}
+        {/* Tiêu đề */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl px-6 py-5 flex items-center justify-between sticky top-0 z-10">
           <h2 id="register-modal-title" className="text-white text-2xl font-bold">Đăng ký</h2>
           <button
@@ -125,7 +133,7 @@ return (
           </button>
         </div>
 
-  {/* Biểu mẫu */}
+        {/* Biểu mẫu */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5" noValidate>
           {/* Thông báo thành công */}
           {showSuccess && (
@@ -135,32 +143,37 @@ return (
             </div>
           )}
 
+          {generalError && (
+            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">{generalError}</span>
+            </div>
+          )}
+
           {/* Ô nhập họ tên */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Họ và tên <span className="text-red-500">*</span>
             </label>
             <input
-              ref={nameInputRef}
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Nguyễn Văn A"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.name
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.fullName
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? 'name-error' : undefined}
+              aria-invalid={!!errors.fullName}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
             />
-            {errors.name && (
-              <div id="name-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
+            {errors.fullName && (
+              <div id="fullName-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
                 <AlertCircle className="w-4 h-4" />
-                <span>{errors.name}</span>
+                <span>{errors.fullName}</span>
               </div>
             )}
           </div>
@@ -177,11 +190,10 @@ return (
               value={formData.email}
               onChange={handleInputChange}
               placeholder="example@email.com"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.email
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.email
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
@@ -206,11 +218,10 @@ return (
               value={formData.phone}
               onChange={handleInputChange}
               placeholder="0912345678"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.phone
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.phone
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                }`}
               disabled={isSubmitting}
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? 'phone-error' : undefined}
@@ -236,11 +247,10 @@ return (
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.password
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'password-error' : undefined}
@@ -270,22 +280,21 @@ return (
             </label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? 'text' : 'password'}
+                type='password'
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="Nhập lại mật khẩu"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  errors.confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.confirmPassword
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
+                  }`}
                 disabled={isSubmitting}
                 aria-invalid={!!errors.confirmPassword}
                 aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
               />
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 disabled={isSubmitting}
@@ -293,7 +302,7 @@ return (
                 aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
               >
                 {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-              </button>
+              </button> */}
             </div>
             {errors.confirmPassword && (
               <div id="confirmPassword-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
