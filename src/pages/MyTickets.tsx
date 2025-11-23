@@ -133,8 +133,7 @@ const MyTickets = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 md:px-6 lg:px-10 py-2 md:py-2.5 lg:py-3 rounded-full font-medium text-sm md:text-base transition-colors ${
-                    activeTab === tab.id
+                  className={`px-3 md:px-6 lg:px-10 py-2 md:py-2.5 lg:py-3 rounded-full font-medium text-sm md:text-base transition-colors ${activeTab === tab.id
                       ? "bg-[#2dc275] text-white"
                       : "bg-[#3a3a3a] text-gray-300 hover:bg-[#616169]"
                   }`}
@@ -158,11 +157,10 @@ const MyTickets = () => {
             <div className="flex gap-6 md:gap-8 lg:gap-12 mb-6 md:mb-8 border-b border-gray-700">
               <button
                 onClick={() => setActiveSubTab("upcoming")}
-                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${
-                  activeSubTab === "upcoming"
+                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "upcoming"
                     ? "text-[#2dc275]"
                     : "text-gray-400 hover:text-gray-300"
-                }`}
+                  }`}
               >
                 Sắp diễn ra
                 {activeSubTab === "upcoming" && (
@@ -171,11 +169,10 @@ const MyTickets = () => {
               </button>
               <button
                 onClick={() => setActiveSubTab("past")}
-                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${
-                  activeSubTab === "past"
+                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "past"
                     ? "text-[#2dc275]"
                     : "text-gray-400 hover:text-gray-300"
-                }`}
+                  }`}
               >
                 Đã kết thúc
                 {activeSubTab === "past" && (

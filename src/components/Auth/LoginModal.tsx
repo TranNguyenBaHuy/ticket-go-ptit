@@ -26,18 +26,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [errors, setErrors] = useState<{
+    emailOrPhone?: string;
+    password?: string;
+  }>({});
   const [showSuccess, setShowSuccess] = useState(false);
-  const emailInputRef = useRef<HTMLInputElement>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && emailInputRef.current) {
-      setTimeout(() => emailInputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -51,13 +46,14 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationErrors({});
+    setErrors({});
+    setGeneralError(null);
 
     setIsSubmitting(true);
 
     try {
       const response = await axios.post("/api/auth/login", {
-        username: formData.emailOrPhone,
+        emailOrPhone: formData.emailOrPhone,
         password: formData.password,
       });
 
@@ -74,7 +70,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
         setShowSuccess(false);
         onClose();
         setFormData({ emailOrPhone: "", password: "" });
-        setValidationErrors({});
+        setErrors({});
 
         if (decodedUser.role?.name === "ADMIN") {
           navigate("/admin");
@@ -82,25 +78,19 @@ const LoginModal: React.FC<LoginModalProps> = ({
           navigate("/");
         }
       }, 1500);
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
+    } catch (err: any) {
       if (err.response?.data?.errors) {
-        const backendErrors: Record<string, string> = {};
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        err.response.data.errors.forEach((error: any) => {
-          if (error.path === "username") backendErrors.username = error.message;
+        type BackendError = { path?: string; message?: string };
+        const backendErrors: { emailOrPhone?: string; password?: string } = {};
+        (err.response.data.errors as BackendError[]).forEach((error) => {
+          if (error.path === "emailOrPhone") backendErrors.emailOrPhone = error.message;
           else if (error.path === "password")
             backendErrors.password = error.message;
         });
-        setValidationErrors(backendErrors);
+        setErrors(backendErrors);
       } else {
-        alert(
-          "Lỗi: " +
-            (err.response?.data?.message ||
-              err.response?.data?.error ||
-              err.message)
-        );
+        const message = err.response?.data?.message || err.response?.data?.error || err.message;
+        setGeneralError(message);
       }
       setIsSubmitting(false);
     }
@@ -109,10 +99,10 @@ const LoginModal: React.FC<LoginModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (validationErrors[name]) {
-      setValidationErrors((prev) => ({ ...prev, [name]: "" }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+    if (generalError) setGeneralError(null);
   };
 
   if (!isOpen) return null;
@@ -151,6 +141,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
             </div>
           )}
 
+          {generalError && (
+            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">{generalError}</span>
+            </div>
+          )}
+
           {/* Ô nhập Email/SĐT */}
           <div>
             <label
@@ -160,7 +157,6 @@ const LoginModal: React.FC<LoginModalProps> = ({
               Email hoặc Số điện thoại
             </label>
             <input
-              ref={emailInputRef}
               type="text"
               id="emailOrPhone"
               name="emailOrPhone"
@@ -168,24 +164,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
               onChange={handleInputChange}
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
-              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.username
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-              }`}
+              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${errors.emailOrPhone
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                }`}
               disabled={isSubmitting}
-              aria-invalid={!!validationErrors.username}
+              aria-invalid={!!errors.emailOrPhone}
               aria-describedby={
-                validationErrors.username ? "emailOrPhone-error" : undefined
+                errors.emailOrPhone ? "emailOrPhone-error" : undefined
               }
             />
-            {validationErrors.username && (
+            {errors.emailOrPhone && (
               <div
                 id="emailOrPhone-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.username}</span>
+                <span>{errors.emailOrPhone}</span>
               </div>
             )}
           </div>
@@ -207,15 +202,14 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 onChange={handleInputChange}
                 placeholder="Nhập mật khẩu của bạn"
                 autoComplete="current-password"
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${
-                  validationErrors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-green-500 focus:border-transparent"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors pr-12 ${errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-transparent"
+                  }`}
                 disabled={isSubmitting}
-                aria-invalid={!!validationErrors.password}
+                aria-invalid={!!errors.password}
                 aria-describedby={
-                  validationErrors.password ? "password-error" : undefined
+                  errors.password ? "password-error" : undefined
                 }
               />
               <button
@@ -232,13 +226,13 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 )}
               </button>
             </div>
-            {validationErrors.password && (
+            {errors.password && (
               <div
                 id="password-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.password}</span>
+                <span>{errors.password}</span>
               </div>
             )}
           </div>
@@ -252,8 +246,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
             {isSubmitting
               ? "Đang xử lý..."
               : showSuccess
-              ? "Thành công!"
-              : "Đăng nhập"}
+                ? "Thành công!"
+                : "Đăng nhập"}
           </button>
 
           {/* Trạng thái tải */}

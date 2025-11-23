@@ -7,7 +7,7 @@ interface CountdownTimerProps {
 }
 
 const CountdownTimer = ({ initialMinutes = 15 }: CountdownTimerProps) => {
-  const [timeLeft, setTimeLeft] = useState(initialMinutes * 60); // giây
+  const [timeLeft, setTimeLeft] = useState(Math.round(initialMinutes * 60)); // giây
   const navigate = useNavigate();
 
   useEffect(() => {
