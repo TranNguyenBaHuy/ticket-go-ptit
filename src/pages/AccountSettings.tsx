@@ -8,6 +8,7 @@ import axios from "axios";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
+
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -16,46 +17,60 @@ const AccountSettings = () => {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    phone: "",
     email: "",
-    birthDate: "",
+    phone: "",
     gender: "",
+    birthDate: "",
+    roleId: "",
+    avatar: null,
   });
-
-  const formatDateForInput = (isoDate: string) => {
-    if (!isoDate) return "";
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${year}-${month}-${day}`;
-  };
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        fullName: user.fullName || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        birthDate: user.birthDate ? formatDateForInput(user.birthDate) : "",
-        gender: user.gender || "",
-      });
+    const fetchUser = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await axios.get(`/api/users/${user.id}`);
+        const userData = res.data;
+        let birthDate = "";
+        if (userData.birthDate) {
+          if (typeof userData.birthDate === "string") {
+            birthDate = userData.birthDate.split("T")[0];
+          } else {
+            birthDate = userData.birthDate.toISOString().split("T")[0];
+          }
+        }
+        setFormData({
+          fullName: userData.fullName || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          gender: userData.gender || "",
+          birthDate: birthDate,
+          roleId: userData.roleId || "",
+          avatar: null,
+        });
+        if (userData.avatar) {
+          let avatarPath;
+          if (userData.avatar.includes("/") || userData.avatar.includes("\\")) {
+            avatarPath = userData.avatar;
+          } else {
+            avatarPath = `/images/user/${userData.avatar}`;
+          }
 
-      if (user.avatar) {
-        const avatarUrl = user.avatar.startsWith("http")
-          ? user.avatar
-          : `/images/user/${user.avatar}`;
-        setAvatarPreview(avatarUrl);
-      } else {
-        setAvatarPreview(
-          `https://ui-avatars.com/api/?name=${
-            user.fullName || user.email
-          }&background=0D8ABC&color=fff&size=200`
-        );
+          console.log("Setting avatar path:", avatarPath);
+          setAvatarPreview(avatarPath);
+        } else {
+          setAvatarPreview(
+            `https://ui-avatars.com/api/?name=${userData.fullName || userData.email
+            }&background=0D8ABC&color=fff&size=200`
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
       }
-    }
+    };
+    fetchUser();
   }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,28 +114,26 @@ const AccountSettings = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("fullName", formData.fullName);
-      formDataToSend.append("phone", formData.phone || "");
+      if (formData.phone) {
+        formDataToSend.append("phone", formData.phone);
+      }
 
       if (formData.birthDate && formData.birthDate.trim()) {
         formDataToSend.append("birthDate", formData.birthDate);
       }
-
-      formDataToSend.append("gender", formData.gender || "");
-      formDataToSend.append("roleId", user.role.id.toString());
-      formDataToSend.append("accountType", user.accountType);
-
+      if (formData.gender) {
+        formDataToSend.append("gender", formData.gender);
+      }
+      if (formData.roleId) {
+        formDataToSend.append("roleId", formData.roleId);
+      }
       if (avatarFile) {
         formDataToSend.append("avatar", avatarFile);
       }
 
       const response = await axios.put(
         `/api/users/${user.id}`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formDataToSend
       );
 
       if (response.data.token) {
@@ -139,6 +152,7 @@ const AccountSettings = () => {
           else if (err.path === "birthDate")
             backendErrors.birthDate = err.message;
           else if (err.path === "gender") backendErrors.gender = err.message;
+          else if (err.path === "roleId") backendErrors.roleId = err.message;
         });
         setErrors(backendErrors);
       } else {
@@ -228,9 +242,8 @@ const AccountSettings = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${
-                      errors.fullName ? "border-2 border-red-500" : ""
-                    }`}
+                    className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm ${errors.fullName ? "border-2 border-red-500" : ""
+                      }`}
                     required
                   />
                 </div>
@@ -257,9 +270,8 @@ const AccountSettings = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
-                          errors.phone ? "border-2 border-red-500" : ""
-                        }`}
+                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${errors.phone ? "border-2 border-red-500" : ""
+                          }`}
                         placeholder="Nhập số điện thoại"
                       />
                       {formData.phone && (
@@ -315,11 +327,10 @@ const AccountSettings = () => {
                       value={formData.birthDate}
                       onChange={handleInputChange}
                       max={new Date().toISOString().split("T")[0]}
-                      className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${
-                        errors.birthDate
-                          ? "border-2 border-red-500"
-                          : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
-                      }`}
+                      className={`w-full px-3 py-2.5 pr-10 bg-white text-black rounded text-sm cursor-pointer transition-all duration-200 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden ${errors.birthDate
+                        ? "border-2 border-red-500"
+                        : "border border-gray-300 hover:border-[#2dc275] focus:border-[#2dc275] focus:ring-2 focus:ring-[#2dc275]/20"
+                        }`}
                     />
                     <button
                       type="button"
