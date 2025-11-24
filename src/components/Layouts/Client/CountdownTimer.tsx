@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 interface CountdownTimerProps {
   initialMinutes?: number;
+  onTimeout?: () => void;
 }
 
-const CountdownTimer = ({ initialMinutes = 15 }: CountdownTimerProps) => {
+const CountdownTimer = ({ initialMinutes = 15, onTimeout }: CountdownTimerProps) => {
   const [timeLeft, setTimeLeft] = useState(Math.round(initialMinutes * 60)); // giây
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -20,10 +18,9 @@ const CountdownTimer = ({ initialMinutes = 15 }: CountdownTimerProps) => {
 
   useEffect(() => {
     if (timeLeft === 0) {
-      toast.error("Đã hết thời gian giữ vé! Mời bạn chọn lại");
-      navigate("/");
+      onTimeout?.();
     }
-  }, [timeLeft, navigate]);
+  }, [timeLeft, onTimeout]);
 
   const minutes = Math.floor(timeLeft / 60)
     .toString()

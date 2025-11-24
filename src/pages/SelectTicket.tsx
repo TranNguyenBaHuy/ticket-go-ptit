@@ -6,6 +6,7 @@ import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 import { toast } from "sonner";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const SelectTicket = () => {
   const { id } = useParams();
@@ -17,8 +18,6 @@ const SelectTicket = () => {
   const [ticketCounts, setTicketCounts] = useState<{ [key: number]: number }>(
     {}
   );
-
-  const [tickets, setTickets] = useState<TicketType[]>([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -59,11 +58,6 @@ const SelectTicket = () => {
       };
       return newCounts;
     });
-
-    const selectedTicket = event?.ticketTypes.find((t) => t.id === id);
-    if (selectedTicket) {
-      setTickets((prevTickets) => [...prevTickets, selectedTicket]);
-    }
   };
 
   const handleToBookingForm = (eventId: string) => {
@@ -71,43 +65,30 @@ const SelectTicket = () => {
     toast.success("Bạn đã vào hàng đợi");
   };
 
-  const handleAddToCart = async (data: TicketType[]) => {
-    if (data.length === 0) return;
+  const handleAddToCart = async () => {
+    const ticketsToAdd = Object.entries(ticketCounts)
+      .filter(([, quantity]) => quantity > 0)
+      .map(([ticketTypeId, quantity]) => ({
+        ticketTypeId: Number(ticketTypeId),
+        quantity,
+      }));
+
+    if (ticketsToAdd.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một vé.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
-
     if (!token) return;
-
-    const decodedUser = jwtDecode(token) as { id?: number };
-    console.log(decodedUser);
 
     try {
       setIsLoading(true);
 
-      const requests = data.map(async (ticket) => {
-        const payload = {
-          ticketTypeId: ticket.id,
-          quantity: 1,
-          userId: decodedUser.id,
-        };
+      const payload = {
+        tickets: ticketsToAdd,
+      };
 
-        const response = await fetch(`/api/carts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          console.log(response);
-          throw new Error(`bug vé ${1}`);
-        }
-
-        return await response.json();
-      });
-
-      await Promise.all(requests);
+      await axios.post(`/api/carts/add-multiple`, payload);
 
       handleToBookingForm(String(event?.id));
     } catch (error) {
@@ -126,17 +107,6 @@ const SelectTicket = () => {
         [id]: Math.max((prev[id] || 0) - 1, 0),
       };
       return newCounts;
-    });
-
-    setTickets((prevTickets) => {
-      const indexToRemove = prevTickets.findIndex((t) => t.id === id);
-
-      if (indexToRemove !== -1) {
-        const newTickets = [...prevTickets];
-        newTickets.splice(indexToRemove, 1);
-        return newTickets;
-      }
-      return prevTickets;
     });
   };
 
@@ -305,9 +275,8 @@ const SelectTicket = () => {
         <div className="flex flex-col gap-4 bg-[#27272A] px-4 py-6 mt-auto text-white">
           {/* total tickets count */}
           <div
-            className={`flex gap-2 items-center${
-              totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
-            }`}
+            className={`flex gap-2 items-center${totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
+              }`}
           >
             <Ticket /> x{totalSelected}
           </div>
@@ -319,7 +288,7 @@ const SelectTicket = () => {
                 : "Vui lòng chọn vé"
             }
             fullSize={true}
-            onClick={() => handleAddToCart(tickets)}
+            onClick={handleAddToCart}
             disabled={
               Object.values(ticketCounts).reduce(
                 (sum, count) => sum + count,
