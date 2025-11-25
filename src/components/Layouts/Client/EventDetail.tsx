@@ -84,7 +84,6 @@ const EventDetail = () => {
     0
   );
   const isSoldOut = totalTickets === 0;
-  const isTimeExpired = new Date(event.startDate) <= new Date();
 
   return (
     <>
@@ -133,8 +132,8 @@ const EventDetail = () => {
               </div>
 
               <PrimaryColorButton
-                title={isSoldOut ? "Hết vé" : isTimeExpired ? "Sự kiện đã kết thúc" : "Mua vé ngay"}
-                disabled={isSoldOut || isTimeExpired}
+                title="Mua vé ngay"
+                disabled={isSoldOut}
                 fullSize={true}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
@@ -194,8 +193,8 @@ const EventDetail = () => {
             <div className="mx-3 flex flex-col sm:flex-row items-start sm:items-center py-3 justify-between border-b border-black gap-3 sm:gap-0">
               <h1 className="text-white text-md font-bold">Thông tin vé</h1>
               <PrimaryColorButton
-                title={isSoldOut ? "Hết vé" : isTimeExpired ? "Sự kiện đã kết thúc" : "Mua vé ngay"}
-                disabled={isSoldOut || isTimeExpired}
+                title="Mua vé ngay"
+                disabled={isSoldOut}
                 onClick={() => handleSelectTicket(String(event.id))}
               />
             </div>
@@ -207,8 +206,9 @@ const EventDetail = () => {
                   <AccordionItem
                     key={ticket.id}
                     value={`ticket-${ticket.id}`}
-                    className={`border-none ${index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
-                      }`}
+                    className={`border-none ${
+                      index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                    }`}
                   >
                     <div className="flex justify-between items-center py-3 px-4">
                       {/* LEFT: ticket name + accordion trigger*/}
@@ -219,10 +219,11 @@ const EventDetail = () => {
                       {/* RIGHT: ticket price and status */}
                       <div className="text-left sm:text-right">
                         <p
-                          className={`font-bold py-2 ${ticket.quantity === 0
-                            ? "text-gray-400"
-                            : "text-[#2dc275]"
-                            }`}
+                          className={`font-bold py-2 ${
+                            ticket.quantity === 0
+                              ? "text-gray-400"
+                              : "text-[#2dc275]"
+                          }`}
                         >
                           {ticket.price.toLocaleString("de-DE")} đ
                         </p>

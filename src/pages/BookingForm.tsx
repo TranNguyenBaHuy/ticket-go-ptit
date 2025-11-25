@@ -199,7 +199,8 @@ const BookingForm = () => {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
+      event.returnValue =
+        "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
     };
 
     const handlePopState = (event: PopStateEvent) => {
@@ -315,7 +316,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverName")}
+                    // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -334,7 +335,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverEmail")}
+                    // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -353,7 +354,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverPhone")}
+                    // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -412,20 +413,20 @@ const BookingForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                    (total, item) => total + item.quantity,
-                    0
-                  )
+                      (total, item) => total + item.quantity,
+                      0
+                    )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                    cartDetails.reduce(
-                      (total, item) => total + item.price * item.quantity,
-                      0
+                      cartDetails.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
                     )
-                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -472,7 +473,7 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => { }} // Không cho phép đóng
+        onClose={() => {}} // Không cho phép đóng
         onConfirm={() => {
           setShowTimeoutDialog(false);
           navigate("/");
