@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
-import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout";
+import { userBookings } from "../constants/types/types";
 
 type TabType = "all" | "success" | "pending" | "cancelled";
 type SubTabType = "upcoming" | "past";
@@ -31,6 +31,7 @@ const MyTickets = () => {
         setIsLoading(false);
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       }
     };
 
@@ -44,56 +45,7 @@ const MyTickets = () => {
     { id: "cancelled" as TabType, label: "Đã hủy" },
   ];
 
-  // Mock data để hiển thị giao diện
-  const mockTickets = [
-    {
-      ticket_id: "1",
-      event_name:
-        "Lorem Ipsum is simply dummy text of the printing typesetting (max 80 characters)",
-      event_date: "26",
-      event_month: "Tháng 07",
-      event_year: "2023",
-      event_time: "08:00 PM - 10:00 PM",
-      location:
-        "Cung thể thao Quần Ngựa\n30 Văn Cao, Liễu Giai, Ba Đình, Hà Nội",
-      order_code: "A214324CD",
-      status: "success",
-      ticket_status: "Thành công",
-      entrance_status: "Vé điện tử",
-    },
-    {
-      ticket_id: "2",
-      event_name:
-        "Lorem Ipsum is simply dummy text of the printing typesetting (max 80 characters)",
-      event_date: "26",
-      event_month: "Tháng 07",
-      event_year: "2023",
-      event_time: "08:00 PM - 10:00 PM",
-      location:
-        "Cung thể thao Quần Ngựa\n30 Văn Cao, Liễu Giai, Ba Đình, Hà Nội",
-      order_code: "A214324CD",
-      status: "success",
-      ticket_status: "Thành công",
-      entrance_status: "Vé vật lý",
-    },
-    {
-      ticket_id: "3",
-      event_name:
-        "Lorem Ipsum is simply dummy text of the printing typesetting (max 80 characters)",
-      event_date: "26",
-      event_month: "Tháng 07",
-      event_year: "2023",
-      event_time: "08:00 PM - 10:00 PM",
-      location:
-        "Cung thể thao Quần Ngựa\n30 Văn Cao, Liễu Giai, Ba Đình, Hà Nội",
-      order_code: "A214324CD",
-      status: "success",
-      ticket_status: "Thành công",
-      entrance_status: "Vé điện tử",
-    },
-  ];
-
-  const filteredTickets = mockTickets.filter((ticket) => {
+  const filteredTickets = userBookings.filter((ticket) => {
     if (activeTab === "all") return true;
     return ticket.status === activeTab;
   });
@@ -195,9 +147,26 @@ const MyTickets = () => {
               </div>
             )}
 
-            {/* Ticket List - Sử dụng component SelectTicketLayout */}
+            {/* Ticket List */}
             {filteredTickets.length > 0 && (
-              <SelectTicketLayout tickets={filteredTickets} />
+              <div className="space-y-3 md:space-y-4">
+                {filteredTickets.map((ticket) => (
+                  <div
+                    key={ticket.ticket_id}
+                    className="bg-[#27272A] p-3 md:p-4 lg:p-6 rounded-lg"
+                  >
+                    <h3 className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                      {ticket.event_name}
+                    </h3>
+                    <p className="text-gray-400 text-xs md:text-sm mt-1 md:mt-2">
+                      {ticket.event_date}
+                    </p>
+                    <p className="text-[#2dc275] font-bold text-sm md:text-base lg:text-lg mt-1 md:mt-2">
+                      {ticket.price.toLocaleString("de-DE")} đ
+                    </p>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
