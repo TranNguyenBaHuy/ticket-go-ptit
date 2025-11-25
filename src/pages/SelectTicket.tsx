@@ -83,7 +83,6 @@ const SelectTicket = () => {
 
     try {
       setIsLoading(true);
-
       const payload = {
         tickets: ticketsToAdd,
       };
@@ -94,6 +93,7 @@ const SelectTicket = () => {
     } catch (error) {
       console.error(error);
       toast.error("Có lỗi xảy ra khi chọn vé");
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -275,8 +275,9 @@ const SelectTicket = () => {
         <div className="flex flex-col gap-4 bg-[#27272A] px-4 py-6 mt-auto text-white">
           {/* total tickets count */}
           <div
-            className={`flex gap-2 items-center${totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
-              }`}
+            className={`flex gap-2 items-center${
+              totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
+            }`}
           >
             <Ticket /> x{totalSelected}
           </div>
