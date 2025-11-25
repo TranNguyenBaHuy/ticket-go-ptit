@@ -57,11 +57,11 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-  fullName: string;
   email: string;
   phone?: string;
   password: string;
   confirmPassword: string;
+  name: string;
   acceptTerms?: boolean;
 }
 
@@ -101,9 +101,3 @@ export interface ResetPasswordCredentials {
   password: string;
   confirmPassword: string;
 }
-
-export type MyJwtPayload = {
-  id: number;
-  email: string;
-  name?: string;
-};

@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import CategoryFilterBar from "@/components/Layouts/Client/CategoryFilterBar";
+import DateFilterBar from "@/components/Layouts/Client/DateFilterBar";
 import { categories } from "@/constants/data/categories";
 
 const AllEvents = () => {
@@ -22,6 +23,7 @@ const AllEvents = () => {
   const [searchParams] = useSearchParams();
   const categoryName = searchParams.get("category");
   const searchQuery = searchParams.get("search");
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +34,9 @@ const AllEvents = () => {
       }
       if (categoryName) {
         url += `&category=${encodeURIComponent(categoryName)}`;
+      }
+      if (selectedDate) {
+        url += `&date=${encodeURIComponent(selectedDate)}`;
       }
 
       try {
@@ -55,13 +60,19 @@ const AllEvents = () => {
       behavior: "smooth",
     });
 
+    setCurrentPage(1);
     fetchData();
-  }, [categoryName, searchQuery, currentPage]);
+  }, [categoryName, searchQuery, selectedDate]);
 
   return (
     <>
       <CategoryFilterBar data={categories} />
-      <div className="min-h-screen bg-[#000]">
+      <DateFilterBar
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+      />
+
+      <div className="min-h-screen bg-[#000] pb-15">
         <div className="mx-5 lg:mx-auto max-w-[1250px]">
           {/* header */}
           <div className="text-white container py-6">

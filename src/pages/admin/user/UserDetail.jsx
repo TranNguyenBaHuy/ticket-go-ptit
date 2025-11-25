@@ -44,22 +44,21 @@ export default function UserDetail() {
           avatar: null,
         });
         if (user.avatar) {
-          console.log("User avatar:", user.avatar);
-          console.log("User avatar type:", typeof user.avatar);
-          console.log("User avatar length:", user.avatar.length);
-
-          // Check if avatar is a full path or just filename
           let avatarPath;
           if (user.avatar.includes("/") || user.avatar.includes("\\")) {
-            // It's already a full path
             avatarPath = user.avatar;
           } else {
-            // It's just a filename
             avatarPath = `/images/user/${user.avatar}`;
           }
 
           console.log("Setting avatar path:", avatarPath);
           setAvatarPreview(avatarPath);
+        } else {
+          setAvatarPreview(
+            `https://ui-avatars.com/api/?name=${
+              user.fullName || user.email
+            }&background=0D8ABC&color=fff&size=200`
+          );
         }
       } catch (err) {
         console.error("Error fetching user:", err);

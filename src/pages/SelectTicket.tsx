@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import type { Event, TicketType } from "../constants/types/types";
+import type { Event } from "../constants/types/types";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 import { toast } from "sonner";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 const SelectTicket = () => {
   const { id } = useParams();
@@ -17,8 +17,6 @@ const SelectTicket = () => {
   const [ticketCounts, setTicketCounts] = useState<{ [key: number]: number }>(
     {}
   );
-
-  const [tickets, setTickets] = useState<TicketType[]>([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -59,11 +57,6 @@ const SelectTicket = () => {
       };
       return newCounts;
     });
-
-    const selectedTicket = event?.ticketTypes.find((t) => t.id === id);
-    if (selectedTicket) {
-      setTickets((prevTickets) => [...prevTickets, selectedTicket]);
-    }
   };
 
   const handleToBookingForm = (eventId: string) => {
@@ -71,48 +64,35 @@ const SelectTicket = () => {
     toast.success("Bạn đã vào hàng đợi");
   };
 
-  const handleAddToCart = async (data: TicketType[]) => {
-    if (data.length === 0) return;
+  const handleAddToCart = async () => {
+    const ticketsToAdd = Object.entries(ticketCounts)
+      .filter(([, quantity]) => quantity > 0)
+      .map(([ticketTypeId, quantity]) => ({
+        ticketTypeId: Number(ticketTypeId),
+        quantity,
+      }));
+
+    if (ticketsToAdd.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một vé.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
-
     if (!token) return;
-
-    const decodedUser = jwtDecode(token) as { id?: number };
-    console.log(decodedUser);
 
     try {
       setIsLoading(true);
+      const payload = {
+        tickets: ticketsToAdd,
+      };
 
-      const requests = data.map(async (ticket) => {
-        const payload = {
-          ticketTypeId: ticket.id,
-          quantity: 1,
-          userId: decodedUser.id,
-        };
-
-        const response = await fetch(`/api/carts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          console.log(response);
-          throw new Error(`bug vé ${1}`);
-        }
-
-        return await response.json();
-      });
-
-      await Promise.all(requests);
+      await axios.post(`/api/carts/add-multiple`, payload);
 
       handleToBookingForm(String(event?.id));
     } catch (error) {
       console.error(error);
       toast.error("Có lỗi xảy ra khi chọn vé");
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -126,17 +106,6 @@ const SelectTicket = () => {
         [id]: Math.max((prev[id] || 0) - 1, 0),
       };
       return newCounts;
-    });
-
-    setTickets((prevTickets) => {
-      const indexToRemove = prevTickets.findIndex((t) => t.id === id);
-
-      if (indexToRemove !== -1) {
-        const newTickets = [...prevTickets];
-        newTickets.splice(indexToRemove, 1);
-        return newTickets;
-      }
-      return prevTickets;
     });
   };
 
@@ -319,7 +288,7 @@ const SelectTicket = () => {
                 : "Vui lòng chọn vé"
             }
             fullSize={true}
-            onClick={() => handleAddToCart(tickets)}
+            onClick={handleAddToCart}
             disabled={
               Object.values(ticketCounts).reduce(
                 (sum, count) => sum + count,
