@@ -1,11 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import type { Event, TicketType } from "../constants/types/types";
+import type { Event } from "../constants/types/types";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 import { toast } from "sonner";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 const SelectTicket = () => {
