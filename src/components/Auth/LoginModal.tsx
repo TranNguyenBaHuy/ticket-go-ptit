@@ -57,7 +57,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
     try {
       const response = await axios.post("/api/auth/login", {
-        username: formData.emailOrPhone,
+        emailOrPhone: formData.emailOrPhone,
         password: formData.password,
       });
 
@@ -89,7 +89,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
         const backendErrors: Record<string, string> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
-          if (error.path === "username") backendErrors.username = error.message;
+          if (error.path === "emailOrPhone") backendErrors.emailOrPhone = error.message;
           else if (error.path === "password")
             backendErrors.password = error.message;
         });
@@ -169,23 +169,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
               placeholder="Nhập email hoặc số điện thoại"
               autoComplete="username"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                validationErrors.username
+                validationErrors.emailOrPhone
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-green-500 focus:border-transparent"
               }`}
               disabled={isSubmitting}
-              aria-invalid={!!validationErrors.username}
+              aria-invalid={!!validationErrors.emailOrPhone}
               aria-describedby={
-                validationErrors.username ? "emailOrPhone-error" : undefined
+                validationErrors.emailOrPhone ? "emailOrPhone-error" : undefined
               }
             />
-            {validationErrors.username && (
+            {validationErrors.emailOrPhone && (
               <div
                 id="emailOrPhone-error"
                 className="flex items-center space-x-1 text-red-600 text-sm mt-2"
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{validationErrors.username}</span>
+                <span>{validationErrors.emailOrPhone}</span>
               </div>
             )}
           </div>

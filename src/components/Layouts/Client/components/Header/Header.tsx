@@ -6,7 +6,6 @@ import {
   Menu,
   ChevronDown,
   User,
-  History,
   LogOut,
 } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
@@ -73,12 +72,6 @@ const Header = () => {
               <Ticket size={22} className="hidden lg:block" />
               Vé của tôi
             </Link>
-            <Link
-              to="/about"
-              className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
-            >
-              Về chúng tôi
-            </Link>
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -115,14 +108,6 @@ const Header = () => {
                       >
                         <Ticket size={20} className="text-gray-600" />
                         <span>Vé của tôi</span>
-                      </Link>
-                      <Link
-                        to="/my-history"
-                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <History size={20} className="text-gray-600" />
-                        <span>Sự kiện của tôi</span>
                       </Link>
                       <Link
                         to="/account"
@@ -189,13 +174,6 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Vé của tôi
-            </Link>
-            <Link
-              to="/about"
-              className="hover:text-amber-400 text-white py-2 border-b border-white/20"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Về chúng tôi
             </Link>
             {user ? (
               <div className="flex flex-col gap-2">
