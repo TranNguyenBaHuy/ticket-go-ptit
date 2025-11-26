@@ -258,36 +258,28 @@ const AccountSettings = () => {
                       </span>
                     )}
                   </label>
-                  <div className="flex gap-2">
+                  <div className="relative">
                     <input
-                      type="text"
-                      value="+84"
-                      disabled
-                      className="w-16 px-3 py-2.5 bg-gray-700 text-gray-300 rounded text-sm text-center"
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
+                        errors.phone ? "border-2 border-red-500" : ""
+                      }`}
+                      placeholder="Nhập số điện thoại"
                     />
-                    <div className="relative flex-1">
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className={`w-full px-3 py-2.5 bg-white text-black rounded text-sm pr-10 ${
-                          errors.phone ? "border-2 border-red-500" : ""
-                        }`}
-                        placeholder="Nhập số điện thoại"
-                      />
-                      {formData.phone && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFormData((prev) => ({ ...prev, phone: "" }))
-                          }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        >
-                          <X size={18} />
-                        </button>
-                      )}
-                    </div>
+                    {formData.phone && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, phone: "" }))
+                        }
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
                   </div>
                 </div>
 

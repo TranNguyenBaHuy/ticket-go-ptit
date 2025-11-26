@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle, AlertCircle } from "lucide-react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9092";
+import axios from "@/utils/axiosInterceptor";
 
 interface OrderDetail {
   id: number;
@@ -50,26 +49,25 @@ const ThanksPage = () => {
 
     const fetchOrderData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Không thể lấy thông tin đơn hàng");
-        }
-
-        const data = await response.json();
-        if (data.success && data.orderDetails) {
-          setOrderData(data.orderDetails);
+        const response = await axios.get(`/api/orders/${orderId}`);
+        console.log("Order response:", response.data);
+        
+        if (response.data.success && response.data.orderDetails) {
+          setOrderData(response.data.orderDetails);
         } else {
-          throw new Error(data.message || "Lỗi khi lấy thông tin đơn hàng");
+          throw new Error(response.data.message || "Lỗi khi lấy thông tin đơn hàng");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Fetch order error:", err);
-        setError(
-          err instanceof Error ? err.message : "Lỗi khi lấy thông tin đơn hàng"
-        );
+        if (err.response?.status === 401) {
+          setError("Vui lòng đăng nhập để xem thông tin đơn hàng");
+        } else if (err.response?.status === 403) {
+          setError("Bạn không có quyền xem đơn hàng này");
+        } else {
+          setError(
+            err instanceof Error ? err.message : "Lỗi khi lấy thông tin đơn hàng"
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -162,205 +160,134 @@ const ThanksPage = () => {
     );
   }
 
-  const isPaymentSuccess = orderData.paymentStatus === "SUCCESS";
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f1419] to-[#1a1f2e] flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        {/* Success/Status Card */}
-        <div className="bg-[#1e2533] rounded-2xl p-8 md:p-12 shadow-2xl border border-[#2a3142]">
-          {/* Status Icon */}
-          <div className="flex justify-center mb-8">
-            {isPaymentSuccess ? (
-              <div className="bg-gradient-to-br from-[#2dc275] to-[#1fa860] rounded-full p-4 shadow-lg">
-                <CheckCircle className="w-16 h-16 text-white" />
-              </div>
-            ) : (
-              <div className="bg-yellow-500/20 rounded-full p-4 shadow-lg">
-                <AlertCircle className="w-16 h-16 text-yellow-500" />
-              </div>
-            )}
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        {/* Main Card */}
+        <div className="bg-[#1a2332] rounded-2xl p-8 md:p-10 shadow-2xl border border-[#2a3f5f]">
+          {/* Success Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="bg-[#2dc275] rounded-full p-2 shadow-lg">
+              <CheckCircle className="w-16 h-16 text-white" strokeWidth={1.5} />
+            </div>
           </div>
 
-          {/* Status Message */}
-          <div className="text-center mb-10">
-            <h1
-              className={`text-3xl md:text-4xl font-bold mb-3 ${
-                isPaymentSuccess ? "text-[#2dc275]" : "text-yellow-500"
-              }`}
-            >
-              {isPaymentSuccess ? "Thanh toán thành công!" : "Đơn hàng đang xử lý"}
+          {/* Success Message */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#2dc275] mb-2">
+              Thanh toán thành công!
             </h1>
-            <p className="text-gray-400 text-base md:text-lg">
-              {isPaymentSuccess
-                ? "Cảm ơn bạn đã thanh toán. Vé của bạn đã được xác nhận."
-                : "Đơn hàng của bạn đang chờ xử lý. Vui lòng kiểm tra email để nhận thông tin chi tiết."}
+            <p className="text-gray-400 text-base">
+              Cảm ơn bạn đã thanh toán. Vé của bạn đã được xác nhận.
             </p>
           </div>
 
-          {/* Order Details */}
-          <div className="bg-[#161b27] rounded-xl p-6 md:p-8 mb-8 border border-[#2a3142]">
-            <h2 className="text-white text-xl font-bold mb-6">Chi tiết đơn hàng</h2>
+          {/* Transaction Details */}
+          <div className="bg-[#0f1419] rounded-xl p-6 mb-6 border border-[#2a3f5f]">
+            <h2 className="text-white text-lg font-bold mb-6">Chi tiết giao dịch</h2>
 
             <div className="space-y-5">
-              {/* Order ID */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Mã đơn hàng:</span>
-                <span className="text-white font-mono text-sm md:text-base">
+              {/* Transaction ID */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-base">Mã giao dịch:</span>
+                <span className="text-white font-mono text-xl font-bold">
                   ORD{orderData.id}
                 </span>
               </div>
 
-              {/* Receiver Name */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Người nhận:</span>
-                <span className="text-white font-semibold">
-                  {orderData.receiverName}
-                </span>
-              </div>
-
-              {/* Receiver Phone */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Số điện thoại:</span>
-                <span className="text-white font-mono text-sm md:text-base">
-                  {orderData.receiverPhone}
-                </span>
-              </div>
-
-              {/* Receiver Email */}
-              {orderData.receiverEmail && (
-                <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                  <span className="text-gray-400 font-medium">Email:</span>
-                  <span className="text-white text-sm md:text-base break-all">
-                    {orderData.receiverEmail}
-                  </span>
-                </div>
-              )}
-
-              {/* Total Amount */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Tổng tiền:</span>
-                <span className="text-[#2dc275] font-bold text-lg">
+              {/* Amount */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-base">Số tiền:</span>
+                <span className="text-[#2dc275] font-bold text-2xl">
                   {formatCurrency(orderData.totalPrice)} đ
                 </span>
               </div>
 
-              {/* Payment Method */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Phương thức:</span>
-                <span className="text-white font-semibold">
-                  {orderData.paymentMethod === "VNPAY"
-                    ? "VNPay"
-                    : orderData.paymentMethod}
+              {/* Bank */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-base">Ngân hàng:</span>
+                <span className="text-white font-semibold text-lg">
+                  {orderData.paymentMethod === "VNPAY" ? "NCB" : "N/A"}
                 </span>
               </div>
 
-              {/* Payment Status */}
-              <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                <span className="text-gray-400 font-medium">Trạng thái thanh toán:</span>
-                <span
-                  className={`font-semibold ${
-                    orderData.paymentStatus === "SUCCESS"
-                      ? "text-[#2dc275]"
-                      : orderData.paymentStatus === "FAILED"
-                        ? "text-red-500"
-                        : "text-yellow-500"
-                  }`}
-                >
-                  {orderData.paymentStatus === "SUCCESS"
-                    ? "Đã thanh toán"
-                    : orderData.paymentStatus === "FAILED"
-                      ? "Thanh toán thất bại"
-                      : "Chưa thanh toán"}
-                </span>
-              </div>
-
-              {/* Payment Ref */}
+              {/* Bank Code */}
               {orderData.paymentRef && (
-                <div className="flex justify-between items-center pb-4 border-b border-[#2a3142]">
-                  <span className="text-gray-400 font-medium">Mã GD:</span>
-                  <span className="text-white font-mono text-sm md:text-base">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-base">Mã GD ngân hàng:</span>
+                  <span className="text-white font-mono text-lg">
                     {orderData.paymentRef}
                   </span>
                 </div>
               )}
 
-              {/* Order Date */}
-              <div className="flex justify-between items-center pt-2">
-                <span className="text-gray-400 font-medium">Thời gian:</span>
-                <span className="text-white font-mono text-sm md:text-base">
+              {/* Card Type */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-base">Loại thẻ:</span>
+                <span className="text-white font-semibold text-lg">ATM</span>
+              </div>
+
+              {/* Time */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400 text-base">Thời gian:</span>
+                <span className="text-white font-mono text-lg">
                   {formatDate(orderData.createdAt)}
                 </span>
+              </div>
+
+              {/* Description */}
+              <div className="flex justify-between items-start pt-6 border-t border-[#2a3f5f]">
+                <span className="text-gray-400 text-base">Nội dung:</span>
+                <div className="text-right">
+                  <p className="text-white font-semibold text-base">
+                    {orderData.ticketOrderDetails && orderData.ticketOrderDetails.length > 0
+                      ? orderData.ticketOrderDetails
+                          .map((d) => `${d.ticketType.event.title} - ${d.ticketType.type} x${d.quantity}`)
+                          .join(", ")
+                      : "Thanh toán vé"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Ticket Details */}
-          {orderData.ticketOrderDetails && orderData.ticketOrderDetails.length > 0 && (
-            <div className="bg-[#161b27] rounded-xl p-6 md:p-8 mb-8 border border-[#2a3142]">
-              <h2 className="text-white text-xl font-bold mb-6">Chi tiết vé</h2>
-
-              <div className="space-y-4">
-                {orderData.ticketOrderDetails.map((detail, index) => (
-                  <div
-                    key={index}
-                    className="border border-[#2a3142] rounded-lg p-4 bg-[#0f1419]"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <p className="text-white font-semibold">
-                          {detail.ticketType.event.title}
-                        </p>
-                        <p className="text-gray-400 text-sm">
-                          Loại: {detail.ticketType.type}
-                        </p>
-                      </div>
-                      <span className="text-[#2dc275] font-bold">
-                        x{detail.quantity}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-[#2a3142]">
-                      <span className="text-gray-400">Giá:</span>
-                      <span className="text-white font-semibold">
-                        {formatCurrency(detail.price)} đ
-                      </span>
-                    </div>
-                  </div>
-                ))}
+          {/* Receiver Info */}
+          <div className="bg-[#0f1419] rounded-xl p-6 mb-6 border border-[#2a3f5f]">
+            <h2 className="text-white text-lg font-bold mb-4">Thông tin người nhận</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tên:</span>
+                <span className="text-white font-semibold">{orderData.receiverName}</span>
               </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Số điện thoại:</span>
+                <span className="text-white font-mono">{orderData.receiverPhone}</span>
+              </div>
+              {orderData.receiverEmail && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Email:</span>
+                  <span className="text-white font-mono text-xs">{orderData.receiverEmail}</span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => navigate("/my-tickets")}
-              className="flex-1 bg-[#2dc275] hover:bg-[#25a860] text-white font-semibold py-6 rounded-lg text-base transition-colors"
+              className="flex-1 bg-[#2dc275] hover:bg-[#25a860] text-white font-bold py-3 rounded-lg text-base transition-colors"
             >
               Xem vé của tôi
             </button>
             <button
               onClick={() => navigate("/")}
-              className="flex-1 bg-[#38383d] hover:bg-[#45454a] text-white font-semibold py-6 rounded-lg text-base transition-colors"
+              className="flex-1 bg-[#38454d] hover:bg-[#45525a] text-white font-bold py-3 rounded-lg text-base transition-colors"
             >
               Về trang chủ
             </button>
           </div>
         </div>
-
-        {/* Debug Info (Development Only) */}
-        {import.meta.env.DEV && (
-          <div className="mt-6 bg-[#1e2533] rounded-lg p-4 border border-[#2a3142]">
-            <details className="cursor-pointer">
-              <summary className="text-gray-400 hover:text-gray-300 font-medium">
-                ▶ Debug Info (Development Only)
-              </summary>
-              <pre className="mt-3 text-xs text-gray-500 overflow-auto max-h-40 bg-[#0f1419] p-3 rounded">
-                {JSON.stringify(orderData, null, 2)}
-              </pre>
-            </details>
-          </div>
-        )}
       </div>
     </div>
   );

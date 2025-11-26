@@ -23,11 +23,6 @@ const UserSidebar = () => {
       title: "Vé của tôi",
       path: "/my-tickets",
     },
-    {
-      icon: faCalendarDays,
-      title: "Sự kiện của tôi",
-      path: "/my-events",
-    },
   ];
 
   return (
