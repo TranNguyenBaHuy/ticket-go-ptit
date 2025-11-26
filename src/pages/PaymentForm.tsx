@@ -95,7 +95,6 @@ const PaymentForm = () => {
         throw new Error(response.data.message || "Không thể tạo đơn hàng");
       }
 
-      // If VNPay, redirect to payment URL
       if (paymentMethod === "VNPAY" && response.data.paymentUrl) {
         sessionStorage.setItem(
           "pendingPayment",
@@ -106,7 +105,6 @@ const PaymentForm = () => {
         );
         window.location.href = response.data.paymentUrl;
       } else {
-        // For cash payment
         toast.success("Đặt vé thành công!");
         navigate("/my-tickets");
       }

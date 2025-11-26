@@ -62,7 +62,6 @@ const Payment = () => {
     setIsProcessing(true);
 
     try {
-      // Step 1: Add tickets to cart
       for (const ticket of paymentData.selectedTickets) {
         const addResponse = await fetch(`${API_URL}/api/carts`, {
           method: "POST",
@@ -81,7 +80,6 @@ const Payment = () => {
         }
       }
 
-      // Step 2: Place order and get payment URL
       const orderResponse = await fetch(`${API_URL}/api/carts/place-order`, {
         method: "POST",
         headers: {
@@ -103,9 +101,7 @@ const Payment = () => {
         throw new Error(data.message || "Không thể tạo đơn hàng");
       }
 
-      // Step 3: Redirect to VNPay payment URL if using VNPay
       if (paymentMethod === "VNPAY" && data.paymentUrl) {
-        // Store order info for reference
         sessionStorage.setItem(
           "pendingPayment",
           JSON.stringify({
@@ -115,10 +111,8 @@ const Payment = () => {
           })
         );
 
-        // Redirect to VNPay
         window.location.href = data.paymentUrl;
       } else {
-        // For other payment methods, show success and redirect
         toast.success("Đặt vé thành công!");
         navigate("/my-tickets");
       }
