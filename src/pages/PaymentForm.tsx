@@ -9,6 +9,7 @@ import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "@/components/Layouts/Client/CountdownTimer";
 import { useLocation, useParams } from "react-router-dom";
 import type { Event, MyJwtPayload } from "@/constants/types/types";
+import CartItem from "@/components/Layouts/Client/CartItem";
 
 const PaymentForm = () => {
   const { id } = useParams();
@@ -235,27 +236,7 @@ const PaymentForm = () => {
               <div className="flex flex-col gap-2">
                 {cartDetails && cartDetails.length > 0 ? (
                   cartDetails.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center"
-                    >
-                      <div className="flex flex-col">
-                        <p className="font-normal">
-                          {item.ticketType?.type ?? "Loại vé"}
-                        </p>
-                        <p className="font-normal text-gray-500">
-                          {formatCurrency(item.price)}
-                        </p>
-                      </div>
-                      <div className="flex flex-col text-end">
-                        <p className="font-normal text-gray-500">
-                          {item.quantity}
-                        </p>
-                        <p className="font-normal text-gray-500">
-                          {formatCurrency(item.price * item.quantity)}
-                        </p>
-                      </div>
-                    </div>
+                    <CartItem key={item.id} item={item} />
                   ))
                 ) : (
                   <div className="flex">Giỏ hàng trống</div>
