@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
@@ -11,12 +11,7 @@ import { Button } from "@/components/ui/button";
 import axios from "@/utils/axiosInterceptor";
 import ConfirmationDialog from "./ConfirmationDialog";
 import CartItem from "@/components/Layouts/Client/CartItem";
-
-// const Schema = z.object({
-//   name: z.string().min(1, "Vui lòng nhập họ tên"),
-//   email: z.string().email("Email không hợp lệ"),
-//   phone: z.string().min(9, "Số điện thoại không hợp lệ"),
-// });
+import { set } from "date-fns";
 
 type BookingFields = "receiverName" | "receiverPhone" | "receiverEmail";
 
@@ -46,34 +41,29 @@ const BookingForm = () => {
 
   const [cartDetails, setCartDetails] = useState<any[]>([]);
   const [cartId, setCartId] = useState<number | null>(null);
-  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
+  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | undefined>(undefined);
 
+  const location = useLocation();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: zodResolver(Schema),
-  // });
+  // const state =
+  //   (location.state as {
+  //     receiverName?: string;
+  //     receiverPhone?: string | null;
+  //     receiverEmail?: string | null;
+  //     paymentExpiresAt?: number;
+  //   }) || {};
 
-  const handleCancel = async () => {
-    try {
-      await axios.delete("/api/carts");
-      const cartId = localStorage.getItem("cartId");
-      if (cartId) {
-        localStorage.removeItem(`checkoutEnd_${cartId}`);
-        localStorage.removeItem("cartId");
-      }
-      setShowConfirmDialog(false);
-      navigate(`/events/${id}/bookings/select-ticket`);
-    } catch (error) {
-      toast.error("Lỗi khi hủy đơn hàng.");
-    }
-  }
+  // const receiverName = state.receiverName ?? "";
+  // const receiverPhone = state.receiverPhone ?? null;
+  // const receiverEmail = state.receiverEmail ?? null;
+  // const paymentExpiresAt = state.paymentExpiresAt;
+
+  const initialMinutes = paymentExpiresAt
+    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
+    : 15;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as BookingFields;
@@ -186,16 +176,34 @@ const BookingForm = () => {
               ? result.cartDetails[0].cartId
               : null);
           setCartId(currentCartId);
+          localStorage.setItem("cartId", String(currentCartId));
 
           if (currentCartId) {
             const storageKey = `checkoutEnd_${currentCartId}`;
-            const storedExpiresAt = localStorage.getItem(storageKey);
             let expiresAt: number;
-            if (storedExpiresAt) {
-              expiresAt = Number(storedExpiresAt);
+            let receiverName: string | undefined;
+            let receiverPhone: string | undefined;
+            let receiverEmail: string | undefined;
+
+            // Ưu tiên state từ trang Payment, sau đó là localStorage, cuối cùng mới tạo mới
+            if (location.state?.paymentExpiresAt) {
+              expiresAt = location.state.paymentExpiresAt;
+              receiverName = location.state.receiverName;
+              receiverPhone = location.state.receiverPhone;
+              receiverEmail = location.state.receiverEmail;
+              setFormData({
+                receiverName: receiverName || "",
+                receiverPhone: receiverPhone || "",
+                receiverEmail: receiverEmail || "",
+              });
             } else {
-              expiresAt = Date.now() + 15 * 60 * 1000;
-              localStorage.setItem(storageKey, String(expiresAt));
+              const storedExpiresAt = localStorage.getItem(storageKey);
+              if (storedExpiresAt) {
+                expiresAt = Number(storedExpiresAt);
+              } else {
+                expiresAt = Date.now() + 15 * 60 * 1000;
+                localStorage.setItem(storageKey, String(expiresAt));
+              }
             }
             setPaymentExpiresAt(expiresAt);
           }
@@ -210,7 +218,7 @@ const BookingForm = () => {
     if (token) {
       fetchCartData();
     }
-  }, [token]);
+  }, [token, location.state]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -250,24 +258,36 @@ const BookingForm = () => {
   //   return <PaymentForm visible={true} />;
   // }
 
-  const initialMinutes = paymentExpiresAt
-    ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
-    : 15;
-
   const handleTimeout = async () => {
     try {
-      const cartId = localStorage.getItem("cartId");
       await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
       if (cartId) {
         localStorage.removeItem(`checkoutEnd_${cartId}`);
         localStorage.removeItem("cartId");
       }
-      setShowTimeoutDialog(true);
-    } catch (error) {
-      toast.error("Lỗi khi xóa giỏ hàng.");
+      setShowTimeoutDialog(false);
       navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
     }
-  };
+  }
+
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setIsNavigatingAway(true);
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
 
   return (
     <>
@@ -305,7 +325,7 @@ const BookingForm = () => {
           <div className="flex-1">
             <CountdownTimer
               initialMinutes={initialMinutes}
-              onTimeout={handleTimeout}
+              onTimeout={() => setShowTimeoutDialog(true)}
             />
           </div>
         </div>
@@ -444,13 +464,8 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showConfirmDialog}
-        onClose={() => {
-          handleCancel();
-          setIsNavigatingAway(true);
-        }}
-        onConfirm={() => {
-          setShowConfirmDialog(false);
-        }}
+        onClose={handleCancel}
+        onConfirm={() => setShowConfirmDialog(false)}
         type="leaveBooking"
         confirmText="Ở lại"
         cancelText="Hủy đơn"
@@ -459,7 +474,7 @@ const BookingForm = () => {
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
         onClose={() => { }} // Không cho phép đóng
-        onConfirm={handleCancel}
+        onConfirm={handleTimeout}
         type="timeout"
       />
     </>

@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Bell } from "lucide-react";
 
-type DialogType = "leaveBooking" | "timeout";
+type DialogType = "leaveBooking" | "timeout" | "continueBooking";
 
 
 interface ConfirmationDialogProps {
@@ -17,7 +17,7 @@ const dialogs: Record<DialogType, {
     title: string;
     question: ReactNode;
     details: string[];
-    buttonLayout: "confirm-cancel" | "single-confirm";
+    buttonLayout: "confirm-cancel" | "single-confirm" | "continue-cancel";
 }> = {
     leaveBooking: {
         title: "Hủy đơn hàng?",
@@ -35,6 +35,12 @@ const dialogs: Record<DialogType, {
             "Đã hết thời gian giữ vé. Vui lòng đặt lại vé mới."
         ],
         buttonLayout: "single-confirm",
+    },
+    continueBooking: {
+        title: "Đơn hàng chưa hoàn thành",
+        question: "Bạn đang có đơn hàng chưa hoàn tất. Bạn có muốn tiếp tục?",
+        details: [],
+        buttonLayout: "continue-cancel",
     },
 };
 
@@ -86,7 +92,7 @@ const ConfirmationDialog = ({
                                 onClick={onConfirm}
                                 className={`flex-1 px-4 py-2.5 rounded-md bg-[#2dc275] text-white font-semibold hover:bg-green-700 transition-colors ${buttonLayout === 'single-confirm' ? 'w-full' : ''}`}
                             >
-                                {buttonLayout === 'single-confirm' ? "Đặt vé mới" : confirmText}
+                                {buttonLayout === 'single-confirm' ? "Đặt vé mới" : (buttonLayout === 'continue-cancel' ? "Quay lại đơn cũ" : confirmText)}
                             </button>
                         </div>
                     </div>

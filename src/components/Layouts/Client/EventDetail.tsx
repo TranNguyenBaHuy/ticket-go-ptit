@@ -12,10 +12,12 @@ import {
 } from "@/components/ui/accordion";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../contexts/AuthContext";
-import { openAuthModal } from "../../../utils/axiosInterceptor";
+import axios, { openAuthModal } from "../../../utils/axiosInterceptor";
 import CategoryFilterBar from "./CategoryFilterBar";
 import { categories } from "@/constants/data/categories";
 import { getDisplayPrice } from "@/utils/getDisplayPrice";
+import ConfirmationDialog from "@/pages/ConfirmationDialog";
+import { toast } from "sonner";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -24,6 +26,8 @@ const EventDetail = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -62,11 +66,31 @@ const EventDetail = () => {
     );
   }
 
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
+
+  const handleConfirm = () => {
+    setShowConfirmDialog(false);
+  }
+
   const handleSelectTicket = (eventId: string) => {
     if (!user) {
       openAuthModal();
       return;
     }
+    setShowConfirmDialog(true);
     navigate(`/events/${eventId}/bookings/select-ticket`);
   };
 
@@ -206,9 +230,8 @@ const EventDetail = () => {
                   <AccordionItem
                     key={ticket.id}
                     value={`ticket-${ticket.id}`}
-                    className={`border-none ${
-                      index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
-                    }`}
+                    className={`border-none ${index % 2 === 0 ? "bg-[#2f3033]" : "bg-[#38383d]"
+                      }`}
                   >
                     <div className="flex justify-between items-center py-3 px-4">
                       {/* LEFT: ticket name + accordion trigger*/}
@@ -219,11 +242,10 @@ const EventDetail = () => {
                       {/* RIGHT: ticket price and status */}
                       <div className="text-left sm:text-right">
                         <p
-                          className={`font-bold py-2 ${
-                            ticket.quantity === 0
-                              ? "text-gray-400"
-                              : "text-[#2dc275]"
-                          }`}
+                          className={`font-bold py-2 ${ticket.quantity === 0
+                            ? "text-gray-400"
+                            : "text-[#2dc275]"
+                            }`}
                         >
                           {ticket.price.toLocaleString("de-DE")} đ
                         </p>
@@ -256,6 +278,15 @@ const EventDetail = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        type="continueBooking"
+        confirmText="Ở lại"
+        cancelText="Hủy đơn"
+      />
     </>
   );
 };

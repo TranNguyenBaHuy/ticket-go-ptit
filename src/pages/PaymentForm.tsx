@@ -22,7 +22,6 @@ const PaymentForm = () => {
   const token = localStorage.getItem("token");
   const [cartDetails, setCartDetails] = useState<any[]>([]);
 
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
 
@@ -46,17 +45,29 @@ const PaymentForm = () => {
 
   const handleTimeout = async () => {
     try {
-      const cartId = localStorage.getItem("cartId");
       await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
       if (cartId) {
         localStorage.removeItem(`checkoutEnd_${cartId}`);
         localStorage.removeItem("cartId");
       }
-      setShowTimeoutDialog(true);
-    } catch (error) {
-      toast.error("Lỗi khi xóa giỏ hàng.");
+      setShowTimeoutDialog(false);
       navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
     }
+  }
+
+  const handleBack = () => {
+    setIsNavigatingAway(true);
+    navigate(`/events/${id}/bookings/select-ticket/booking-form`, {
+      state: {
+        receiverName,
+        receiverPhone,
+        receiverEmail,
+        paymentExpiresAt,
+      },
+    });
   };
 
   const decodedUser = token ? jwtDecode<MyJwtPayload>(token) : null;
@@ -125,46 +136,6 @@ const PaymentForm = () => {
     setPaymentMethod(value);
   };
 
-  const handleCancel = async () => {
-    try {
-      await axios.delete("/api/carts");
-      const cartId = localStorage.getItem("cartId");
-      if (cartId) {
-        localStorage.removeItem(`checkoutEnd_${cartId}`);
-        localStorage.removeItem("cartId");
-      }
-      setShowConfirmDialog(false);
-      navigate(`/events/${id}/bookings/select-ticket`);
-    } catch (error) {
-      toast.error("Lỗi khi hủy đơn hàng.");
-    }
-  }
-
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue =
-        "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
-    };
-
-    const handlePopState = (event: PopStateEvent) => {
-      if (!isNavigatingAway) {
-        event.preventDefault();
-        setShowConfirmDialog(true);
-        window.history.pushState(null, "", window.location.href);
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handlePopState);
-    window.history.pushState(null, "", window.location.href);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [isNavigatingAway]);
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
@@ -202,6 +173,31 @@ const PaymentForm = () => {
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue =
+        "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
+    };
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (!isNavigatingAway) {
+        event.preventDefault();
+        handleBack();
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+    window.history.pushState(null, "", window.location.href);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isNavigatingAway]);
+
   return (
     <>
       <div className="relative w-full h-62 md:h-72 lg:h-62 overflow-hidden">
@@ -237,7 +233,7 @@ const PaymentForm = () => {
           <div className="flex-1">
             <CountdownTimer
               initialMinutes={initialMinutes}
-              onTimeout={handleTimeout} />
+              onTimeout={() => setShowTimeoutDialog(true)} />
           </div>
         </div>
       </div>
@@ -347,23 +343,9 @@ const PaymentForm = () => {
       </div>
 
       <ConfirmationDialog
-        isOpen={showConfirmDialog}
-        onClose={() => {
-          handleCancel();
-          setIsNavigatingAway(true);
-        }}
-        onConfirm={() => {
-          setShowConfirmDialog(false);
-        }}
-        type="leaveBooking"
-        confirmText="Ở lại"
-        cancelText="Hủy đơn"
-      />
-
-      <ConfirmationDialog
         isOpen={showTimeoutDialog}
         onClose={() => { }} // Không cho phép đóng
-        onConfirm={handleCancel}
+        onConfirm={handleTimeout}
         type="timeout"
       />
     </>
