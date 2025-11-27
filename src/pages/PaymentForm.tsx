@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import axios from "@/utils/axiosInterceptor";
 import { jwtDecode } from "jwt-decode";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "@/components/Layouts/Client/CountdownTimer";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { Event, MyJwtPayload } from "@/constants/types/types";
 import CartItem from "@/components/Layouts/Client/CartItem";
 import ConfirmationDialog from "./ConfirmationDialog";
+import PaymentMethods from "@/components/Layouts/Client/PaymentMethods";
 
 const PaymentForm = () => {
   const { id } = useParams();
