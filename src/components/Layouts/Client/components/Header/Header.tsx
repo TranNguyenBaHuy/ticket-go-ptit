@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Ticket,
   Search,
@@ -13,7 +13,7 @@ import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../../../contexts/AuthContext";
-import { setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
+import { openAuthModal, setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +21,7 @@ const Header = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Đăng ký handler để mở modal khi có lỗi 401
   useEffect(() => {
@@ -42,6 +43,14 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  function toMyTickets() {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    navigate("/my-tickets");
+  }
 
   return (
     <header className="w-full bg-[#2dc275] shadow-sm">
@@ -66,13 +75,13 @@ const Header = () => {
 
           {/* Nav menu */}
           <nav className="hidden md:flex items-center gap-4 lg:gap-6 font-semibold">
-            <Link
-              to="/my-tickets"
+            <a
+              onClick={toMyTickets}
               className="flex items-center gap-2 hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
             >
               <Ticket size={22} className="hidden lg:block" />
               Vé của tôi
-            </Link>
+            </a>
             <Link
               to="/about"
               className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
@@ -91,9 +100,8 @@ const Header = () => {
                         ? user.avatar.startsWith("http")
                           ? user.avatar
                           : `/images/user/${user.avatar}`
-                        : `https://ui-avatars.com/api/?name=${
-                            user.fullName || user.email
-                          }&background=0D8ABC&color=fff`
+                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email
+                        }&background=0D8ABC&color=fff`
                     }
                     alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"
