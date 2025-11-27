@@ -28,6 +28,9 @@ const EventDetail = () => {
   const { user } = useAuth();
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
+  const [cartDetailsForDialog, setCartDetailsForDialog] = useState<any[]>([]);
+  const [countdownEndTime, setCountdownEndTime] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -83,15 +86,55 @@ const EventDetail = () => {
 
   const handleConfirm = () => {
     setShowConfirmDialog(false);
+    navigate(`/events/${id}/bookings/select-ticket/booking-form`);
   }
 
-  const handleSelectTicket = (eventId: string) => {
+  const handleDialogTimeout = () => {
+    setShowConfirmDialog(false);
+    setShowTimeoutDialog(true);
+  };
+
+  const handleTimeout = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowTimeoutDialog(false);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  };
+
+  const handleSelectTicket = async (eventId: string) => {
     if (!user) {
       openAuthModal();
       return;
     }
-    setShowConfirmDialog(true);
-    navigate(`/events/${eventId}/bookings/select-ticket`);
+    try {
+      const response = await axios.get(`/api/carts`);
+      const result = response.data;
+
+      const cartId = result.cartId;
+      const cartDetails = result.cartDetails;
+
+      if (cartId && cartDetails && cartDetails.length > 0) {
+        const storageKey = `checkoutEnd_${cartId}`;
+        const expiresAt = localStorage.getItem(storageKey);
+
+        if (expiresAt && Number(expiresAt) > Date.now()) {
+          setCartDetailsForDialog(cartDetails);
+          setCountdownEndTime(Number(expiresAt));
+          setShowConfirmDialog(true);
+          return;
+        }
+      }
+      navigate(`/events/${eventId}/bookings/select-ticket`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (!event)
@@ -284,8 +327,18 @@ const EventDetail = () => {
         onClose={handleCancel}
         onConfirm={handleConfirm}
         type="continueBooking"
-        confirmText="Ở lại"
-        cancelText="Hủy đơn"
+        cartItems={cartDetailsForDialog}
+        onTimeout={handleDialogTimeout}
+        countdownEndTime={countdownEndTime}
+        confirmText="Quay lại đơn cũ"
+        cancelText="Hủy đơn, mua vé mới"
+      />
+
+      <ConfirmationDialog
+        isOpen={showTimeoutDialog}
+        onClose={() => { }}
+        onConfirm={handleTimeout}
+        type="timeout"
       />
     </>
   );

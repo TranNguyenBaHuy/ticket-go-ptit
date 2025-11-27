@@ -142,7 +142,7 @@ const SelectTicket = () => {
         <div className="flex items-center text-[#2dc275] font-bold text-xl py-8">
           <button
             className="flex items-center gap-3"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/events/${String(id)}`)}
           >
             <svg
               width="20"
