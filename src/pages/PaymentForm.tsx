@@ -1,4 +1,5 @@
-import PaymentMethods from "@/components/Layouts/Client/PaymentMethods";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -57,7 +58,7 @@ const PaymentForm = () => {
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
-  }
+  };
 
   const handleCancel = async () => {
     try {
@@ -73,7 +74,7 @@ const PaymentForm = () => {
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
-  }
+  };
 
   const handleBack = () => {
     setIsNavigatingAway(true);
@@ -250,7 +251,8 @@ const PaymentForm = () => {
           <div className="flex-1">
             <CountdownTimer
               initialMinutes={initialMinutes}
-              onTimeout={() => setShowTimeoutDialog(true)} />
+              onTimeout={() => setShowTimeoutDialog(true)}
+            />
           </div>
         </div>
       </div>
@@ -303,7 +305,10 @@ const PaymentForm = () => {
               <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
               <a
                 onClick={() => setShowConfirmDialog(true)}
-                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer">Chọn lại vé</a>
+                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer"
+              >
+                Chọn lại vé
+              </a>
             </div>
 
             <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
@@ -330,20 +335,20 @@ const PaymentForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                    (total, item) => total + item.quantity,
-                    0
-                  )
+                      (total, item) => total + item.quantity,
+                      0
+                    )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                    cartDetails.reduce(
-                      (total, item) => total + item.price * item.quantity,
-                      0
+                      cartDetails.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
                     )
-                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -375,7 +380,7 @@ const PaymentForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => { }} // Không cho phép đóng
+        onClose={() => {}} // Không cho phép đóng
         onConfirm={handleTimeout}
         type="timeout"
       />

@@ -46,6 +46,21 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     e.preventDefault();
     setErrors({});
   
+    if (!formData.name || formData.name.trim() === '') {
+      setErrors({ name: 'Họ và tên không được để trống' });
+      return;
+    }
+
+    if (!formData.email || formData.email.trim() === '') {
+      setErrors({ email: 'Email không được để trống' });
+      return;
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      setErrors({ password: 'Mật khẩu phải có ít nhất 6 ký tự' });
+      return;
+    }
+  
     if (formData.password !== formData.confirmPassword) {
       setErrors({ confirmPassword: 'Mật khẩu xác nhận không khớp' });
       return;
@@ -55,8 +70,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   
     try {
       const response = await axios.post('/api/auth/register', {
+        fullName: formData.name,
         email: formData.email,
-        password: formData.password
+        phone: formData.phone || undefined,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
       });
 
       if (response.data) {
@@ -81,8 +99,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
         const backendErrors: Record<string, string> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
-          if (error.path === "email") backendErrors.email = error.message;
+          if (error.path === "fullName") backendErrors.name = error.message;
+          else if (error.path === "email") backendErrors.email = error.message;
+          else if (error.path === "phone") backendErrors.phone = error.message;
           else if (error.path === "password") backendErrors.password = error.message;
+          else if (error.path === "confirmPassword") backendErrors.confirmPassword = error.message;
         });
         setErrors(backendErrors);
       } else {

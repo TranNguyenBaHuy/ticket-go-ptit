@@ -6,7 +6,6 @@ import {
   Menu,
   ChevronDown,
   User,
-  History,
   LogOut,
 } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
@@ -125,14 +124,6 @@ const Header = () => {
                         <span>Vé của tôi</span>
                       </Link>
                       <Link
-                        to="/my-history"
-                        className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <History size={20} className="text-gray-600" />
-                        <span>Sự kiện của tôi</span>
-                      </Link>
-                      <Link
                         to="/account"
                         className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
                         onClick={() => setIsUserMenuOpen(false)}
@@ -197,13 +188,6 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Vé của tôi
-            </Link>
-            <Link
-              to="/about"
-              className="hover:text-amber-400 text-white py-2 border-b border-white/20"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Về chúng tôi
             </Link>
             {user ? (
               <div className="flex flex-col gap-2">
