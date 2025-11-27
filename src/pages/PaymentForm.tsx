@@ -173,6 +173,7 @@ const PaymentForm = () => {
       const response = await axios.post("/api/carts/place-order", payload);
 
       if (response.data.paymentUrl) {
+        setIsNavigatingAway(true);
         window.location.href = response.data.paymentUrl;
       } else {
         toast.success(response.data.message || "Đặt hàng thành công!");
@@ -191,12 +192,6 @@ const PaymentForm = () => {
   };
 
   useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue =
-        "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
-    };
-
     const handlePopState = (event: PopStateEvent) => {
       if (!isNavigatingAway) {
         event.preventDefault();
@@ -205,12 +200,10 @@ const PaymentForm = () => {
       }
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("popstate", handlePopState);
     window.history.pushState(null, "", window.location.href);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handlePopState);
     };
   }, [isNavigatingAway]);
@@ -334,20 +327,20 @@ const PaymentForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                      (total, item) => total + item.quantity,
-                      0
-                    )
+                    (total, item) => total + item.quantity,
+                    0
+                  )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                      cartDetails.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
+                    cartDetails.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
                     )
+                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -379,7 +372,7 @@ const PaymentForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => {}} // Không cho phép đóng
+        onClose={() => { }} // Không cho phép đóng
         onConfirm={handleTimeout}
         type="timeout"
       />
