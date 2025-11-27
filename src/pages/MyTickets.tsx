@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
+import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout";
 import { userBookings } from "../constants/types/types";
 
 type TabType = "all" | "success" | "pending" | "cancelled";
@@ -31,7 +32,6 @@ const MyTickets = () => {
         setIsLoading(false);
       } catch (error) {
         console.log(error);
-        setIsLoading(false);
       }
     };
 
@@ -147,26 +147,9 @@ const MyTickets = () => {
               </div>
             )}
 
-            {/* Ticket List */}
+            {/* Ticket List - Sử dụng component SelectTicketLayout */}
             {filteredTickets.length > 0 && (
-              <div className="space-y-3 md:space-y-4">
-                {filteredTickets.map((ticket) => (
-                  <div
-                    key={ticket.ticket_id}
-                    className="bg-[#27272A] p-3 md:p-4 lg:p-6 rounded-lg"
-                  >
-                    <h3 className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                      {ticket.event_name}
-                    </h3>
-                    <p className="text-gray-400 text-xs md:text-sm mt-1 md:mt-2">
-                      {ticket.event_date}
-                    </p>
-                    <p className="text-[#2dc275] font-bold text-sm md:text-base lg:text-lg mt-1 md:mt-2">
-                      {ticket.price.toLocaleString("de-DE")} đ
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <SelectTicketLayout tickets={filteredTickets} />
             )}
           </div>
         </div>
