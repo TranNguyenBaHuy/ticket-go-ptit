@@ -128,7 +128,7 @@ const SelectTicket = () => {
   if (loading) {
     return (
       <div className="flex flex-1 items-center bg-black justify-center text-2xl font-bold text-center text-white min-h-screen">
-        Loading...
+        Đang tải...
       </div>
     );
   }
@@ -274,9 +274,8 @@ const SelectTicket = () => {
         <div className="flex flex-col gap-4 bg-[#27272A] px-4 py-6 mt-auto text-white">
           {/* total tickets count */}
           <div
-            className={`flex gap-2 items-center${
-              totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
-            }`}
+            className={`flex gap-2 items-center${totalSelected > 0 ? "opacity-100 visible" : "opacity-0 invisible"
+              }`}
           >
             <Ticket /> x{totalSelected}
           </div>

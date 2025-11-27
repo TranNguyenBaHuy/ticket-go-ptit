@@ -60,6 +60,21 @@ const BookingForm = () => {
   //   resolver: zodResolver(Schema),
   // });
 
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as BookingFields;
     const value = e.target.value;
@@ -250,7 +265,7 @@ const BookingForm = () => {
       setShowTimeoutDialog(true);
     } catch (error) {
       toast.error("Lỗi khi xóa giỏ hàng.");
-      navigate("/");
+      navigate(`/events/${id}/bookings/select-ticket`);
     }
   };
 
@@ -317,7 +332,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverName")}
+                  // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -336,7 +351,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverEmail")}
+                  // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -355,7 +370,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverPhone")}
+                  // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -394,20 +409,20 @@ const BookingForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                      (total, item) => total + item.quantity,
-                      0
-                    )
+                    (total, item) => total + item.quantity,
+                    0
+                  )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                      cartDetails.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
+                    cartDetails.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
                     )
+                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -429,20 +444,9 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showConfirmDialog}
-        onClose={async () => {
-          try {
-            await axios.delete("/api/carts");
-            const cartId = localStorage.getItem("cartId");
-            if (cartId) {
-              localStorage.removeItem(`checkoutEnd_${cartId}`);
-              localStorage.removeItem("cartId");
-            }
-            setShowConfirmDialog(false);
-            setIsNavigatingAway(true);
-            navigate("/");
-          } catch (error) {
-            toast.error("Lỗi khi hủy đơn hàng.");
-          }
+        onClose={() => {
+          handleCancel();
+          setIsNavigatingAway(true);
         }}
         onConfirm={() => {
           setShowConfirmDialog(false);
@@ -454,11 +458,8 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => {}} // Không cho phép đóng
-        onConfirm={() => {
-          setShowTimeoutDialog(false);
-          navigate("/");
-        }}
+        onClose={() => { }} // Không cho phép đóng
+        onConfirm={handleCancel}
         type="timeout"
       />
     </>

@@ -7,18 +7,24 @@ import { jwtDecode } from "jwt-decode";
 import { Calendar, MapPin } from "lucide-react";
 import { formatCurrency, formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "@/components/Layouts/Client/CountdownTimer";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { Event, MyJwtPayload } from "@/constants/types/types";
 import CartItem from "@/components/Layouts/Client/CartItem";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 const PaymentForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("VNPAY");
   const [event, setEvent] = useState<Event>();
   const [isLoading, setIsLoading] = useState(false);
 
   const token = localStorage.getItem("token");
   const [cartDetails, setCartDetails] = useState<any[]>([]);
+
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isNavigatingAway, setIsNavigatingAway] = useState(false);
+  const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
 
   const location = useLocation();
   const state =
@@ -37,6 +43,21 @@ const PaymentForm = () => {
   const initialMinutes = paymentExpiresAt
     ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
     : 15;
+
+  const handleTimeout = async () => {
+    try {
+      const cartId = localStorage.getItem("cartId");
+      await axios.delete("/api/carts");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowTimeoutDialog(true);
+    } catch (error) {
+      toast.error("Lỗi khi xóa giỏ hàng.");
+      navigate(`/events/${id}/bookings/select-ticket`);
+    }
+  };
 
   const decodedUser = token ? jwtDecode<MyJwtPayload>(token) : null;
 
@@ -103,6 +124,46 @@ const PaymentForm = () => {
   const handleSelect = (value: string) => {
     setPaymentMethod(value);
   };
+
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setShowConfirmDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue =
+        "Bạn có chắc muốn rời khỏi trang? Các thay đổi sẽ không được lưu.";
+    };
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (!isNavigatingAway) {
+        event.preventDefault();
+        setShowConfirmDialog(true);
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+    window.history.pushState(null, "", window.location.href);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isNavigatingAway]);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -174,7 +235,9 @@ const PaymentForm = () => {
           </div>
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
-            <CountdownTimer initialMinutes={initialMinutes} />
+            <CountdownTimer
+              initialMinutes={initialMinutes}
+              onTimeout={handleTimeout} />
           </div>
         </div>
       </div>
@@ -249,20 +312,20 @@ const PaymentForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                      (total, item) => total + item.quantity,
-                      0
-                    )
+                    (total, item) => total + item.quantity,
+                    0
+                  )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                      cartDetails.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
+                    cartDetails.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
                     )
+                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -282,6 +345,27 @@ const PaymentForm = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={() => {
+          handleCancel();
+          setIsNavigatingAway(true);
+        }}
+        onConfirm={() => {
+          setShowConfirmDialog(false);
+        }}
+        type="leaveBooking"
+        confirmText="Ở lại"
+        cancelText="Hủy đơn"
+      />
+
+      <ConfirmationDialog
+        isOpen={showTimeoutDialog}
+        onClose={() => { }} // Không cho phép đóng
+        onConfirm={handleCancel}
+        type="timeout"
+      />
     </>
   );
 };
