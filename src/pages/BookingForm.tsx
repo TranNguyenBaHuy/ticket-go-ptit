@@ -266,8 +266,6 @@ const BookingForm = () => {
         localStorage.removeItem(`checkoutEnd_${cartId}`);
         localStorage.removeItem("cartId");
       }
-      setShowTimeoutDialog(false);
-      navigate(`/events/${id}/bookings/select-ticket`);
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
@@ -325,7 +323,10 @@ const BookingForm = () => {
           <div className="flex-1">
             <CountdownTimer
               initialMinutes={initialMinutes}
-              onTimeout={() => setShowTimeoutDialog(true)}
+              onTimeout={() => {
+                handleTimeout();
+                setShowTimeoutDialog(true);
+              }}
             />
           </div>
         </div>
@@ -403,7 +404,12 @@ const BookingForm = () => {
           </div>
           {/* ORDER INFO  */}
           <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
-            <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+            <div className="flex justify-between">
+              <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+              <a
+                onClick={() => setShowConfirmDialog(true)}
+                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer">Chọn lại vé</a>
+            </div>
 
             <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
               {/* TITLE */}
@@ -473,8 +479,8 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => { }} // Không cho phép đóng
-        onConfirm={handleTimeout}
+        onClose={() => { }}
+        onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
         type="timeout"
       />
     </>

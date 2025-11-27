@@ -90,6 +90,7 @@ const EventDetail = () => {
   }
 
   const handleDialogTimeout = () => {
+    handleTimeout();
     setShowConfirmDialog(false);
     setShowTimeoutDialog(true);
   };
@@ -102,7 +103,6 @@ const EventDetail = () => {
         localStorage.removeItem(`checkoutEnd_${cartId}`);
         localStorage.removeItem("cartId");
       }
-      setShowTimeoutDialog(false);
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
@@ -337,7 +337,7 @@ const EventDetail = () => {
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
         onClose={() => { }}
-        onConfirm={handleTimeout}
+        onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
         type="timeout"
       />
     </>

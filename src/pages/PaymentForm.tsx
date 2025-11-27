@@ -22,6 +22,7 @@ const PaymentForm = () => {
   const token = localStorage.getItem("token");
   const [cartDetails, setCartDetails] = useState<any[]>([]);
 
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
 
@@ -52,6 +53,22 @@ const PaymentForm = () => {
         localStorage.removeItem("cartId");
       }
       setShowTimeoutDialog(false);
+      navigate(`/events/${id}/bookings/select-ticket`);
+    } catch (error) {
+      toast.error("Lỗi khi hủy đơn hàng.");
+    }
+  }
+
+  const handleCancel = async () => {
+    try {
+      await axios.delete("/api/carts");
+      const cartId = localStorage.getItem("cartId");
+      if (cartId) {
+        localStorage.removeItem(`checkoutEnd_${cartId}`);
+        localStorage.removeItem("cartId");
+      }
+      setIsNavigatingAway(true);
+      setShowConfirmDialog(false);
       navigate(`/events/${id}/bookings/select-ticket`);
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
@@ -282,7 +299,12 @@ const PaymentForm = () => {
 
           {/* ORDER INFO  */}
           <div className="flex flex-col gap-4 bg-white text-black flex-3 mt-28 rounded-xl p-4 h-fit">
-            <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+            <div className="flex justify-between">
+              <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
+              <a
+                onClick={() => setShowConfirmDialog(true)}
+                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer">Chọn lại vé</a>
+            </div>
 
             <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
               {/* TITLE */}
@@ -341,6 +363,15 @@ const PaymentForm = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={handleCancel}
+        onConfirm={() => setShowConfirmDialog(false)}
+        type="leaveBooking"
+        confirmText="Ở lại"
+        cancelText="Hủy đơn"
+      />
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
