@@ -7,6 +7,7 @@ import type { Event } from "@/constants/types/types";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDateTimeDisplay } from "@/utils/utils";
 import CountdownTimer from "../components/Layouts/Client/CountdownTimer";
+import { paymentMethods } from "@/constants/data/paymentMethods";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9092";
 
@@ -231,13 +232,7 @@ const PaymentForm = () => {
                     Phương thức thanh toán
                   </h3>
                   <div className="space-y-3">
-                    {[
-                      { value: "VNPAY", label: "VNPAY/Ứng dụng ngân hàng", icon: "💳" },
-                      { value: "VIETQR", label: "VietQR", icon: "📱" },
-                      { value: "SHOPEEPAY", label: "ShopeePay", icon: "🛍️" },
-                      { value: "ZALOPAY", label: "Zalopay", icon: "💰" },
-                      { value: "CARD", label: "Thẻ ghi nợ/Thẻ tín dụng", icon: "💳" },
-                    ].map((method) => (
+                    {paymentMethods.map((method) => (
                       <div
                         key={method.value}
                         onClick={() => setPaymentMethod(method.value)}
@@ -258,7 +253,14 @@ const PaymentForm = () => {
                             <div className="w-3 h-3 rounded-full bg-[#2dc275]"></div>
                           )}
                         </div>
-                        <span className="text-sm text-white font-medium">{method.label}</span>
+                        <img
+                          src={method.icon}
+                          alt={method.label}
+                          className="w-8 h-8 object-contain"
+                        />
+                        <span className="text-sm text-white font-medium">
+                          {method.label}
+                        </span>
                       </div>
                     ))}
                   </div>
