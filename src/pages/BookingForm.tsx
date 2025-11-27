@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import axios from "@/utils/axiosInterceptor";
 import ConfirmationDialog from "./ConfirmationDialog";
 import CartItem from "@/components/Layouts/Client/CartItem";
-import { set } from "date-fns";
 
 type BookingFields = "receiverName" | "receiverPhone" | "receiverEmail";
 
@@ -41,7 +40,9 @@ const BookingForm = () => {
 
   const [cartDetails, setCartDetails] = useState<any[]>([]);
   const [cartId, setCartId] = useState<number | null>(null);
-  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | undefined>(undefined);
+  const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | undefined>(
+    undefined
+  );
 
   const location = useLocation();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -269,7 +270,7 @@ const BookingForm = () => {
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
-  }
+  };
 
   const handleCancel = async () => {
     try {
@@ -285,7 +286,7 @@ const BookingForm = () => {
     } catch (error) {
       toast.error("Lỗi khi hủy đơn hàng.");
     }
-  }
+  };
 
   return (
     <>
@@ -353,7 +354,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverName")}
+                    // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -372,7 +373,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverEmail")}
+                    // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -391,7 +392,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                  // {...register("receiverPhone")}
+                    // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -408,7 +409,10 @@ const BookingForm = () => {
               <h3 className="font-semibold text-lg">Thông tin đặt vé</h3>
               <a
                 onClick={() => setShowConfirmDialog(true)}
-                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer">Chọn lại vé</a>
+                className="font-semibold text-md text-[#2dc275] hover:text-black transition-colors duration-500 cursor-pointer"
+              >
+                Chọn lại vé
+              </a>
             </div>
 
             <div className="flex flex-col gap-3   border-b-1 border-dashed border-b-gray-600 pb-4">
@@ -435,20 +439,20 @@ const BookingForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                    (total, item) => total + item.quantity,
-                    0
-                  )
+                      (total, item) => total + item.quantity,
+                      0
+                    )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                    cartDetails.reduce(
-                      (total, item) => total + item.price * item.quantity,
-                      0
+                      cartDetails.reduce(
+                        (total, item) => total + item.price * item.quantity,
+                        0
+                      )
                     )
-                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -479,7 +483,7 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => { }}
+        onClose={() => {}}
         onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
         type="timeout"
       />
