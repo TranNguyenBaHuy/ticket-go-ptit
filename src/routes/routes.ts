@@ -1,5 +1,4 @@
 import Home from "../pages/Home";
-import About from "../pages/About";
 import MyTickets from "../pages/MyTickets";
 import DefaultLayout from "../components/Layouts/Client/DefaultLayout/DefaultLayout";
 import Contact from "../pages/Contact";
@@ -37,7 +36,6 @@ import ThanksPage from "@/pages/ThanksPage";
 
 const publicRoutes = [
   { path: "/", component: Home, layout: DefaultLayout },
-  { path: "/about", component: About, layout: DefaultLayout },
   { path: "/my-tickets", component: MyTickets, layout: DefaultLayout },
   { path: "/account", component: AccountSettings, layout: DefaultLayout },
   { path: "/contact", component: Contact, layout: DefaultLayout },

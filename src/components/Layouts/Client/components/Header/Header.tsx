@@ -1,18 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Ticket,
-  Search,
-  Menu,
-  ChevronDown,
-  User,
-  LogOut,
-} from "lucide-react";
+import { Ticket, Search, Menu, ChevronDown, User, LogOut } from "lucide-react";
 import AuthContainer from "../../../../Auth/AuthContainer";
 import SearchBar from "./SearchBar";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../../../contexts/AuthContext";
-import { openAuthModal, setAuthModalHandler } from "../../../../../utils/axiosInterceptor";
+import {
+  openAuthModal,
+  setAuthModalHandler,
+} from "../../../../../utils/axiosInterceptor";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -81,12 +77,7 @@ const Header = () => {
               <Ticket size={22} className="hidden lg:block" />
               Vé của tôi
             </a>
-            <Link
-              to="/about"
-              className="hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
-            >
-              Về chúng tôi
-            </Link>
+
             {user ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -99,8 +90,9 @@ const Header = () => {
                         ? user.avatar.startsWith("http")
                           ? user.avatar
                           : `/images/user/${user.avatar}`
-                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email
-                        }&background=0D8ABC&color=fff`
+                        : `https://ui-avatars.com/api/?name=${
+                            user.fullName || user.email
+                          }&background=0D8ABC&color=fff`
                     }
                     alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"
