@@ -46,7 +46,47 @@ const MyTickets = () => {
     { id: "cancelled" as TabType, label: "Đã hủy" },
   ];
 
-  const filteredTickets = userBookings.filter((ticket) => {
+  // TODO: Xóa mock data này khi backend xong
+  const mockTickets = [
+    {
+      ticket_id: "MOCK001",
+      event_name: "Concert Mỹ Tâm 2024 - Tour Diễn Toàn Quốc",
+      event_date: "26 Tháng 07 2023",
+      price: 500000,
+      status: "completed"
+    },
+    {
+      ticket_id: "MOCK002",
+      event_name: "Hội chợ Sách Quốc tế Hà Nội - Book Fair 2024",
+      event_date: "15 Tháng 08 2023",
+      price: 150000,
+      status: "completed"
+    },
+    {
+      ticket_id: "MOCK003",
+      event_name: "Trận Chung Kết V-League 2024 - Hà Nội vs TP.HCM",
+      event_date: "22 Tháng 09 2023",
+      price: 300000,
+      status: "completed"
+    },
+    {
+      ticket_id: "MOCK004",
+      event_name: "Workshop Thiết kế UI/UX - Học viện PTIT",
+      event_date: "05 Tháng 10 2023",
+      price: 100000,
+      status: "pending"
+    },
+    {
+      ticket_id: "MOCK005",
+      event_name: "Triển lãm Nghệ thuật Đương đại Việt Nam",
+      event_date: "12 Tháng 11 2023",
+      price: 50000,
+      status: "cancelled"
+    }
+  ];
+
+  // Dùng mock data tạm (khi backend xong, đổi lại userBookings)
+  const filteredTickets = mockTickets.filter((ticket) => {
     if (activeTab === "all") return true;
     return ticket.status === activeTab;
   });
