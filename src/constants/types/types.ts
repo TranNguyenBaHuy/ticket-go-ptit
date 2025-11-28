@@ -151,7 +151,5 @@ export interface MappedTicket {
   event_date: string;
   event_location?: string;
   event_duration?: string;
-  price: number;
-  quantity: number;
   status: string;
 }

@@ -69,8 +69,6 @@ const MyTickets = () => {
                     event_date: dateStr,
                     event_location: event?.location,
                     event_duration: event?.duration,
-                    price: item.price || 0,
-                    quantity: item.quantity || 1,
                     status: order.status
                 });
             });

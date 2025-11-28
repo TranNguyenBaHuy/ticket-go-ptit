@@ -8,8 +8,6 @@ interface TicketCardItemProps {
     event_date: string;
     event_location?: string;
     event_duration?: string;
-    price: number;
-    quantity: number;
     status: string;
   };
 }
@@ -46,8 +44,6 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
     if (statusLower === "cancelled") return "bg-red-600";
     return "bg-[#2dc275]";
   };
-
-  const totalPrice = (ticket.price || 0) * (ticket.quantity || 1);
 
   return (
     <div className="relative bg-[#515257] rounded-xl overflow-hidden hover:shadow-lg hover:shadow-[#2dc275]/30 transition-all duration-300 flex flex-col md:flex-row">
