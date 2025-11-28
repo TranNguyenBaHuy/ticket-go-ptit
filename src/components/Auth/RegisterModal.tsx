@@ -15,7 +15,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     phone: '',
     password: '',
     confirmPassword: '',
-    name: ''
+    fullName: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -46,8 +46,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     e.preventDefault();
     setErrors({});
   
-    if (!formData.name || formData.name.trim() === '') {
-      setErrors({ name: 'Họ và tên không được để trống' });
+    if (!formData.fullName || formData.fullName.trim() === '') {
+      setErrors({ fullName: 'Họ và tên không được để trống' });
       return;
     }
 
@@ -70,7 +70,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   
     try {
       const response = await axios.post('/api/auth/register', {
-        fullName: formData.name,
+        fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone || undefined,
         password: formData.password,
@@ -86,7 +86,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
             phone: '',
             password: '',
             confirmPassword: '',
-            name: ''
+            fullName: ''
           });
           setErrors({});
           onSwitchToLogin();
@@ -99,7 +99,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
         const backendErrors: Record<string, string> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         err.response.data.errors.forEach((error: any) => {
-          if (error.path === "fullName") backendErrors.name = error.message;
+          if (error.path === "fullName") backendErrors.fullName = error.message;
           else if (error.path === "email") backendErrors.email = error.message;
           else if (error.path === "phone") backendErrors.phone = error.message;
           else if (error.path === "password") backendErrors.password = error.message;
@@ -158,30 +158,30 @@ return (
 
           {/* Ô nhập họ tên */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
               Họ và tên <span className="text-red-500">*</span>
             </label>
             <input
               ref={nameInputRef}
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Nguyễn Văn A"
               className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                errors.name
+                errors.fullName
                   ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-green-500 focus:border-transparent'
               }`}
               disabled={isSubmitting}
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? 'name-error' : undefined}
+              aria-invalid={!!errors.fullName}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
             />
-            {errors.name && (
-              <div id="name-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
+            {errors.fullName && (
+              <div id="fullName-error" className="flex items-center space-x-1 text-red-600 text-sm mt-2">
                 <AlertCircle className="w-4 h-4" />
-                <span>{errors.name}</span>
+                <span>{errors.fullName}</span>
               </div>
             )}
           </div>

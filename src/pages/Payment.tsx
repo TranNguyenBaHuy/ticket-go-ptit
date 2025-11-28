@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import axios from "@/utils/axiosInterceptor";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9092";
 
@@ -63,41 +64,23 @@ const Payment = () => {
 
     try {
       for (const ticket of paymentData.selectedTickets) {
-        const addResponse = await fetch(`${API_URL}/api/carts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            ticketTypeId: ticket.ticketTypeId,
-            quantity: ticket.quantity,
-          }),
+        await axios.post(`${API_URL}/api/carts`, {
+          ticketTypeId: ticket.ticketTypeId,
+          quantity: ticket.quantity,
         });
-
-        if (!addResponse.ok) {
-          throw new Error("Không thể thêm vé vào giỏ hàng");
-        }
       }
 
-      const orderResponse = await fetch(`${API_URL}/api/carts/place-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          receiverName: receiverName.trim(),
-          receiverPhone: receiverPhone.trim(),
-          receiverEmail: receiverEmail.trim() || null,
-          totalPrice: paymentData.totalAmount,
-          paymentMethod: paymentMethod,
-        }),
+      const orderResponse = await axios.post(`${API_URL}/api/carts/place-order`, {
+        receiverName: receiverName.trim(),
+        receiverPhone: receiverPhone.trim(),
+        receiverEmail: receiverEmail.trim() || null,
+        totalPrice: paymentData.totalAmount,
+        paymentMethod: paymentMethod,
       });
 
-      const data = await orderResponse.json();
+      const data = orderResponse.data;
 
-      if (!orderResponse.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || "Không thể tạo đơn hàng");
       }
 
@@ -116,10 +99,10 @@ const Payment = () => {
         toast.success("Đặt vé thành công!");
         navigate("/my-tickets");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Order error:", error);
       toast.error(
-        error instanceof Error ? error.message : "Có lỗi xảy ra khi tạo đơn hàng"
+        error.response?.data?.message || error.message || "Có lỗi xảy ra khi tạo đơn hàng"
       );
       setIsProcessing(false);
     }
