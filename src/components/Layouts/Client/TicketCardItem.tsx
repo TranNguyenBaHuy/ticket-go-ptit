@@ -1,5 +1,7 @@
 import React from "react";
 import { MapPin, Clock, FileText, Ticket as TicketIcon } from "lucide-react";
+import axios from "@/utils/axiosInterceptor";
+import { toast } from "sonner";
 
 interface TicketCardItemProps {
   ticket: {
@@ -10,6 +12,7 @@ interface TicketCardItemProps {
     event_duration?: string;
     status: string;
     ticket_type: string;
+    quantity: number;
   };
 }
 
@@ -46,6 +49,16 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
     return "bg-[#2dc275]";
   };
 
+  const handleRetryPayment = async () => {
+    try {
+      const response = await axios.post(`/api/orders/${ticket.ticket_id}/retry-payment`);
+      if (response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
+    } catch (error) {
+      toast.error("Đơn hàng đã hết hạn hoặc có lỗi xảy ra. Vui lòng đặt lại vé.");
+    }
+  };
   return (
     <div className="relative bg-[#515257] rounded-xl overflow-hidden hover:shadow-lg hover:shadow-[#2dc275]/30 transition-all duration-300 flex flex-col md:flex-row">
       {/* Left side - Date section (ticket stub) */}
@@ -115,6 +128,9 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
             <div className="flex items-center gap-2 text-gray-300">
               <TicketIcon size={16} className="flex-shrink-0" />
               <span className="text-xs md:text-sm">
+                {ticket.quantity >= 2 && (
+                  <span className="font-bold text-white mr-1.5">{ticket.quantity} x</span>
+                )}
                 {ticket.ticket_type}
               </span>
             </div>
@@ -139,6 +155,17 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
           )}
         </div>
 
+        {/* Retry Payment Button */}
+        {ticket.status.toUpperCase() === 'PENDING' && (
+          <div className="mt-4">
+            <button
+              onClick={handleRetryPayment}
+              className="w-full bg-[#ff9800] hover:bg-[#e68a00] text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              Thanh toán ngay
+            </button>
+          </div>
+        )}
         {/* Price section removed as requested */}
       </div>
     </div>

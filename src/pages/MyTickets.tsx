@@ -100,7 +100,8 @@ const MyTickets = () => {
               event_location: event?.location,
               event_duration: event?.duration,
               status: order.status,
-              ticket_type: item.ticketType?.type || "Không xác định"
+              ticket_type: item.ticketType?.type || "Không xác định",
+              quantity: item.quantity
             });
           });
         });

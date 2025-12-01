@@ -152,4 +152,6 @@ export interface MappedTicket {
   event_location?: string;
   event_duration?: string;
   status: string;
+  ticket_type: string;
+  quantity: number;
 }

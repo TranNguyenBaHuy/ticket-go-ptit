@@ -15,7 +15,7 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const { user, logout } = useAuth();
+  const { user, logout, pendingOrdersCount } = useAuth();
   const navigate = useNavigate();
 
   // Đăng ký handler để mở modal khi có lỗi 401
@@ -71,11 +71,17 @@ const Header = () => {
           {/* Nav menu */}
           <nav className="hidden md:flex items-center gap-4 lg:gap-6 font-semibold">
             <a
+              role="button"
               onClick={toMyTickets}
-              className="flex items-center gap-2 hover:text-black transition-colors duration-500 text-white text-sm lg:text-base"
+              className="relative flex items-center gap-2 hover:text-black transition-colors duration-500 text-white text-sm lg:text-base cursor-pointer"
             >
               <Ticket size={22} className="hidden lg:block" />
               Vé của tôi
+              {pendingOrdersCount > 0 && (
+                <span className="absolute top-[-5px] left-[-10px] flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+                  {pendingOrdersCount}
+                </span>
+              )}
             </a>
 
             {user ? (
@@ -90,9 +96,8 @@ const Header = () => {
                         ? user.avatar.startsWith("http")
                           ? user.avatar
                           : `/images/user/${user.avatar}`
-                        : `https://ui-avatars.com/api/?name=${
-                            user.fullName || user.email
-                          }&background=0D8ABC&color=fff`
+                        : `https://ui-avatars.com/api/?name=${user.fullName || user.email
+                        }&background=0D8ABC&color=fff`
                     }
                     alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border-2 border-white"

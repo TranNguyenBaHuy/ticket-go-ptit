@@ -12,13 +12,12 @@ interface LoginModalProps {
   onClose: () => void;
   onSwitchToRegister: () => void;
 }
-
 const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
   onSwitchToRegister,
 }) => {
-  const { login } = useAuth();
+  const { login, refreshPendingOrdersCount } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginCredentials>({
     emailOrPhone: "",
@@ -67,6 +66,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
 
       const { token } = response.data;
       login(token);
+      refreshPendingOrdersCount();
       const decodedUser = jwtDecode(token) as { role?: { name?: string } };
 
       setShowSuccess(true);

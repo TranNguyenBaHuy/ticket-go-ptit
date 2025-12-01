@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import axios from "@/utils/axiosInterceptor";
+// @ts-expect-error - JSX file without type declarations
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OrderDetail {
   id: number;
@@ -35,6 +37,7 @@ const ThanksPage = () => {
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { refreshPendingOrdersCount } = useAuth();
 
   const orderId = searchParams.get("orderId");
 
@@ -51,9 +54,10 @@ const ThanksPage = () => {
       try {
         const response = await axios.get(`/api/orders/${orderId}`);
         console.log("Order response:", response.data);
-        
+
         if (response.data.success && response.data.orderDetails) {
           setOrderData(response.data.orderDetails);
+          refreshPendingOrdersCount(); // Làm mới số lượng đơn hàng PENDING
         } else {
           throw new Error(response.data.message || "Lỗi khi lấy thông tin đơn hàng");
         }
@@ -242,8 +246,8 @@ const ThanksPage = () => {
                   <p className="text-white font-semibold text-base">
                     {orderData.ticketOrderDetails && orderData.ticketOrderDetails.length > 0
                       ? orderData.ticketOrderDetails
-                          .map((d) => `${d.ticketType.event.title} - ${d.ticketType.type} x${d.quantity}`)
-                          .join(", ")
+                        .map((d) => `${d.ticketType.event.title} - ${d.ticketType.type} x${d.quantity}`)
+                        .join(", ")
                       : "Thanh toán vé"}
                   </p>
                 </div>
