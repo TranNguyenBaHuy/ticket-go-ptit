@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faTicket,
-  faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
 // @ts-expect-error - JSX file without type declarations
 import { useAuth } from "../../../contexts/AuthContext";
