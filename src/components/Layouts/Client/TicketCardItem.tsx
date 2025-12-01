@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, Clock, FileText } from "lucide-react";
+import { MapPin, Clock, FileText, Ticket as TicketIcon } from "lucide-react";
 
 interface TicketCardItemProps {
   ticket: {
@@ -9,6 +9,7 @@ interface TicketCardItemProps {
     event_location?: string;
     event_duration?: string;
     status: string;
+    ticket_type: string;
   };
 }
 
@@ -66,12 +67,12 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
         <div className="flex-1 border-l-2 border-dashed border-[#212121] my-1"></div>
         <div className="w-6 h-6 rounded-full bg-[#212121] -mb-3"></div>
       </div>
-       {/* Mobile Divider (Horizontal) */}
-       <div className="md:hidden relative w-full h-4 bg-[#515257] flex items-center justify-center">
-         <div className="absolute left-0 w-4 h-4 rounded-full bg-[#212121] -ml-2"></div>
-         <div className="w-full border-t-2 border-dashed border-[#212121]"></div>
-         <div className="absolute right-0 w-4 h-4 rounded-full bg-[#212121] -mr-2"></div>
-       </div>
+      {/* Mobile Divider (Horizontal) */}
+      <div className="md:hidden relative w-full h-4 bg-[#515257] flex items-center justify-center">
+        <div className="absolute left-0 w-4 h-4 rounded-full bg-[#212121] -ml-2"></div>
+        <div className="w-full border-t-2 border-dashed border-[#212121]"></div>
+        <div className="absolute right-0 w-4 h-4 rounded-full bg-[#212121] -mr-2"></div>
+      </div>
 
 
       {/* Right side - Ticket details */}
@@ -105,6 +106,16 @@ const TicketCardItem: React.FC<TicketCardItemProps> = ({ ticket }) => {
               <FileText size={16} className="flex-shrink-0" />
               <span className="text-xs md:text-sm">
                 Mã đơn: {ticket.ticket_id}
+              </span>
+            </div>
+          )}
+
+          {/* Ticket Type */}
+          {ticket.ticket_type && (
+            <div className="flex items-center gap-2 text-gray-300">
+              <TicketIcon size={16} className="flex-shrink-0" />
+              <span className="text-xs md:text-sm">
+                {ticket.ticket_type}
               </span>
             </div>
           )}

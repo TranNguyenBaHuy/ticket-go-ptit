@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout";
 import axios from "../utils/axiosInterceptor";
@@ -9,18 +9,47 @@ import type {
   RawTicketOrderDetail,
   MappedTicket,
 } from "../constants/types/types";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-type TabType = "all" | "COMPLETED" | "PENDING" | "CANCELLED";
+type TabType = "ALL" | "COMPLETED" | "PENDING" | "CANCELLED";
 type SubTabType = "UPCOMING" | "PAST";
 
 const MyTickets = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TabType>("ALL");
   const [activeSubTab, setActiveSubTab] = useState<SubTabType>("UPCOMING");
   const [loading, setIsLoading] = useState<boolean>(true);
-  const [tickets, setTickets] = useState<MappedTicket[]>([]);
+  const [tickets, setTickets] = useState<MappedTicket[]>([])
+  const [totalPages, setTotalPages] = useState(1);
 
-  const PAGE_LIMIT = 6;
+  const currentPage = Number(searchParams.get("page")) || 1;
+
+  const updateUrlParams = (
+    newParams: Record<string, string | number | null>
+  ) => {
+    const currentParams = new URLSearchParams(searchParams);
+    for (const key in newParams) {
+      if (newParams[key] === null || newParams[key] === "") {
+        currentParams.delete(key);
+      } else {
+        currentParams.set(key, String(newParams[key]));
+      }
+    }
+    setSearchParams(currentParams);
+  };
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    updateUrlParams({ page: 1 });
+  };
+
+  const handleSubTabChange = (subTab: SubTabType) => {
+    setActiveSubTab(subTab);
+    updateUrlParams({ page: 1 });
+  };
+
+  const PAGE_LIMIT = 3; // Không phải số vé mà là số đơn hàng mỗi trang
 
   useEffect(() => {
     const handleFetchMyTicket = async () => {
@@ -30,8 +59,8 @@ const MyTickets = () => {
       try {
         const response = await axios.get<OrdersHistoryResponse>("/api/orders/history", {
           params: {
-            page: 1,
             limit: PAGE_LIMIT,
+            page: currentPage,
             status: activeTab,
             eventTime: activeSubTab,
           },
@@ -39,6 +68,7 @@ const MyTickets = () => {
 
         const result = response.data;
         const orders: RawOrder[] = result.orders || [];
+        setTotalPages(result.totalPages || 1);
 
         const mappedTickets: MappedTicket[] = [];
 
@@ -69,7 +99,8 @@ const MyTickets = () => {
               event_date: dateStr,
               event_location: event?.location,
               event_duration: event?.duration,
-              status: order.status
+              status: order.status,
+              ticket_type: item.ticketType?.type || "Không xác định"
             });
           });
         });
@@ -83,10 +114,10 @@ const MyTickets = () => {
     };
 
     handleFetchMyTicket();
-  }, [activeTab, activeSubTab]);
+  }, [activeTab, activeSubTab, currentPage]);
 
   const tabs = [
-    { id: "all" as TabType, label: "Tất cả" },
+    { id: "ALL" as TabType, label: "Tất cả" },
     { id: "COMPLETED" as TabType, label: "Thành công" },
     { id: "PENDING" as TabType, label: "Đang xử lý" },
     { id: "CANCELLED" as TabType, label: "Đã hủy" },
@@ -132,7 +163,7 @@ const MyTickets = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`px-3 md:px-6 lg:px-10 py-2 md:py-2.5 lg:py-3 rounded-full font-medium text-sm md:text-base transition-colors ${activeTab === tab.id
                     ? "bg-[#2dc275] text-white"
                     : "bg-[#52525b] text-gray-300 hover:bg-[#616169]"
@@ -146,10 +177,10 @@ const MyTickets = () => {
             {/* Sub Tabs */}
             <div className="flex gap-6 md:gap-8 lg:gap-12 mb-6 md:mb-8 border-b border-gray-700">
               <button
-                onClick={() => setActiveSubTab("UPCOMING")}
+                onClick={() => handleSubTabChange("UPCOMING")}
                 className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "UPCOMING"
-                    ? "text-[#2dc275]"
-                    : "text-gray-400 hover:text-gray-300"
+                  ? "text-[#2dc275]"
+                  : "text-gray-400 hover:text-gray-300"
                   }`}
               >
                 Sắp diễn ra
@@ -158,10 +189,10 @@ const MyTickets = () => {
                 )}
               </button>
               <button
-                onClick={() => setActiveSubTab("PAST")}
+                onClick={() => handleSubTabChange("PAST")}
                 className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "PAST"
-                    ? "text-[#2dc275]"
-                    : "text-gray-400 hover:text-gray-300"
+                  ? "text-[#2dc275]"
+                  : "text-gray-400 hover:text-gray-300"
                   }`}
               >
                 Đã kết thúc
@@ -190,6 +221,62 @@ const MyTickets = () => {
             {/* Ticket List - Sử dụng component SelectTicketLayout */}
             {tickets.length > 0 && (
               <SelectTicketLayout tickets={tickets} />
+            )}
+
+            {/* shadcn PAGINATION  */}
+            {totalPages > 1 && (
+              <div className="flex justify-center py-8">
+                <Pagination>
+                  <PaginationContent className="text-white">
+                    {/* prev btn */}
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={() =>
+                          updateUrlParams({ page: Math.max(currentPage - 1, 1) })
+                        }
+                        className={`${currentPage === 1
+                          ? "opacity-40 pointer-events-none"
+                          : "hover:bg-blue-600 hover:text-white"
+                          } bg-[#3f3f46] text-white border border-gray-600`}
+                      />
+                    </PaginationItem>
+
+                    {/* page nums */}
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === i + 1}
+                          onClick={() => updateUrlParams({ page: i + 1 })}
+                          className={`${currentPage === i + 1
+                            ? "bg-blue-500 text-white border-blue-500"
+                            : "bg-[#3f3f46] text-gray-300 hover:bg-blue-600 hover:text-white border border-gray-600"
+                            }`}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    {/* next btn */}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={() =>
+                          updateUrlParams({
+                            page: Math.min(currentPage + 1, totalPages),
+                          })
+                        }
+                        className={`${currentPage === totalPages
+                          ? "opacity-40 pointer-events-none"
+                          : "hover:bg-blue-600 hover:text-white"
+                          } bg-[#3f3f46] text-white border border-gray-600`}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
             )}
           </div>
         </div>
