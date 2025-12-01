@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import UserSidebar from "../components/Layouts/Client/UserSidebar";
 import SelectTicketLayout from "../components/Layouts/Client/SelectTicketLayout";
 import { userBookings } from "../constants/types/types";
+import axios from "@/utils/axiosInterceptor";
 
 type TabType = "all" | "success" | "pending" | "cancelled";
 type SubTabType = "upcoming" | "past";
@@ -20,12 +21,12 @@ const MyTickets = () => {
       const url = `/api/orders/history`;
 
       try {
-        const response = await fetch(url);
+        const response = await axios.get(url);
 
-        if (!response.ok)
+        if (!response.data)
           throw new Error(`Response status: ${response.status}`);
 
-        const result = await response.json();
+        const result = await response.data;
 
         console.log("FETCH TICKET DETAILS", result);
 
@@ -131,11 +132,10 @@ const MyTickets = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 md:px-6 lg:px-10 py-2 md:py-2.5 lg:py-3 rounded-full font-medium text-sm md:text-base transition-colors ${
-                    activeTab === tab.id
-                      ? "bg-[#2dc275] text-white"
-                      : "bg-[#52525b] text-gray-300 hover:bg-[#616169]"
-                  }`}
+                  className={`px-3 md:px-6 lg:px-10 py-2 md:py-2.5 lg:py-3 rounded-full font-medium text-sm md:text-base transition-colors ${activeTab === tab.id
+                    ? "bg-[#2dc275] text-white"
+                    : "bg-[#52525b] text-gray-300 hover:bg-[#616169]"
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -146,11 +146,10 @@ const MyTickets = () => {
             <div className="flex gap-6 md:gap-8 lg:gap-12 mb-6 md:mb-8 border-b border-gray-700">
               <button
                 onClick={() => setActiveSubTab("upcoming")}
-                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${
-                  activeSubTab === "upcoming"
-                    ? "text-[#2dc275]"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
+                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "upcoming"
+                  ? "text-[#2dc275]"
+                  : "text-gray-400 hover:text-gray-300"
+                  }`}
               >
                 Sắp diễn ra
                 {activeSubTab === "upcoming" && (
@@ -159,11 +158,10 @@ const MyTickets = () => {
               </button>
               <button
                 onClick={() => setActiveSubTab("past")}
-                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${
-                  activeSubTab === "past"
-                    ? "text-[#2dc275]"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
+                className={`pb-2 md:pb-3 font-medium transition-colors relative text-sm md:text-base ${activeSubTab === "past"
+                  ? "text-[#2dc275]"
+                  : "text-gray-400 hover:text-gray-300"
+                  }`}
               >
                 Đã kết thúc
                 {activeSubTab === "past" && (

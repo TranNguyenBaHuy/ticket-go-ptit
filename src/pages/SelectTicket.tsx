@@ -5,7 +5,7 @@ import { Calendar, MapPin, Ticket } from "lucide-react";
 import { formatDateTimeDisplay } from "../utils/utils";
 import PrimaryColorButton from "../components/Layouts/Client/PrimaryColorButton";
 import { toast } from "sonner";
-import axios from "axios";
+import axios from "@/utils/axiosInterceptor";
 
 const SelectTicket = () => {
   const { id } = useParams();
