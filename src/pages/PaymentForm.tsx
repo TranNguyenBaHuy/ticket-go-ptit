@@ -25,6 +25,7 @@ const PaymentForm = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
+  const [countdownKey, setCountdownKey] = useState(Date.now());
 
   const location = useLocation();
   const state =
@@ -40,7 +41,7 @@ const PaymentForm = () => {
   const receiverEmail = state.receiverEmail ?? null;
   const paymentExpiresAt = state.paymentExpiresAt;
 
-  const initialMinutes = paymentExpiresAt
+  let initialMinutes = paymentExpiresAt
     ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
     : 15;
 
@@ -208,6 +209,20 @@ const PaymentForm = () => {
     };
   }, [isNavigatingAway]);
 
+  useEffect(() => {
+    const handler = () => {
+      if (!document.hidden && paymentExpiresAt) {
+        initialMinutes = Math.max(
+          0,
+          (paymentExpiresAt - Date.now()) / (1000 * 60)
+        );
+        setCountdownKey(Date.now()); // Force re-render CountdownTimer
+      }
+    };
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, [paymentExpiresAt]);
+
   return (
     <>
       <div className="relative w-full h-62 md:h-72 lg:h-62 overflow-hidden">
@@ -242,6 +257,7 @@ const PaymentForm = () => {
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
             <CountdownTimer
+              key={countdownKey}
               initialMinutes={initialMinutes}
               onTimeout={() => setShowTimeoutDialog(true)}
             />

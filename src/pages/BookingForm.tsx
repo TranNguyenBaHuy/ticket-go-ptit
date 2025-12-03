@@ -48,6 +48,7 @@ const BookingForm = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isNavigatingAway, setIsNavigatingAway] = useState(false);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
+  const [countdownKey, setCountdownKey] = useState(Date.now());
 
   // const state =
   //   (location.state as {
@@ -62,7 +63,7 @@ const BookingForm = () => {
   // const receiverEmail = state.receiverEmail ?? null;
   // const paymentExpiresAt = state.paymentExpiresAt;
 
-  const initialMinutes = paymentExpiresAt
+  let initialMinutes = paymentExpiresAt
     ? Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60))
     : 15;
 
@@ -246,6 +247,18 @@ const BookingForm = () => {
     };
   }, [isNavigatingAway]);
 
+  useEffect(() => {
+    const handler = () => {
+      if (!document.hidden && paymentExpiresAt) {
+        initialMinutes = Math.max(0, (paymentExpiresAt - Date.now()) / (1000 * 60));
+        setCountdownKey(Date.now()); // Force re-render CountdownTimer
+      }
+    };
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, [paymentExpiresAt]);
+
+
   if (loading) {
     return (
       <div className="flex flex-1 min-h-screen bg-black text-white text-xl items-center justify-center">
@@ -323,6 +336,7 @@ const BookingForm = () => {
           {/* COUNTDOWN SECTION */}
           <div className="flex-1">
             <CountdownTimer
+              key={countdownKey}
               initialMinutes={initialMinutes}
               onTimeout={() => {
                 handleTimeout();
@@ -354,7 +368,7 @@ const BookingForm = () => {
                     value={formData.receiverName}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverName")}
+                  // {...register("receiverName")}
                   />
                   {errors.receiverName && (
                     <p className="text-red-500 text-sm">
@@ -373,7 +387,7 @@ const BookingForm = () => {
                     value={formData.receiverEmail}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverEmail")}
+                  // {...register("receiverEmail")}
                   />
                   {errors.receiverEmail && (
                     <p className="text-red-500 text-sm">
@@ -392,7 +406,7 @@ const BookingForm = () => {
                     value={formData.receiverPhone}
                     onChange={handleChange}
                     className="bg-[#2c2c30] border-gray-600 text-white py-6"
-                    // {...register("receiverPhone")}
+                  // {...register("receiverPhone")}
                   />
                   {errors.receiverPhone && (
                     <p className="text-red-500 text-sm">
@@ -439,20 +453,20 @@ const BookingForm = () => {
                 Tạm tính{" "}
                 {cartDetails.length > 0
                   ? cartDetails.reduce(
-                      (total, item) => total + item.quantity,
-                      0
-                    )
+                    (total, item) => total + item.quantity,
+                    0
+                  )
                   : 0}{" "}
                 ghế
               </p>
               <p className="font-bold text-lg text-[#2dc275]">
                 {cartDetails.length > 0
                   ? formatCurrency(
-                      cartDetails.reduce(
-                        (total, item) => total + item.price * item.quantity,
-                        0
-                      )
+                    cartDetails.reduce(
+                      (total, item) => total + item.price * item.quantity,
+                      0
                     )
+                  )
                   : formatCurrency(0)}
               </p>
             </div>
@@ -483,7 +497,7 @@ const BookingForm = () => {
 
       <ConfirmationDialog
         isOpen={showTimeoutDialog}
-        onClose={() => {}}
+        onClose={() => { }}
         onConfirm={() => navigate(`/events/${id}/bookings/select-ticket`)}
         type="timeout"
       />
